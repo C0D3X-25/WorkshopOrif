@@ -1,0 +1,89 @@
+.workshop-list-page {
+  padding: 40px 32px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.list-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.list-header h1 {
+  margin: 0;
+}
+
+.change-profile {
+  font-size: 14px;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.change-profile:hover {
+  text-decoration: underline;
+}
+
+.workshop-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.workshop-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.workshop-card:hover {
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow);
+}
+
+.workshop-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-family: var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.type-theory    { background: var(--accent-bg); color: var(--accent); }
+.type-exercise  { background: rgba(59,130,246,0.1); color: #3b82f6; }
+.level-introduction { background: rgba(16,185,129,0.1); color: #10b981; }
+.level-advanced     { background: rgba(245,158,11,0.1); color: #f59e0b; }
+
+.workshop-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-h);
+  text-decoration: none;
+  font-family: var(--heading);
+}
+
+.workshop-title:hover {
+  color: var(--accent);
+}
+
+.workshop-description {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.5;
+}

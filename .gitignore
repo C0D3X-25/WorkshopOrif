@@ -1,0 +1,15 @@
+# Secrets
+.env
+
+# Build outputs
+backend/**/bin/
+backend/**/obj/
+frontend/dist/
+
+# Node
+frontend/node_modules/
+
+# IDE
+.vs/
+.vscode/
+*.user

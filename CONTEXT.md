@@ -9,16 +9,16 @@ A learner profile that determines which workshops are accessible. Each user is a
 _Avoid_: Persona, role, user type
 
 **Intern**:
-Profile for a half-day stage. Covers introduction-level theory workshops only. Goal: understand that AI is now part of IT jobs.
+Profile for a half-day stage. Covers introduction-level theory workshops only. Goal: understand that AI is now part of IT jobs. Display label in French UI: **Stage**.
 _Avoid_: Stagiaire, Internship
 
 **Observer**:
-Profile for a 3-day observation. Covers introduction theory workshops and a small set of simple exercise workshops.
+Profile for a 3-day observation. Covers introduction theory workshops and a small set of simple exercise workshops. Display label in French UI: **Observation**.
 _Avoid_: Visiteur
 
 **Apprentice**:
-Profile for CFC and pre-apprenticeship students. Covers the full course — all theory workshops (including advanced) and all exercise workshops.
-_Avoid_: Learner, CFC, Student
+Profile for CFC and pre-apprenticeship students. Covers the full course — all theory workshops (including advanced) and all exercise workshops. Display label in French UI: **CFC**.
+_Avoid_: Learner, Student
 
 **Profile Picker**:
 A landing screen shown on first visit where the user self-selects their profile. Selection is persisted in localStorage. Can be changed at any time from a settings control.
