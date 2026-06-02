@@ -137,6 +137,49 @@
 }
 .detail-content th { background: var(--code-bg); }
 
+/* Quiz answer blocks */
+.detail-content details {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 8px 0 16px;
+}
+.detail-content details summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--accent);
+  list-style: none;
+  user-select: none;
+}
+.detail-content details summary::before {
+  content: '▶ ';
+  font-size: 10px;
+}
+.detail-content details[open] summary::before {
+  content: '▼ ';
+}
+.detail-content details[open] summary {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Questions section */
+.questions-group {
+  margin-bottom: 32px;
+}
+
+.questions-chapter {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
 /* Print button */
 .detail-actions {
   margin-top: 40px;

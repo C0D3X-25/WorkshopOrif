@@ -1,0 +1,132 @@
+.qcard {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  background: var(--bg);
+  transition: border-color 0.2s;
+}
+
+.qcard--revealed {
+  border-color: var(--accent);
+}
+
+.qcard-text {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-h);
+}
+
+.qcard-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--mono);
+  margin-right: 10px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.qcard-hint {
+  margin: -4px 0 10px;
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0.65;
+  font-style: italic;
+}
+
+.qcard-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qcard-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--code-bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.qcard-option:not(:disabled):hover {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.qcard-option.selected {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.qcard-option:disabled {
+  cursor: default;
+}
+
+.qcard-option.correct {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.08);
+  color: #10b981;
+}
+
+.qcard-option.correct::after {
+  content: ' ✓';
+  font-weight: 700;
+}
+
+.qcard-option.wrong {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+}
+
+.qcard-option.wrong::after {
+  content: ' ✗';
+  font-weight: 700;
+}
+
+.qcard-verify {
+  margin-top: 12px;
+  padding: 8px 20px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.qcard-verify:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.qcard-explanation {
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: var(--code-bg);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+}

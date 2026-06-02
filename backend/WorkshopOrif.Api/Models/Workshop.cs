@@ -6,6 +6,21 @@ namespace WorkshopOrif.Api.Models;
 public enum WorkshopLevel { Introduction, Advanced }
 public enum WorkshopType { Theory, Exercise }
 
+public class QuestionOption
+{
+    public string Text { get; set; } = string.Empty;
+    public bool IsCorrect { get; set; }
+}
+
+public class Question
+{
+    public string ChapterTitle { get; set; } = string.Empty;
+    public string Text { get; set; } = string.Empty;
+    public string Type { get; set; } = "single";
+    public QuestionOption[] Options { get; set; } = [];
+    public string Explanation { get; set; } = string.Empty;
+}
+
 public class Workshop
 {
     [BsonId]
@@ -26,4 +41,5 @@ public class Workshop
     public WorkshopLevel Level { get; set; }
     public WorkshopType Type { get; set; }
     public string Track { get; set; } = string.Empty;
+    public Question[] Questions { get; set; } = [];
 }

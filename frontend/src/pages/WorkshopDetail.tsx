@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
+import QuestionCard, { type Question } from '../components/QuestionCard'
 import './WorkshopDetail.css'
 
 interface Workshop {
@@ -18,6 +19,7 @@ interface Workshop {
   expectedOutcome: string
   contentFr: string
   date: string
+  questions: Question[]
 }
 
 const TYPE_LABELS: Record<number, string> = { 0: 'Theory', 1: 'Exercise' }
@@ -105,6 +107,26 @@ export default function WorkshopDetail() {
             <ReactMarkdown>{workshop.contentFr}</ReactMarkdown>
           </section>
         )}
+
+        {workshop.questions?.length > 0 && (() => {
+          const grouped = workshop.questions.reduce<Record<string, Question[]>>((acc, q) => {
+            (acc[q.chapterTitle] ??= []).push(q)
+            return acc
+          }, {})
+          return (
+            <section className="detail-section">
+              <h2>Auto-évaluation</h2>
+              {Object.entries(grouped).map(([chapter, qs]) => (
+                <div key={chapter} className="questions-group">
+                  <h3 className="questions-chapter">{chapter}</h3>
+                  {qs.map((q, i) => (
+                    <QuestionCard key={i} question={q} index={i} />
+                  ))}
+                </div>
+              ))}
+            </section>
+          )
+        })()}
 
         {workshop.expectedOutcome && (
           <section className="detail-section">

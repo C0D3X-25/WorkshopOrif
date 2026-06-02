@@ -48,7 +48,7 @@ A workshop that presents a hands-on task for the learner to complete.
 _Avoid_: Exercise module, lab, practical
 
 **Question**:
-A self-assessment item embedded in a Theory Workshop. Fields: text, type (single-choice or multiple-choice), options (each with text and isCorrect), and explanation shown after answering. Stored as an embedded array in the workshop document.
+A self-assessment item embedded in a Theory Workshop. Fields: chapterTitle (groups the question under its chapter heading in the UI), text, type (single-choice or multiple-choice), options (each with text and isCorrect), and explanation shown after answering. Stored as an embedded array in the workshop document. Rendered as a grouped interactive self-assessment section after the workshop content body.
 _Avoid_: Quiz, test, exercise
 
 **Admin UI**:
