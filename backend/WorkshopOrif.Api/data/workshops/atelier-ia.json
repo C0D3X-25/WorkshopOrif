@@ -1,0 +1,223 @@
+{
+  "title": "Atelier IA — Théorie et Quizz",
+  "description": "Introduction à l'intelligence artificielle pour des profils en situation de stage ou d'observation. Couvre les types d'IA, son fonctionnement, ses limites et les bonnes pratiques.",
+  "type": "Theory",
+  "level": "Introduction",
+  "track": "Sensibilisation",
+  "authors": ["Ken Cacciabue"],
+  "prerequisites": [],
+  "requiredMaterials": [],
+  "maxConcurrentParticipants": 0,
+  "estimatedDuration": 180,
+  "date": "2026-06-02",
+  "expectedOutcome": "",
+  "chapters": [
+    {
+      "section": "Théorie",
+      "title": "Chapitre 1 — C'est quoi l'IA ?",
+      "body": "L'IA ou Intelligence Artificielle, est un domaine de l'informatique qui vise à créer des systèmes capables d'effectuer des tâches qui nécessitent normalement l'intelligence humaine. Cela inclut des tâches telles que la reconnaissance vocale, la compréhension du langage naturel, la prise de décision, et bien plus encore.\n\nBien que beaucoup plus avancée que les systèmes informatiques traditionnels, l'IA est encore loin d'égaler l'intelligence humaine dans tous les domaines. Cependant, elle a déjà démontré des capacités impressionnantes dans des domaines spécifiques, tels que la reconnaissance d'images, la traduction automatique, et les jeux.\n\n#### Exercice pratique\n\nSur [Gemini](https://gemini.google.com) ou [ChatGPT](https://chatgpt.com), demandez :\n\n> « Explique-moi ce qu'est l'Intelligence Artificielle en 3 phrases simples. »\n\nLisez la réponse et comparez-la avec la définition du chapitre. L'IA a-t-elle bien résumé le concept ?",
+      "questions": [
+        {
+          "text": "Qu'est-ce que l'Intelligence Artificielle ?",
+          "type": "single",
+          "options": [
+            { "text": "Un domaine de l'informatique qui crée des systèmes capables d'effectuer des tâches nécessitant normalement l'intelligence humaine", "isCorrect": true },
+            { "text": "Un logiciel capable de remplacer entièrement l'être humain dans tous les domaines", "isCorrect": false },
+            { "text": "Un réseau de stockage de données à très grande échelle", "isCorrect": false }
+          ],
+          "explanation": "L'IA vise à créer des systèmes qui effectuent des tâches normalement réservées à l'intelligence humaine, comme la reconnaissance vocale ou la prise de décision."
+        },
+        {
+          "text": "Dans quels domaines l'IA a-t-elle déjà démontré des capacités impressionnantes ?",
+          "type": "single",
+          "options": [
+            { "text": "La reconnaissance d'images, la traduction automatique et les jeux", "isCorrect": true },
+            { "text": "La création artistique libre, l'empathie et la conscience de soi", "isCorrect": false },
+            { "text": "La gestion d'entreprise complète et les décisions éthiques complexes", "isCorrect": false }
+          ],
+          "explanation": "L'IA excelle dans des domaines spécifiques comme la reconnaissance d'images, la traduction et les jeux, mais reste loin d'égaler l'intelligence humaine de façon générale."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 2 — Les différents types d'IA",
+      "body": "Il existe plusieurs types d'IA, classés en fonction de leur capacité à apprendre et à s'adapter :\n\n- **IA de chat (ou IA de conversation)** : conçue pour simuler une conversation humaine, comme les chatbots.\n- **IA de reconnaissance d'images** : capable d'identifier et de classer des objets dans des images.\n- **IA de traduction automatique** : capable de traduire du texte d'une langue à une autre.\n- **IA générative** : capable de créer du contenu original, comme du texte, des images ou de la musique.\n- **Agents IA** : capables d'interagir avec leur environnement pour accomplir des tâches spécifiques, comme les assistants virtuels ou les aides à la programmation.\n\n#### Exercice pratique\n\nSur [Gemini](https://gemini.google.com), demandez-lui de générer une image d'un paysage (ou utilisez [DALL-E via ChatGPT](https://chatgpt.com)). Ensuite, demandez une traduction d'une phrase de votre choix. Identifiez quel type d'IA vous venez d'utiliser dans chaque cas.",
+      "questions": [
+        {
+          "text": "Parmi ces propositions, lesquelles sont des types d'IA mentionnés dans ce chapitre ?",
+          "type": "multiple",
+          "options": [
+            { "text": "IA de chat (conversation)", "isCorrect": true },
+            { "text": "IA générative", "isCorrect": true },
+            { "text": "IA de comptabilité", "isCorrect": false },
+            { "text": "Agents IA", "isCorrect": true }
+          ],
+          "explanation": "Les types mentionnés sont : IA de chat, IA de reconnaissance d'images, IA de traduction automatique, IA générative et agents IA. L'IA de comptabilité n'en fait pas partie."
+        },
+        {
+          "text": "Quel type d'IA utilise-t-on quand on parle à un chatbot ?",
+          "type": "single",
+          "options": [
+            { "text": "Une IA de conversation (IA de chat)", "isCorrect": true },
+            { "text": "Une IA générative", "isCorrect": false },
+            { "text": "Un agent IA", "isCorrect": false }
+          ],
+          "explanation": "Un chatbot utilise une IA de conversation, conçue spécifiquement pour simuler une conversation humaine."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 3 — Comment ça fonctionne ?",
+      "body": "L'IA fonctionne grâce à des algorithmes d'apprentissage automatique, qui permettent aux systèmes d'apprendre à partir de données. Basiquement, on montre à l'IA un grand nombre d'exemples, et elle apprend à reconnaître des patterns et à faire des prédictions basées sur ces données.\n\nPar exemple, pour entraîner une IA de reconnaissance d'images, on lui montre des milliers d'images étiquetées (par exemple, « chien », « chat », « voiture »), et elle apprend à associer les caractéristiques visuelles de ces images à leurs étiquettes correspondantes.\n\n#### Exercice pratique\n\nSur [ChatGPT](https://chatgpt.com) ou [Claude](https://claude.ai), demandez :\n\n> « Comment as-tu été entraîné ? »\n\nComparez la réponse avec ce que vous avez appris dans ce chapitre. Notez les similitudes et les différences.",
+      "questions": [
+        {
+          "text": "Sur quoi repose l'apprentissage des systèmes d'IA ?",
+          "type": "single",
+          "options": [
+            { "text": "Des algorithmes d'apprentissage automatique qui apprennent à partir de données", "isCorrect": true },
+            { "text": "Des règles programmées manuellement par des développeurs pour chaque situation", "isCorrect": false },
+            { "text": "Une conscience artificielle permettant de raisonner de façon autonome", "isCorrect": false }
+          ],
+          "explanation": "L'IA utilise des algorithmes d'apprentissage automatique qui analysent des données pour reconnaître des patterns et faire des prédictions."
+        },
+        {
+          "text": "Pour entraîner une IA de reconnaissance d'images, que lui fournit-on ?",
+          "type": "single",
+          "options": [
+            { "text": "Des milliers d'images étiquetées associées à leurs catégories", "isCorrect": true },
+            { "text": "Une description textuelle de chaque image à reconnaître", "isCorrect": false },
+            { "text": "Un ensemble de règles mathématiques définissant chaque objet", "isCorrect": false }
+          ],
+          "explanation": "On montre à l'IA un grand nombre d'images avec leurs étiquettes (ex : « chien », « chat »), et elle apprend à associer les caractéristiques visuelles aux catégories."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 4 — Les problèmes de l'IA",
+      "body": "Malgré ses avancées, l'IA présente plusieurs problèmes et défis importants.\n\n**Biais** — Les systèmes d'IA peuvent refléter les biais présents dans les données sur lesquelles ils sont entraînés, ce qui peut conduire à des résultats erronés ou orientés.\n\n> *Définition :* Un biais est une tendance systématique à produire des résultats erronés ou injustes en raison de préjugés. Chez les humains, on parle par exemple du *biais de confirmation* : la tendance à rechercher des informations qui confirment nos croyances préexistantes. De même, les systèmes d'IA peuvent présenter des biais si leurs données d'entraînement sont biaisées.\n\n**Hallucinations** — Les systèmes d'IA peuvent générer des informations incorrectes ou inventées, ce qui peut être problématique, surtout dans des contextes critiques.\n\n> *Pourquoi les IA hallucinent-elles ?* Les IA font des prédictions basées sur des probabilités. Parfois, elles extrapolent ou font des associations incorrectes. Imaginez le dicton : « Si tu vois un grand animal à quatre pattes qui galope, pense à un cheval et pas à un zèbre. » Les IA fonctionnent de la même manière : si leurs données d'entraînement ne contiennent pas assez d'exemples de zèbres, elles pourraient considérer que tous les animaux ressemblant à un cheval sont des chevaux, même s'ils ont des rayures. De plus, les IA sont conçues pour produire une réponse satisfaisante plutôt qu'une réponse vraie — elles peuvent inventer des informations si cela semble correspondre à ce que l'utilisateur attend.\n\n**Biais de confirmation** — Les utilisateurs peuvent être tentés de ne chercher que des informations qui confirment leurs croyances, et les IA sont conçues pour les satisfaire.\n\n> *Exemple :* Si un utilisateur pense que 2 + 2 = 5 et qu'il pose la question à une IA de manière orientée, l'IA pourrait confirmer cette croyance erronée. Il est donc crucial de vérifier les informations fournies par les IA.\n\n**Confidentialité des données** — Les systèmes d'IA peuvent collecter et utiliser des données personnelles sans consentement explicite. La plupart des modèles tournent sur des serveurs distants, et les données fournies peuvent être utilisées à des fins diverses, posant des risques pour la confidentialité personnelle et professionnelle.\n\n#### Exercice pratique — Tester les hallucinations\n\nSur [Gemini](https://gemini.google.com) ou [ChatGPT](https://chatgpt.com), posez une question sur un sujet précis que vous connaissez bien (ex : une ville de votre région, un logiciel que vous utilisez). Vérifiez si la réponse est exacte. Notez si vous détectez des erreurs ou des imprécisions.\n\n#### Exercice pratique — Tester le biais de confirmation\n\nSur [ChatGPT](https://chatgpt.com) ou [Claude](https://claude.ai), posez la même question de deux façons opposées, par exemple :\n\n1. « Est-ce que [X] est une bonne idée ? »\n2. « Est-ce que [X] est une mauvaise idée ? »\n\nObservez comment l'IA adapte sa réponse selon la formulation.",
+      "questions": [
+        {
+          "text": "Qu'est-ce qu'une hallucination dans le contexte de l'IA ?",
+          "type": "single",
+          "options": [
+            { "text": "Quand une IA génère des informations incorrectes ou inventées", "isCorrect": true },
+            { "text": "Quand une IA refuse de répondre à une question jugée dangereuse", "isCorrect": false },
+            { "text": "Quand une IA produit une réponse trop longue et hors sujet", "isCorrect": false }
+          ],
+          "explanation": "Une hallucination se produit lorsqu'une IA génère des informations factuellement incorrectes ou inventées, souvent parce qu'elle extrapole à partir de probabilités plutôt que de faits vérifiés."
+        },
+        {
+          "text": "Pourquoi les biais dans les données d'entraînement sont-ils problématiques ?",
+          "type": "single",
+          "options": [
+            { "text": "Parce qu'ils ralentissent l'entraînement de l'IA", "isCorrect": false },
+            { "text": "Parce qu'ils peuvent conduire l'IA à produire des résultats erronés ou injustes", "isCorrect": true },
+            { "text": "Parce qu'ils rendent l'IA incapable d'apprendre de nouvelles informations", "isCorrect": false }
+          ],
+          "explanation": "Les biais dans les données se reflètent dans les résultats de l'IA, pouvant mener à des décisions injustes ou discriminatoires."
+        },
+        {
+          "text": "Quel risque pose le partage de données professionnelles avec une IA en ligne ?",
+          "type": "single",
+          "options": [
+            { "text": "Ces données pourraient être utilisées pour entraîner d'autres modèles ou divulguées", "isCorrect": true },
+            { "text": "L'IA pourrait refuser de traiter les données et générer une erreur", "isCorrect": false },
+            { "text": "Les données seraient automatiquement supprimées après la conversation", "isCorrect": false }
+          ],
+          "explanation": "Les IA en ligne fonctionnent sur des serveurs distants. Les données partagées peuvent être utilisées à des fins diverses, y compris l'entraînement du modèle ou être exposées en cas de faille."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 5 — Bonnes pratiques",
+      "body": "Pour bien utiliser l'IA, il est important de suivre quelques bonnes pratiques :\n\n- **Vérifier les informations** : ne pas se fier aveuglément aux réponses de l'IA, et les vérifier auprès de sources fiables (experts humains, articles scientifiques, sites officiels).\n- **Être conscient des biais** : comprendre que les IA peuvent présenter des biais et être vigilant quant à la manière dont leurs réponses sont utilisées, surtout dans des contextes sensibles.\n- **Protéger la confidentialité des données** : ne jamais divulguer d'informations sensibles ou personnelles à une IA, et être conscient de ce que l'on partage.\n\n#### Exercice pratique — Prompt engineering\n\nSur [Claude](https://claude.ai) ou [ChatGPT](https://chatgpt.com), essayez 3 façons différentes de poser la même question :\n\n1. **Vague :** « Parle-moi de l'IA »\n2. **Précise :** « Explique l'IA en 5 points pour un débutant »\n3. **Avec contexte :** « Je suis stagiaire en informatique, explique-moi l'IA en 5 points accessibles »\n\nComparez les 3 réponses. Qu'est-ce qui change ? Quelle formulation donne les meilleurs résultats ?",
+      "questions": [
+        {
+          "text": "Pourquoi ne faut-il pas partager des informations personnelles ou professionnelles avec une IA ?",
+          "type": "single",
+          "options": [
+            { "text": "Ces informations pourraient être utilisées à des fins non désirées ou divulguées", "isCorrect": true },
+            { "text": "L'IA ne peut pas traiter des informations personnelles correctement", "isCorrect": false },
+            { "text": "Cela ralentirait les temps de réponse de l'IA", "isCorrect": false }
+          ],
+          "explanation": "Les informations partagées avec une IA en ligne peuvent être stockées et utilisées à des fins diverses, notamment l'entraînement du modèle, ce qui présente des risques de confidentialité."
+        },
+        {
+          "text": "Que doit-on faire pour s'assurer de la fiabilité des informations fournies par une IA ?",
+          "type": "single",
+          "options": [
+            { "text": "Les vérifier auprès de sources fiables (experts, publications officielles)", "isCorrect": true },
+            { "text": "Poser la même question à plusieurs IA différentes et comparer", "isCorrect": false },
+            { "text": "Accepter les informations si elles sont présentées avec confiance par l'IA", "isCorrect": false }
+          ],
+          "explanation": "La vérification auprès de sources fiables est essentielle, car les IA peuvent produire des hallucinations même sur un ton très assuré."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 6 — Le contexte",
+      "body": "**Qu'est-ce que le contexte ?**\n\nLe **contexte**, c'est l'ensemble des informations que l'IA possède au moment où elle génère sa réponse. Cela inclut votre message actuel, l'historique de la conversation, les éventuelles instructions de configuration, et tout document ou texte que vous avez fourni.\n\nPlus le contexte est complet et clair, meilleure sera la réponse. Un contexte vague produit une réponse vague.\n\n> *Analogie — Le stagiaire sans briefing :* Si vous demandez à un stagiaire de rédiger un e-mail sans lui donner d'informations sur le projet, le client ou le ton attendu, il fera de son mieux — mais le résultat sera générique. Si vous lui donnez le contexte complet, il produira un bien meilleur travail. **L'IA fonctionne exactement de la même façon.**\n\n| Prompt pauvre | Prompt avec bon contexte |\n|---|---|\n| « Aide-moi avec mon mail. » | « Je dois envoyer un e-mail professionnel à un client mécontent. Ton : poli et professionnel. Longueur : 3 phrases. Problème : livraison en retard de 2 jours. » |\n\n**La fenêtre de contexte**\n\nL'IA ne peut pas traiter une quantité illimitée de texte. Elle dispose d'une **fenêtre de contexte** : la quantité maximale de texte qu'elle peut prendre en compte lors d'une interaction. Cette limite est mesurée en **tokens** — des unités de texte d'une longueur variable.\n\nLes outils gratuits actuels ont des fenêtres très généreuses : [ChatGPT](https://chatgpt.com) gère jusqu'à 128 000 tokens, [Claude](https://claude.ai) jusqu'à 200 000 tokens, et [Gemini](https://gemini.google.com) jusqu'à 1 million de tokens. En pratique, pour un usage quotidien, cette limite est rarement atteinte.\n\nSi vous dépassez cette limite, l'IA « oublie » les parties les plus anciennes de la conversation et peut sembler incohérente avec ce qui a été dit au début.\n\n**Le rechargement du contexte**\n\nPar défaut, chaque nouvelle conversation repart de zéro : l'IA n'a aucun souvenir de vos échanges précédents. Certains outils proposent une fonctionnalité « Mémoire » (comme [ChatGPT](https://chatgpt.com)), mais elle est optionnelle, limitée et ne remplace pas un bon contexte fourni explicitement.\n\nLa bonne habitude : **ouvrez chaque nouvelle conversation avec un bloc de contexte structuré**.\n\n> *Analogie — Le collègue avec la mémoire effacée :* Imaginez un collègue qui arrive chaque matin sans aucun souvenir de la veille. Ce n'est pas un défaut — c'est simplement sa façon de fonctionner. Pour travailler efficacement avec lui, vous devez lui redire chaque matin où en est le projet. Avec l'IA, c'est pareil.\n\nModèle de bloc de contexte à réutiliser au début de chaque nouvelle conversation :\n\n> Mon rôle : [qui vous êtes]\n> Le projet : [ce sur quoi vous travaillez]\n> L'objectif : [ce que vous voulez accomplir]\n> Ma question : [votre question précise]\n\n**Comment bien contextualiser ?**\n\nPour construire un contexte efficace, utilisez le cadre **5W** (Qui / Quoi / Pour qui / Comment / Pourquoi) :\n\n| Question | Ce qu'elle apporte | Exemple |\n|---|---|---|\n| **Qui ?** | Le rôle que l'IA doit jouer | « Tu es un assistant de rédaction professionnel » |\n| **Quoi ?** | La tâche précise | « Rédige un paragraphe de présentation LinkedIn » |\n| **Pour qui ?** | Le public cible | « Pour un recruteur dans le domaine informatique » |\n| **Comment ?** | Le format ou le style attendu | « En 3 phrases, ton professionnel mais accessible » |\n| **Pourquoi ?** | L'objectif ou le contexte | « Je cherche mon premier emploi en développement web » |\n\n#### Exercice pratique — Vague vs. contextualisé, puis rechargement\n\n**Partie A — Prompt vague vs. prompt contextualisé (5–10 min)**\n\nSur [ChatGPT](https://chatgpt.com) ou [Gemini](https://gemini.google.com), envoyez d'abord ce prompt vague :\n\n> « Aide-moi à rédiger un texte. »\n\nNotez la réponse générique obtenue. Puis, dans la **même conversation**, envoyez la version enrichie avec le cadre 5W :\n\n> « Tu es un assistant de rédaction professionnel. Rédige un paragraphe de présentation LinkedIn en 3 phrases, avec un ton professionnel mais accessible, pour un recruteur dans le domaine informatique. Je cherche mon premier emploi en développement web. »\n\nComparez les deux réponses. Qu'est-ce qui a changé ?\n\n**Partie B — Rechargement du contexte (5–10 min)**\n\n1. Fermez la conversation et ouvrez-en une **nouvelle** sur [Gemini](https://gemini.google.com).\n2. Envoyez directement (sans contexte) :\n\n> « Quelles pages dois-je créer pour mon site ? »\n\nNotez la réponse générique. Ouvrez ensuite une autre nouvelle conversation et commencez par ce bloc de contexte :\n\n> Mon rôle : je suis étudiant en informatique.\n> Le projet : créer un site web sur les plantes exotiques pour des débutants en botanique.\n> L'objectif : publier des fiches informatives sur 20 plantes.\n> Ma question : Quelles pages dois-je créer pour mon site ?\n\nComparez les deux réponses. L'IA peut-elle vraiment faire mieux quand elle a du contexte ?",
+      "questions": [
+        {
+          "text": "Qu'est-ce que le « contexte » d'une IA dans une conversation ?",
+          "type": "single",
+          "options": [
+            { "text": "L'ensemble des informations disponibles à l'IA au moment de générer sa réponse", "isCorrect": true },
+            { "text": "La mémoire permanente que l'IA accumule au fil de toutes ses conversations", "isCorrect": false },
+            { "text": "Les règles de sécurité qui encadrent les réponses de l'IA", "isCorrect": false }
+          ],
+          "explanation": "Le contexte comprend le message actuel, l'historique de la conversation et tout document fourni. Plus il est riche, meilleure est la réponse."
+        },
+        {
+          "text": "Que se passe-t-il si une conversation dépasse la fenêtre de contexte d'une IA ?",
+          "type": "single",
+          "options": [
+            { "text": "L'IA oublie les parties les plus anciennes et peut devenir incohérente", "isCorrect": true },
+            { "text": "L'IA refuse de continuer et demande d'ouvrir une nouvelle conversation", "isCorrect": false },
+            { "text": "L'IA compresse automatiquement les messages pour libérer de l'espace", "isCorrect": false }
+          ],
+          "explanation": "Quand la fenêtre de contexte est dépassée, les informations les plus anciennes disparaissent. L'IA peut alors oublier des éléments discutés en début de conversation."
+        },
+        {
+          "text": "Vous fermez une conversation avec une IA et en ouvrez une nouvelle. Que se passe-t-il ?",
+          "type": "single",
+          "options": [
+            { "text": "L'IA repart de zéro : elle n'a aucun souvenir de la conversation précédente", "isCorrect": true },
+            { "text": "L'IA se souvient automatiquement de tout ce qui a été dit auparavant", "isCorrect": false },
+            { "text": "L'IA conserve un résumé de la conversation pour la prochaine fois", "isCorrect": false }
+          ],
+          "explanation": "Par défaut, chaque nouvelle conversation repart de zéro. Il faut donc fournir à nouveau le contexte nécessaire au début de chaque session."
+        }
+      ]
+    },
+    {
+      "section": "Expérimentation",
+      "title": "Activité 1 — Améliorer une présentation personnelle",
+      "body": "Rédigez une courte présentation de vous-même (3 à 5 phrases : qui vous êtes, votre stage, ce que vous y faites). Ensuite, demandez à une IA de l'améliorer :\n\n> « Voici une courte présentation de moi : [votre texte]. Peux-tu l'améliorer pour la rendre plus professionnelle et claire ? »\n\nComparez votre version originale avec la version améliorée par l'IA. Qu'a-t-elle changé ?",
+      "questions": []
+    },
+    {
+      "section": "Expérimentation",
+      "title": "Activité 2 — Demander une explication technique",
+      "body": "Choisissez un concept technique ou un outil que vous utilisez dans votre stage (ex : un langage de programmation, un logiciel, un processus). Demandez à une IA de vous l'expliquer comme si vous étiez débutant :\n\n> « Explique-moi [concept/outil] en termes simples, comme si j'étais débutant. »\n\nEst-ce que l'explication correspond à ce que vous savez déjà ? Y a-t-il des erreurs ?",
+      "questions": []
+    },
+    {
+      "section": "Expérimentation",
+      "title": "Activité 3 — Générer un quizz de révision",
+      "body": "Demandez à une IA de vous poser un quizz sur le contenu de ce document :\n\n> « Je viens de lire un document sur l'IA couvrant : ce qu'est l'IA, les types d'IA, son fonctionnement, ses problèmes (biais, hallucinations, confidentialité) et les bonnes pratiques. Pose-moi 5 questions de quizz avec les réponses. »\n\nVérifiez si les questions et réponses générées sont correctes par rapport à ce que vous avez appris. L'IA a-t-elle bien compris les sujets ? Y a-t-il des erreurs ou des imprécisions ?",
+      "questions": []
+    },
+    {
+      "section": "Ressources",
+      "title": "Liens utiles",
+      "body": "- [Gemini](https://gemini.google.com) — IA de Google (gratuit)\n- [ChatGPT](https://chatgpt.com) — IA d'OpenAI (gratuit avec compte)\n- [Claude](https://claude.ai) — IA d'Anthropic (gratuit avec compte)",
+      "questions": []
+    }
+  ]
+}

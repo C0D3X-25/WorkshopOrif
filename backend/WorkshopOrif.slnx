@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="WorkshopOrif.Api.Tests/WorkshopOrif.Api.Tests.csproj" />
+  <Project Path="WorkshopOrif.Api/WorkshopOrif.Api.csproj" />
+</Solution>

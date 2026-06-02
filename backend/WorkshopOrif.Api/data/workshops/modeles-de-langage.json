@@ -1,0 +1,22 @@
+{
+  "title": "Modèles de langage avancés",
+  "description": "Explorer le fonctionnement interne des LLM et leurs limites.",
+  "type": "Theory",
+  "level": "Advanced",
+  "track": "Formation",
+  "authors": ["Formateur ORIF"],
+  "prerequisites": [],
+  "requiredMaterials": [],
+  "maxConcurrentParticipants": 0,
+  "estimatedDuration": 60,
+  "date": null,
+  "expectedOutcome": "",
+  "chapters": [
+    {
+      "section": "Contenu",
+      "title": "Introduction aux LLM",
+      "body": "Cet atelier approfondit les modèles de langage de grande taille (LLM) : tokenisation, paramètres, température et mécanismes d'attention.",
+      "questions": []
+    }
+  ]
+}

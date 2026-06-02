@@ -1,0 +1,245 @@
+.workshop-detail {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 32px 64px;
+  text-align: left;
+}
+
+.detail-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.detail-nav a {
+  font-size: 14px;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.detail-nav a:hover { text-decoration: underline; }
+
+.detail-header {
+  margin-bottom: 32px;
+}
+
+.detail-badges {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* Badge styles reused from WorkshopList */
+.badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-family: var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.type-theory    { background: var(--accent-bg); color: var(--accent); }
+.type-exercise  { background: rgba(59,130,246,0.1); color: #3b82f6; }
+.level-introduction { background: rgba(16,185,129,0.1); color: #10b981; }
+.level-advanced     { background: rgba(245,158,11,0.1); color: #f59e0b; }
+
+.detail-header h1 {
+  margin: 0 0 12px;
+}
+
+.detail-description {
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Summary table */
+.detail-summary {
+  margin-bottom: 32px;
+}
+
+.detail-summary table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.detail-summary th,
+.detail-summary td {
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  font-size: 14px;
+  text-align: left;
+}
+
+.detail-summary th {
+  width: 180px;
+  background: var(--code-bg);
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.detail-section {
+  margin-bottom: 28px;
+}
+
+.detail-section h2 {
+  font-size: 18px;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-section ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.detail-section li {
+  margin-bottom: 4px;
+  font-size: 15px;
+  color: var(--text);
+}
+
+/* Markdown content */
+.detail-content {
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.detail-content h2 { font-size: 20px; }
+.detail-content h3 { font-size: 16px; }
+.detail-content code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 0.9em;
+}
+.detail-content pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px;
+  overflow-x: auto;
+}
+.detail-content pre code {
+  background: none;
+  padding: 0;
+}
+.detail-content table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+}
+.detail-content th,
+.detail-content td {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+}
+.detail-content th { background: var(--code-bg); }
+
+/* Quiz answer blocks */
+.detail-content details {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 8px 0 16px;
+}
+.detail-content details summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--accent);
+  list-style: none;
+  user-select: none;
+}
+.detail-content details summary::before {
+  content: '▶ ';
+  font-size: 10px;
+}
+.detail-content details[open] summary::before {
+  content: '▼ ';
+}
+.detail-content details[open] summary {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Chapters */
+.detail-chapters {
+  margin-bottom: 28px;
+}
+
+.chapter {
+  margin-bottom: 32px;
+}
+
+.section-heading {
+  font-size: 20px;
+  margin: 32px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border);
+}
+
+.chapter-heading {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: var(--text-h);
+}
+
+.chapter-questions {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+}
+
+/* Print button */
+.print-btn {
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.print-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Print styles */
+@media print {
+  .no-print { display: none; }
+
+  .workshop-detail {
+    padding: 0;
+    max-width: 100%;
+  }
+
+  body {
+    color: #000;
+    background: #fff;
+  }
+
+  .badge {
+    border: 1px solid #999;
+    background: none !important;
+    color: #000 !important;
+  }
+
+  .detail-summary th { background: #f0f0f0; }
+
+  a { color: #000; text-decoration: none; }
+  a[href]::after { content: " (" attr(href) ")"; font-size: 0.8em; color: #555; }
+
+  h1, h2, h3 { page-break-after: avoid; }
+  table, pre, blockquote { page-break-inside: avoid; }
+}

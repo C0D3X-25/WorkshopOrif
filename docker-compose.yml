@@ -1,0 +1,52 @@
+services:
+
+  # ── MongoDB ──────────────────────────────────────────────────────────────────
+  mongo:
+    image: mongo:8.0
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: workshoporif
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── ASP.NET Core API ─────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      MongoDB__ConnectionString: mongodb://mongo:27017
+      MongoDB__DatabaseName: workshoporif
+      AdminPassword: ${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
+      Jwt__Secret: ${JWT_SECRET:?JWT_SECRET is required}
+    ports:
+      - "8080:8080"
+
+  # ── React frontend ───────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: ${FRONTEND_TARGET:-prod}
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"       # prod (nginx)
+      - "5173:5173"   # dev (vite)
+    volumes:
+      # Dev only: mount source for hot-reload (ignored in prod)
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  mongo_data:
