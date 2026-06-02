@@ -11,4 +11,8 @@
     <PackageReference Include="MongoDB.Driver" Version="3.9.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="data\workshops\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

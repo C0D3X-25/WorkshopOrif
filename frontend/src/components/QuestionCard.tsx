@@ -7,7 +7,6 @@ interface QuestionOption {
 }
 
 export interface Question {
-  chapterTitle: string
   text: string
   type: string
   options: QuestionOption[]

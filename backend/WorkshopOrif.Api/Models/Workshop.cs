@@ -14,11 +14,18 @@ public class QuestionOption
 
 public class Question
 {
-    public string ChapterTitle { get; set; } = string.Empty;
     public string Text { get; set; } = string.Empty;
     public string Type { get; set; } = "single";
     public QuestionOption[] Options { get; set; } = [];
     public string Explanation { get; set; } = string.Empty;
+}
+
+public class Chapter
+{
+    public string Section { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string Body { get; set; } = string.Empty;
+    public Question[] Questions { get; set; } = [];
 }
 
 public class Workshop
@@ -36,10 +43,8 @@ public class Workshop
     public string[] RequiredMaterials { get; set; } = [];
     public int EstimatedDuration { get; set; }
     public string ExpectedOutcome { get; set; } = string.Empty;
-    public string ContentFr { get; set; } = string.Empty;
-    public string ContentEn { get; set; } = string.Empty;
     public WorkshopLevel Level { get; set; }
     public WorkshopType Type { get; set; }
     public string Track { get; set; } = string.Empty;
-    public Question[] Questions { get; set; } = [];
+    public Chapter[] Chapters { get; set; } = [];
 }

@@ -6,6 +6,9 @@
 }
 
 .detail-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 24px;
 }
 
@@ -166,27 +169,36 @@
   border-bottom: 1px solid var(--border);
 }
 
-/* Questions section */
-.questions-group {
+/* Chapters */
+.detail-chapters {
+  margin-bottom: 28px;
+}
+
+.chapter {
   margin-bottom: 32px;
 }
 
-.questions-chapter {
-  font-size: 15px;
+.section-heading {
+  font-size: 20px;
+  margin: 32px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border);
+}
+
+.chapter-heading {
+  font-size: 16px;
   font-weight: 600;
-  color: var(--text-h);
   margin: 0 0 12px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid var(--border);
+  color: var(--text-h);
+}
+
+.chapter-questions {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
 }
 
 /* Print button */
-.detail-actions {
-  margin-top: 40px;
-  padding-top: 24px;
-  border-top: 1px solid var(--border);
-}
-
 .print-btn {
   padding: 10px 20px;
   border: 1px solid var(--border);
@@ -206,7 +218,6 @@
 /* Print styles */
 @media print {
   .no-print { display: none; }
-  .detail-nav { display: none; }
 
   .workshop-detail {
     padding: 0;

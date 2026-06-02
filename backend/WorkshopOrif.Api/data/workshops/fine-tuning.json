@@ -1,0 +1,22 @@
+{
+  "title": "Fine-tuning d'un modèle",
+  "description": "Adapter un modèle pré-entraîné à un cas métier spécifique.",
+  "type": "Exercise",
+  "level": "Advanced",
+  "track": "Formation",
+  "authors": ["Formateur ORIF"],
+  "prerequisites": [],
+  "requiredMaterials": [],
+  "maxConcurrentParticipants": 0,
+  "estimatedDuration": 120,
+  "date": null,
+  "expectedOutcome": "",
+  "chapters": [
+    {
+      "section": "Exercice",
+      "title": "Appliquer le fine-tuning",
+      "body": "Appliquez le fine-tuning sur un jeu de données fourni pour adapter le modèle à votre cas d'usage.",
+      "questions": []
+    }
+  ]
+}

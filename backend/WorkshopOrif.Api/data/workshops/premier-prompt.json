@@ -1,0 +1,22 @@
+{
+  "title": "Premier prompt",
+  "description": "Rédiger et tester son premier prompt avec un assistant IA.",
+  "type": "Exercise",
+  "level": "Introduction",
+  "track": "Formation",
+  "authors": ["Formateur ORIF"],
+  "prerequisites": [],
+  "requiredMaterials": [],
+  "maxConcurrentParticipants": 0,
+  "estimatedDuration": 45,
+  "date": null,
+  "expectedOutcome": "",
+  "chapters": [
+    {
+      "section": "Exercice",
+      "title": "Rédiger un premier prompt",
+      "body": "Rédigez un prompt pour obtenir une réponse précise d'un assistant IA. Comparez différentes formulations et observez l'impact sur la qualité des réponses.",
+      "questions": []
+    }
+  ]
+}

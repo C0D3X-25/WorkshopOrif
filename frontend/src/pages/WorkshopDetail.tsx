@@ -4,6 +4,13 @@ import ReactMarkdown from 'react-markdown'
 import QuestionCard, { type Question } from '../components/QuestionCard'
 import './WorkshopDetail.css'
 
+interface Chapter {
+  section: string
+  title: string
+  body: string
+  questions: Question[]
+}
+
 interface Workshop {
   id: string
   title: string
@@ -17,9 +24,8 @@ interface Workshop {
   requiredMaterials: string[]
   estimatedDuration: number
   expectedOutcome: string
-  contentFr: string
   date: string
-  questions: Question[]
+  chapters: Chapter[]
 }
 
 const TYPE_LABELS: Record<number, string> = { 0: 'Theory', 1: 'Exercise' }
@@ -47,8 +53,11 @@ export default function WorkshopDetail() {
 
   return (
     <main className="workshop-detail">
-      <nav className="detail-nav">
+      <nav className="detail-nav no-print">
         <Link to="/workshops">← Retour aux ateliers</Link>
+        <button className="print-btn" onClick={() => window.print()}>
+          Imprimer / Exporter PDF
+        </button>
       </nav>
 
       <article>
@@ -102,31 +111,30 @@ export default function WorkshopDetail() {
           </section>
         )}
 
-        {workshop.contentFr && (
-          <section className="detail-section detail-content">
-            <ReactMarkdown>{workshop.contentFr}</ReactMarkdown>
-          </section>
-        )}
-
-        {workshop.questions?.length > 0 && (() => {
-          const grouped = workshop.questions.reduce<Record<string, Question[]>>((acc, q) => {
-            (acc[q.chapterTitle] ??= []).push(q)
-            return acc
-          }, {})
-          return (
-            <section className="detail-section">
-              <h2>Auto-évaluation</h2>
-              {Object.entries(grouped).map(([chapter, qs]) => (
-                <div key={chapter} className="questions-group">
-                  <h3 className="questions-chapter">{chapter}</h3>
-                  {qs.map((q, i) => (
-                    <QuestionCard key={i} question={q} index={i} />
-                  ))}
+        {workshop.chapters?.length > 0 && (
+          <div className="detail-chapters">
+            {workshop.chapters.map((chapter, ci) => {
+              const showSectionHeader = chapter.section &&
+                (ci === 0 || workshop.chapters[ci - 1].section !== chapter.section)
+              return (
+                <div key={ci} className="chapter">
+                  {showSectionHeader && <h2 className="section-heading">{chapter.section}</h2>}
+                  {chapter.title && <h3 className="chapter-heading">{chapter.title}</h3>}
+                  <div className="detail-content">
+                    <ReactMarkdown>{chapter.body}</ReactMarkdown>
+                  </div>
+                  {chapter.questions?.length > 0 && (
+                    <div className="chapter-questions">
+                      {chapter.questions.map((q, qi) => (
+                        <QuestionCard key={qi} question={q} index={qi} />
+                      ))}
+                    </div>
+                  )}
                 </div>
-              ))}
-            </section>
-          )
-        })()}
+              )
+            })}
+          </div>
+        )}
 
         {workshop.expectedOutcome && (
           <section className="detail-section">
@@ -136,11 +144,6 @@ export default function WorkshopDetail() {
         )}
       </article>
 
-      <div className="detail-actions no-print">
-        <button className="print-btn" onClick={() => window.print()}>
-          Imprimer / Exporter PDF
-        </button>
-      </div>
     </main>
   )
 }
