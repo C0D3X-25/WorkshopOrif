@@ -1,0 +1,466 @@
+﻿{
+  "title": "Atelier IA — Théorie Avancée",
+  "description": "Exploration approfondie des capacités avancées des agents IA : vision multimodale, modèles de raisonnement, skills, hooks, MCP, paramètres d'inférence et prompt engineering intermédiaire. Conçu pour les participants ayant déjà suivi l'atelier de base.",
+  "type": "Theory",
+  "level": "Advanced",
+  "track": "Sensibilisation",
+  "authors": ["Ken Cacciabue"],
+  "prerequisites": ["Atelier IA — Théorie et Quizz"],
+  "requiredMaterials": [
+    "Ordinateur avec accès internet",
+    "Compte Google (pour Google AI Studio — gratuit)",
+    "Ollama installé (optionnel, pour les exercices locaux)"
+  ],
+  "maxConcurrentParticipants": 0,
+  "estimatedDuration": 420,
+  "date": "2026-06-03",
+  "expectedOutcome": "Comprendre les capacités avancées des agents IA (vision, raisonnement, skills, hooks, MCP), maîtriser les paramètres d'inférence clés, et être capable de configurer et d'optimiser un agent IA pour des cas d'usage professionnels.",
+  "chapters": [
+    {
+      "section": "Théorie",
+      "title": "Chapitre 1 — Qu'est-ce qu'un agent IA ?",
+      "body": "Un **agent IA** est un LLM (Large Language Model) placé dans une **boucle d'exécution**. Là où un LLM ordinaire répond à une question puis s'arrête, un agent continue d'agir jusqu'à ce que sa tâche soit accomplie. Ce pattern fondamental s'appelle **ReAct** (Reason → Act → Observe → Reason…) : l'agent raisonne, exécute une action, observe le résultat, puis recommence jusqu'à la complétion de la tâche.\n\n## L'analogie du chef d'orchestre\n\nImaginez la différence entre un musicien soliste et un chef d'orchestre. Un LLM ordinaire est comme un musicien soliste : il joue sa partition (répond à votre question) et s'arrête. Un agent IA est comme le chef d'orchestre : il coordonne, écoute, ajuste, réagit à chaque instrument, et dirige jusqu'à la fin du morceau. Si quelque chose se passe mal, il réagit et corrige le tir — sans attendre qu'on lui demande.\n\nUn assistant humain qui a une liste de tâches, les exécute une à une, et vous revient avec un rapport complet — c'est exactement ce qu'est un agent IA.\n\n## Les 5 composants d'un agent IA\n\nUn agent IA n'est pas un monolithe — c'est un assemblage de cinq éléments complémentaires :\n\n- **Modèle / LLM** : le cerveau de l'agent. Il raisonne, analyse la situation, décide des prochaines étapes et génère du texte.\n- **Prompt système / mission** : les instructions persistantes qui définissent le rôle, les règles et le périmètre de l'agent. Sans cela, l'agent n'a pas de direction.\n- **Outils (tools)** : les fonctions que l'agent peut appeler pour agir sur le monde réel — recherche web, lecture de fichiers, appels API, envoi d'emails.\n- **Mémoire** : la capacité à retenir des informations au-delà d'un seul échange — contexte court terme, base de données persistante, fichiers.\n- **Boucle d'orchestration** : le mécanisme qui fait tourner l'agent en boucle, évalue si la tâche est accomplie, et décide de continuer ou de s'arrêter.\n\n## Systèmes multi-agents\n\nUn agent peut aussi **déléguer** à d'autres agents spécialisés. Dans un système multi-agents, un agent orchestrateur planifie et divise le travail, des agents exécuteurs réalisent les tâches, et un agent vérificateur valide les résultats. Ce pattern permet de décomposer des tâches très complexes en sous-tâches gérables, chacune confiée à un agent optimisé pour elle.\n\n## LLM simple vs Agent IA\n\n| Aspect | LLM simple | Agent IA |\n|--------|-----------|----------|\n| Durée d'une interaction | Une question → une réponse | Boucle jusqu'à la tâche accomplie |\n| Utilisation d'outils | Non | Oui (recherche web, fichiers, API…) |\n| Mémoire | Contexte de la conversation | Mémoire persistante possible |\n| Autonomie | Nulle | Partielle (dans les limites définies) |\n| Exemples | ChatGPT basique | Copilot Agent, AutoGPT, orchestrateur |\n\n> **Dans l'orchestrateur :** Le projet orchestrateur dans ce workspace est un exemple concret de système multi-agents. Le `PlannerAgent` décompose la tâche, l'`ExecutorAgent` l'exécute, et le `VerifierAgent` valide le résultat — tous en boucle sur le même modèle `qwen2.5:0.5b`.\n\n## Exercice pratique\n\n1. Ouvrir https://chat.openai.com\n2. **Sans outils** : demander *\"Quel est le cours de l'action Apple aujourd'hui ?\"* → observer que le modèle répond qu'il n'a pas accès à internet.\n3. Activer la recherche web (bouton **Search**) et reposer la même question.\n4. Observer : le modèle a cherché, trouvé, synthétisé — il a utilisé un **outil**.\n5. Réfléchir : quelle étape de la boucle ReAct venons-nous d'observer ?\n\n*(Optionnel — VS Code + Copilot)* En mode Agent, demander \"Lis le fichier README.md et résume-le.\" Observer comment Copilot lit le fichier via un outil avant de répondre.",
+      "questions": [
+        {
+          "text": "Quelle est la différence principale entre un LLM standard et un agent IA ?",
+          "type": "single",
+          "options": [
+            { "text": "Un LLM répond à une question et s'arrête ; un agent tourne en boucle jusqu'à accomplir une tâche.", "isCorrect": true },
+            { "text": "Un agent est plus intelligent qu'un LLM car il a plus de paramètres.", "isCorrect": false },
+            { "text": "Un LLM peut utiliser des outils alors qu'un agent ne le peut pas.", "isCorrect": false }
+          ],
+          "explanation": "La différence clé est la boucle d'exécution. Un agent IA combine un LLM avec des outils et une boucle de traitement (ReAct), ce qui lui permet d'effectuer des tâches complexes en plusieurs étapes. La taille du modèle n'est pas le critère."
+        },
+        {
+          "text": "Lesquels de ces éléments font partie de la composition d'un agent IA ? (plusieurs réponses possibles)",
+          "type": "multiple",
+          "options": [
+            { "text": "Un modèle de langage (LLM)", "isCorrect": true },
+            { "text": "Un prompt système (mission)", "isCorrect": true },
+            { "text": "Des outils (tools)", "isCorrect": true },
+            { "text": "Une interface graphique obligatoire", "isCorrect": false }
+          ],
+          "explanation": "Un agent IA est composé d'un modèle, d'un prompt système, d'outils et d'une boucle d'orchestration. Une interface graphique n'est pas nécessaire — de nombreux agents tournent entièrement en ligne de commande ou en arrière-plan."
+        },
+        {
+          "text": "Que signifie ReAct dans le contexte des agents IA ?",
+          "type": "single",
+          "options": [
+            { "text": "Reason → Act → Observe — la boucle de raisonnement et d'action d'un agent", "isCorrect": true },
+            { "text": "Rapid Execution and Automated Communication Technology", "isCorrect": false },
+            { "text": "Une bibliothèque Python pour créer des interfaces réactives", "isCorrect": false }
+          ],
+          "explanation": "ReAct décrit le cycle : le modèle raisonne (Reason), exécute une action (Act), observe le résultat (Observe), puis recommence jusqu'à compléter la tâche. Ce pattern est le fondement de la plupart des agents IA modernes."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 2 — Vision",
+      "body": "La **vision** désigne la capacité d'un LLM à accepter une ou plusieurs **images** en entrée — en plus du texte — et à raisonner sur leur contenu. Un modèle qui traite plusieurs types de données est dit **multimodal**. Ce que la vision permet concrètement : décrire une image, lire du texte dans une image (OCR implicite), analyser des graphiques, comparer des images, et répondre à des questions sur ce qu'elles montrent.\n\n## L'analogie de la photo envoyée à un ami\n\nC'est comme envoyer une photo à un ami en lui demandant \"dis-moi ce que tu vois\" — sauf que l'ami est un modèle IA capable d'analyser des millions de détails en quelques secondes. Lien avec la fenêtre de contexte (déjà connue) : les images, c'est du contexte sous forme visuelle — et ça coûte des tokens, comme du texte.\n\n## Comment les images sont-elles traitées ?\n\nLe modèle ne \"voit\" pas comme un humain. L'image est **convertie en tokens** avant d'entrer dans le modèle, via un encodeur visuel. Méthode courante : découpage en tuiles de 512×512 pixels (GPT-4o, Claude). Une image haute résolution peut consommer 500 à 2 000 tokens dans la fenêtre de contexte.\n\n## Modèles supportant la vision (accès gratuit)\n\n| Modèle | Accès gratuit ? | Remarques |\n|--------|----------------|----------|\n| GPT-4o | Oui (ChatGPT free) | Très bon, intégré dans l'interface chat |\n| Claude 3.x (Haiku, Sonnet) | Oui (claude.ai free) | Excellente analyse de documents |\n| Gemini 2.5 Flash | Oui (Google AI Studio) | Très grande fenêtre de contexte, supporte aussi la vidéo |\n| LLaVA via Ollama | Oui (local, gratuit) | `ollama run llava` — moins précis mais privé |\n| LLaMA 3.2 Vision via Ollama | Oui (local, gratuit) | `ollama run llama3.2-vision` |\n\n## Limitations à connaître\n\n| Limitation | Explication |\n|-----------|-------------|\n| Hallucinations visuelles | Le modèle peut \"inventer\" des détails qu'il ne voit pas clairement |\n| Texte non-latin | Performance réduite pour le japonais, l'arabe, l'hébreu, etc. |\n| Texte petit ou penché | OCR peu fiable sur texte microscopique ou incliné |\n| Comptage d'objets | \"Combien y a-t-il de pommes ?\" → réponse approximative |\n| Raisonnement spatial | Positions relatives d'objets (échiquier, carte) → erreurs fréquentes |\n| Coût en tokens | Une image haute résolution peut coûter 1 000+ tokens |\n\n## Exercice pratique 1 — Analyse d'image simple (ChatGPT ou Claude)\n\n1. Ouvrir https://chat.openai.com ou https://claude.ai\n2. Cliquer sur l'icône \"joindre une image\" (trombone ou icône image).\n3. Uploader une photo au choix (paysage, document, graphique).\n4. Demander : *\"Décris cette image en détail.\"*\n5. Variantes : *\"Quel texte vois-tu dans cette image ?\"* / *\"Quelles émotions cette image évoque-t-elle ?\"*\n\n## Exercice pratique 2 — Analyse de graphique (Google AI Studio)\n\n1. Aller sur https://aistudio.google.com (gratuit avec un compte Google).\n2. Uploader un graphique (export Excel, capture d'écran).\n3. Demander : *\"Quelles sont les tendances principales dans ce graphique ?\"*\n\n## Exercice pratique 3 — Vision locale avec Ollama + LLaVA *(Si Ollama est installé)*\n\n```bash\nollama pull llava\nollama run llava\n```\n\nTaper : `Décris cette image` puis coller le chemin d'une image locale. Comparer la qualité avec GPT-4o.",
+      "questions": [
+        {
+          "text": "Que signifie \"multimodal\" dans le contexte des LLM ?",
+          "type": "single",
+          "options": [
+            { "text": "Le modèle peut traiter plusieurs types de données en entrée (texte, images, etc.)", "isCorrect": true },
+            { "text": "Le modèle peut répondre dans plusieurs langues simultanément", "isCorrect": false },
+            { "text": "Le modèle utilise plusieurs processeurs pour calculer plus vite", "isCorrect": false }
+          ],
+          "explanation": "Multimodal signifie que le modèle accepte plusieurs modalités d'entrée : texte, images, et parfois audio ou vidéo. Cela n'a pas de lien avec les langues ou le matériel."
+        },
+        {
+          "text": "Comment une image est-elle \"comprise\" par un LLM avec vision ?",
+          "type": "single",
+          "options": [
+            { "text": "L'image est convertie en tokens avant d'entrer dans le modèle", "isCorrect": true },
+            { "text": "L'image est analysée par un algorithme de reconnaissance d'objets séparé", "isCorrect": false },
+            { "text": "Le modèle reçoit directement les pixels de l'image", "isCorrect": false }
+          ],
+          "explanation": "Les modèles vision convertissent l'image en tokens (via un encodeur visuel) avant de la traiter. Ces tokens occupent de l'espace dans la fenêtre de contexte, comme du texte. Le modèle ne \"voit\" pas — il traite une représentation numérique."
+        },
+        {
+          "text": "Parmi ces tâches, lesquelles un modèle avec vision peut-il réaliser ? (plusieurs réponses possibles)",
+          "type": "multiple",
+          "options": [
+            { "text": "Décrire le contenu d'une photo", "isCorrect": true },
+            { "text": "Lire et retranscrire du texte dans une image (OCR)", "isCorrect": true },
+            { "text": "Analyser un graphique et en extraire les tendances", "isCorrect": true },
+            { "text": "Entendre l'audio enregistré dans une vidéo", "isCorrect": false }
+          ],
+          "explanation": "La vision concerne uniquement les images. La compréhension audio nécessite une modalité supplémentaire (présente dans certains modèles comme Gemini, mais pas dans tous). Les trois premières tâches sont des cas d'usage classiques de la vision."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 3 — Thinking / Raisonnement",
+      "body": "Un modèle de **raisonnement** génère d'abord une **séquence interne de réflexion** (reasoning tokens / thinking tokens) avant de produire sa réponse finale. Cette étape lui permet de décomposer des problèmes complexes, se corriger en cours de route, explorer plusieurs approches, et vérifier la cohérence de son raisonnement avant de répondre.\n\n## L'analogie du brouillon\n\nQuand vous résolvez un problème difficile, vous réfléchissez mentalement — ou sur du papier de brouillon — avant de formuler votre réponse. Les modèles reasoning font exactement pareil : ils ont un \"brouillon interne\" avant de vous donner leur réponse finale. La différence : ce brouillon est parfois visible (DeepSeek-R1) et parfois caché (o3, Claude).\n\n## Lien avec Chain-of-Thought (CoT)\n\nVous avez peut-être déjà utilisé la technique \"Raisonne étape par étape\" avec un LLM standard (Chain-of-Thought). Les modèles reasoning intègrent ce mécanisme dans leur **architecture** : pas besoin de le demander explicitement — ils le font automatiquement sur les tâches complexes.\n\n## Quand utiliser un modèle reasoning ?\n\n- **Oui** : mathématiques, code complexe, logique multi-étapes, débogage, problèmes de planification.\n- **Non** : chat simple, rédaction créative, résumé, traduction — un modèle standard est plus rapide et moins coûteux.\n\n## LLM standard vs Modèle reasoning\n\n| Aspect | LLM standard | Modèle reasoning |\n|--------|-------------|------------------|\n| Latence | Rapide (quelques secondes) | Plus lent (30 s à plusieurs minutes) |\n| Tokens générés | Output seul | Reasoning tokens + output |\n| Coût | Standard | Plus élevé |\n| Précision (problèmes complexes) | Limitée | Significativement meilleure |\n| Tâches créatives | Très bon | Pas de gain notable |\n| Conversation simple | Optimal | Sur-dimensionné |\n\n## Modèles reasoning accessibles gratuitement\n\n| Modèle | Accès gratuit ? | Raisonnement visible ? |\n|--------|----------------|------------------------|\n| o3-mini (OpenAI) | ChatGPT free tier (limité) | Non (thinking caché) |\n| Gemini 2.5 Flash | Google AI Studio (gratuit) | Oui (`thinkingBudget`, \"Show thinking\") |\n| DeepSeek-R1:7b | Ollama (local, gratuit) | Oui (entre `&lt;think&gt;…&lt;/think&gt;`) |\n| QwQ-32B | Ollama (local, si RAM suffisante) | Oui |\n\n## Exercice pratique 1 — Comparer standard vs reasoning (ChatGPT)\n\n1. Ouvrir https://chat.openai.com\n2. Poser à **GPT-4o** (modèle standard) : *\"J'ai 3 boîtes. L'une contient 2 pommes, l'autre 2 oranges, la troisième un mélange. Toutes les étiquettes sont fausses. Je peux piocher un seul fruit d'une seule boîte. Comment savoir le contenu de chaque boîte ?\"*\n3. Passer à **o3** ou **o4-mini** et poser la même question.\n4. Comparer : qualité de la réponse, latence, clarté du raisonnement.\n\n## Exercice pratique 2 — Raisonnement visible (Google AI Studio)\n\n1. Aller sur https://aistudio.google.com\n2. Sélectionner **Gemini 2.5 Flash** et activer **\"Show thinking\"**.\n3. Demander : *\"Si je double 1 centime tous les jours pendant 30 jours, combien ai-je ?\"*\n4. Observer le raisonnement intermédiaire affiché en grisé avant la réponse.\n\n## Exercice pratique 3 — DeepSeek-R1 local *(Si Ollama est installé)*\n\n```bash\nollama pull deepseek-r1:7b\nollama run deepseek-r1:7b\n```\n\nPoser le même problème logique. Observer les balises `&lt;think&gt;…&lt;/think&gt;` contenant le raisonnement brut.",
+      "questions": [
+        {
+          "text": "Que sont les \"reasoning tokens\" dans un modèle de raisonnement ?",
+          "type": "single",
+          "options": [
+            { "text": "Des tokens générés en interne par le modèle pour réfléchir avant de répondre", "isCorrect": true },
+            { "text": "Des tokens spéciaux qui rendent la réponse plus longue et plus détaillée", "isCorrect": false },
+            { "text": "Des tokens qui analysent la grammaire de la question", "isCorrect": false }
+          ],
+          "explanation": "Les reasoning tokens forment le \"brouillon interne\" du modèle. Ils sont générés avant la réponse finale, occupent de l'espace dans la fenêtre de contexte, et ne sont pas toujours visibles par l'utilisateur."
+        },
+        {
+          "text": "Pour quel type de tâche un modèle reasoning est-il particulièrement adapté ?",
+          "type": "single",
+          "options": [
+            { "text": "Résoudre un problème de logique ou de mathématiques complexes", "isCorrect": true },
+            { "text": "Rédiger un poème créatif", "isCorrect": false },
+            { "text": "Répondre rapidement à des questions simples dans un chatbot", "isCorrect": false }
+          ],
+          "explanation": "Les modèles reasoning brillent sur les tâches qui nécessitent plusieurs étapes de réflexion (maths, code, logique). Pour la créativité ou les réponses rapides, un modèle standard est plus adapté — et moins coûteux."
+        },
+        {
+          "text": "Quels signes indiquent qu'un modèle reasoning est en train de \"réfléchir\" ? (plusieurs réponses possibles)",
+          "type": "multiple",
+          "options": [
+            { "text": "Une latence plus longue avant la réponse", "isCorrect": true },
+            { "text": "L'affichage d'un indicateur 'Thinking...' ou 'Reasoning...'", "isCorrect": true },
+            { "text": "Des balises &lt;think&gt;...&lt;/think&gt; visibles dans la réponse (DeepSeek-R1)", "isCorrect": true },
+            { "text": "La réponse est toujours plus courte qu'avec un modèle standard", "isCorrect": false }
+          ],
+          "explanation": "Latence plus longue, indicateurs visuels et balises de raisonnement sont tous des signes caractéristiques d'un modèle reasoning. La longueur de la réponse n'est pas un indicateur — les réponses peuvent être aussi longues ou plus longues."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 4 — Tools (Outils)",
+      "body": "Un **tool** (outil) est une **fonction unique** que le LLM peut appeler pour interagir avec le monde extérieur. Sans tools, un LLM ne peut que parler. Avec des tools, il peut agir : chercher sur le web, lire un fichier, exécuter du code, envoyer un email, appeler une API externe.\n\n## L'analogie de la boîte à outils\n\nUn technicien sait réparer des appareils (= le LLM sait raisonner), mais il a besoin de ses outils physiques pour toucher et modifier le monde réel (= les tools). Sans outils, il ne peut que donner des conseils. Un standardiste décide quoi faire ; l'assistant spécialisé exécute — c'est exactement la relation LLM / tool.\n\n## Comment fonctionne le function calling ?\n\nLe mécanisme est élégant :\n\n1. L'utilisateur envoie un message.\n2. Le LLM reçoit les **descriptions JSON Schema** de tous les outils disponibles.\n3. Le LLM **décide** quel outil appeler et avec quels arguments (il ne l'exécute pas lui-même).\n4. Le **framework** exécute la fonction.\n5. Le résultat est ajouté à la conversation.\n6. Le LLM synthétise et répond à l'utilisateur.\n\nCrucial : le LLM choisit l'outil sur la base de sa **description textuelle** — pas son nom de fonction. Une description claire et précise est indispensable.\n\n## LLM sans tools vs LLM avec tools\n\n| Aspect | LLM sans tools | LLM avec tools |\n|--------|---------------|----------------|\n| Accès à internet | Non | Oui (si `search_web` disponible) |\n| Lire des fichiers | Non | Oui (si `read_file` disponible) |\n| Exécuter du code | Non | Oui (si `run_code` disponible) |\n| Envoyer des emails | Non | Oui (si `send_email` disponible) |\n| Connaissances | Figées à la date d'entraînement | Peuvent être mises à jour via tools |\n\n> **Dans l'orchestrateur :** Chaque agent dispose d'un accès à `RepoCapabilities` pour lire les fichiers du projet. C'est un \"tool\" qui permet à l'`ExecutorAgent` de répondre à des questions sur le code réel — pas uniquement à partir de ses connaissances d'entraînement.\n\n## Exercice pratique\n\n1. Ouvrir https://chat.openai.com (ou https://aistudio.google.com)\n2. Activer l'outil de recherche web (bouton **Search** dans ChatGPT).\n3. Demander : *\"Quels sont les 3 derniers films sortis au cinéma cette semaine ?\"*\n4. Observer : le modèle utilise l'outil de recherche, indique les sources, et synthétise.\n5. Désactiver la recherche et reposer la même question. Observer la différence.\n6. Réfléchir : que se passe-t-il si la description de l'outil est mal rédigée ?",
+      "questions": [
+        {
+          "text": "Qu'est-ce qu'un tool dans le contexte d'un agent IA ?",
+          "type": "single",
+          "options": [
+            { "text": "Une fonction unique que le LLM peut appeler pour interagir avec le monde extérieur", "isCorrect": true },
+            { "text": "Un modèle spécialisé installé à côté du LLM principal", "isCorrect": false },
+            { "text": "Une contrainte de sécurité qui filtre les sorties du modèle", "isCorrect": false }
+          ],
+          "explanation": "Un tool est une fonction invocable — recherche web, lecture de fichier, appel API, etc. Le LLM décide d'appeler le tool, et le framework exécute la fonction. Cela permet à l'agent d'interagir avec l'environnement réel."
+        },
+        {
+          "text": "Sur quelle base le LLM décide-t-il d'utiliser un outil particulier ?",
+          "type": "single",
+          "options": [
+            { "text": "Sur la base de la description textuelle de l'outil (JSON Schema)", "isCorrect": true },
+            { "text": "Sur la base du nom exact de la fonction (ex : search_web)", "isCorrect": false },
+            { "text": "Le LLM ne choisit pas — c'est le développeur qui décide quel outil appeler", "isCorrect": false }
+          ],
+          "explanation": "Le LLM reçoit les descriptions de tous les outils disponibles et choisit celui qui correspond à la tâche en cours. Une description claire et précise est donc cruciale pour que le LLM fasse le bon choix."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 5 — Skills (Compétences)",
+      "body": "Une **skill** (compétence) est un **ensemble packagé** de tools et de fonctions liés par un thème — une unité de capacité réutilisable. Là où un tool est une seule action, une skill regroupe plusieurs actions complémentaires avec des métadonnées sémantiques qui permettent au LLM de comprendre quand l'utiliser.\n\n## L'analogie du couteau suisse\n\nUn agent sans skills est comme un artisan à mains nues : il peut réfléchir mais pas agir. Chaque skill est comme une lame du couteau suisse — chacune fait une chose précise, et l'ensemble forme un outil complet. Une application smartphone est une autre bonne analogie : une skill regroupe des fonctionnalités liées, s'installe (s'active) quand on en a besoin, et peut être partagée.\n\n## Terminologie selon les frameworks\n\nLe concept existe dans tous les grands frameworks d'agents, sous des noms différents :\n\n- **Skill** — terme général, Semantic Kernel (Microsoft)\n- **Plugin** — Semantic Kernel (usage courant)\n- **Toolkit** — LangChain\n- **SKILL.md** — VS Code Copilot (fichier Markdown qui décrit la skill)\n\n## La description sémantique est cruciale\n\nC'est la description — pas le nom de la fonction — qui permet au LLM de savoir quand invoquer une skill. Une description vague ou absente empêche le LLM de faire le bon choix, même si la fonction existe et est parfaitement implémentée.\n\n## Exemples de skills\n\n- `WebPlugin` : recherche + fetch + résumé d'une page\n- `CalendarSkill` : lire + créer + modifier des événements\n- `session-management` : créer + mettre à jour + archiver des sessions de travail\n\n## Composition et chaînage\n\nLes skills peuvent être **chaînées** (séquentielles), **parallélisées** (parallel function calling) ou **récursives** (une skill invoque un sous-agent). Cette composition permet de construire des workflows complexes à partir de briques simples.\n\n## Tool vs Skill vs Agent\n\n| Concept | Description | Granularité | Exemple |\n|---------|-------------|-------------|--------|\n| **Tool** | Une fonction unique invocable | Fine | `search_web(query)` |\n| **Skill / Plugin** | Groupe de tools liés par un thème | Coarse | `WebPlugin` → search + fetch + summarize |\n| **Agent** | LLM + tools + mémoire + boucle | Très coarse | AssistantAgent, ExecutorAgent |\n\n> **Dans l'orchestrateur :** Les fichiers `SKILL.md` dans `.github/skills/` sont les skills au sens VS Code Copilot. Chaque fichier décrit une skill packagée : `session-management`, `online-research`, etc. Le LLM les lit et sait quand les invoquer.\n\n## Exercice pratique 1 — Explorer les skills VS Code Copilot *(Si accès à VS Code + Copilot)*\n\n1. Dans VS Code, naviguer vers `.github/skills/` dans ce workspace.\n2. Ouvrir `session-management/SKILL.md`.\n3. Identifier : (a) le nom, (b) la description, (c) les procédures étape par étape.\n4. Réfléchir : comment le LLM sait-il quand invoquer cette skill ?\n5. Comparer avec `online-research/SKILL.md` — quelles sont les différences d'objectif ?\n\n## Exercice pratique 2 — ChatGPT sans et avec skill\n\n1. Ouvrir https://chat.openai.com\n2. Sans plugin : demander *\"Génère une image d'un chat.\"* — observer la réponse.\n3. Si disponible, activer DALL-E (génération d'images) et reposer la même question.\n4. Observer : une skill de génération d'image vient d'être invoquée.",
+      "questions": [
+        {
+          "text": "Quelle est la différence principale entre un tool et une skill ?",
+          "type": "single",
+          "options": [
+            { "text": "Un tool est une fonction unique ; une skill est un groupe de tools packagés thématiquement", "isCorrect": true },
+            { "text": "Un tool est plus intelligent qu'une skill", "isCorrect": false },
+            { "text": "Une skill est un terme exclusif à Microsoft, les autres frameworks utilisent tool", "isCorrect": false }
+          ],
+          "explanation": "La distinction tool/skill est une question de granularité. Un tool est une seule action (ex : `search_web`) ; une skill regroupe plusieurs tools liés (ex : `WebPlugin` = recherche + fetch + résumé). La terminologie varie selon les frameworks mais le concept est universel."
+        },
+        {
+          "text": "Qu'est-ce qui permet au LLM de savoir quand utiliser une skill particulière ?",
+          "type": "single",
+          "options": [
+            { "text": "La description sémantique de la skill (texte lisible par le LLM)", "isCorrect": true },
+            { "text": "Le nom de la fonction de la skill", "isCorrect": false },
+            { "text": "Un fichier de configuration séparé lu avant chaque inférence", "isCorrect": false }
+          ],
+          "explanation": "Le LLM reçoit les descriptions de toutes les skills disponibles et se base sur leur contenu pour décider laquelle invoquer. Une description vague ou absente empêche le LLM de faire le bon choix, même si la fonction existe."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 6 — Hooks",
+      "body": "Un **hook** est un **point d'interception** dans le pipeline d'un agent qui permet d'exécuter du code **avant** (pre-request) ou **après** (post-response) un événement clé — appel LLM, exécution d'un tool, fin d'une boucle.\n\n## L'analogie du middleware\n\nC'est exactement comme les middleware dans Express.js (Node.js) ou les filtres dans Spring Boot. Chaque requête \"passe par\" les hooks avant d'atteindre sa destination, et chaque réponse \"repasse par\" les hooks avant de revenir à l'utilisateur. Autre analogie : la ceinture de sécurité — le conducteur (LLM) essaie de bien conduire, mais la ceinture (hooks) ajoute une protection indépendante pour les cas où il ne le fait pas.\n\n## Pre-request hooks\n\nS'exécutent **avant** l'envoi du prompt au modèle. Usages typiques :\n\n- Sanitisation de l'input (détecter les injections de prompt)\n- Injection de contexte (ajouter la date, le profil utilisateur)\n- Comptage de tokens (refuser si prompt trop long)\n- Rate limiting (limiter le nombre d'appels par minute)\n- Guardrails d'entrée (bloquer les sujets hors périmètre)\n\n## Post-response hooks\n\nS'exécutent **après** la réponse du modèle. Usages typiques :\n\n- Validation du format (est-ce un JSON valide ?)\n- Guardrails de sortie (filtrer le contenu toxique)\n- Logging et observabilité (latence, tokens, coût)\n- Caching (retourner une réponse mémorisée pour des prompts identiques)\n- Post-processing (reformater la réponse avant de l'afficher)\n\n## Pourquoi les hooks sont-ils nécessaires ?\n\nLe LLM seul **ne peut pas garantir** la sécurité, la qualité ou la conformité de ses sorties. Les hooks ajoutent une couche de contrôle **indépendante du modèle** — ce qui est essentiel en production où la fiabilité est critique.\n\nDans LangChain, les hooks sont implémentés via `BaseCallbackHandler` avec des méthodes comme `on_llm_start`, `on_llm_end`, `on_tool_start`, `on_tool_end`.\n\n## Cas d'usage par besoin\n\n| Besoin | Solution via hook | Exemple |\n|--------|------------------|---------|\n| Sécurité | Bloquer contenu dangereux | Détecter les injections de prompt |\n| Observabilité | Logger chaque appel | Audit trail complet avec timestamps |\n| Coût | Compter les tokens | `if tokens > budget: raise BudgetError` |\n| Qualité | Valider le format | Vérifier que la réponse est du JSON valide |\n| Privacy | Masquer le PII | Remplacer les emails par `[EMAIL]` |\n| Cache | Réponse mémorisée | Éviter des appels API répétitifs |\n\n> **Dans l'orchestrateur :** Le `VerifierAgent` joue le rôle d'un post-response hook architectural : il inspecte la sortie de l'`ExecutorAgent` avant de valider l'étape. Les guardrails (`max_iterations: 3`, `stop_conditions`) agissent comme des hooks de contrôle de boucle.\n\n## Exercice pratique — Conception de hooks (aucun outil requis)\n\nImaginer un agent qui aide des employés à rédiger des emails professionnels.\n\n1. Lister 3 **pre-request hooks** utiles (ex : bloquer le PII, vérifier la langue, limiter la longueur).\n2. Lister 3 **post-response hooks** utiles (ex : vérifier la politesse, logger, refuser si inapproprié).\n3. Discussion : quels hooks sont indispensables en production ? Lesquels peuvent être optionnels ?",
+      "questions": [
+        {
+          "text": "Qu'est-ce qu'un hook \"pre-request\" dans un pipeline d'agent IA ?",
+          "type": "single",
+          "options": [
+            { "text": "Du code exécuté avant l'envoi du prompt au modèle, pour filtrer ou enrichir l'entrée", "isCorrect": true },
+            { "text": "Un paramètre qui contrôle la vitesse d'inférence du modèle", "isCorrect": false },
+            { "text": "Un composant qui compresse la réponse pour réduire les tokens", "isCorrect": false }
+          ],
+          "explanation": "Un pre-request hook intervient avant l'appel au LLM. Il peut modifier, filtrer ou enrichir le prompt (ex : ajouter la date, masquer le PII, vérifier les contraintes de sécurité). Il ne touche pas au modèle lui-même."
+        },
+        {
+          "text": "Quels sont les usages typiques d'un post-response hook ? (plusieurs réponses possibles)",
+          "type": "multiple",
+          "options": [
+            { "text": "Valider que la réponse est dans le bon format (ex : JSON valide)", "isCorrect": true },
+            { "text": "Logger la réponse, la latence et les tokens utilisés", "isCorrect": true },
+            { "text": "Filtrer du contenu inapproprié avant de l'afficher à l'utilisateur", "isCorrect": true },
+            { "text": "Modifier la question de l'utilisateur avant qu'elle arrive au modèle", "isCorrect": false }
+          ],
+          "explanation": "Les post-response hooks opèrent après la réponse du modèle. Modifier la question est un rôle de pre-request hook. Les post-response hooks gèrent la validation, le logging, le filtrage de sortie et la mise en cache."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 7 — Instructions et Prompt Système",
+      "body": "Le **prompt système** (ou \"system prompt\") est un ensemble d'instructions persistantes données au modèle **avant** toute interaction utilisateur. Il définit le rôle, les règles, le périmètre et la mission de l'agent. Dans les APIs LLM, c'est le message `{\"role\": \"system\", \"content\": \"...\"}` envoyé avant les messages `user` et `assistant`.\n\n## L'analogie de la fiche de poste\n\nComme la fiche de poste et le règlement intérieur donnés à un nouvel employé le premier jour — il lit, intègre les règles, et les applique avant toute interaction client. Changer le prompt système, c'est comme changer entièrement le rôle d'un acteur de théâtre : même acteur (même modèle), personnage totalement différent.\n\n## Les 6 éléments d'un prompt système robuste\n\n1. **Définition du rôle** : *\"Tu es un assistant expert en Python avec 10 ans d'expérience.\"*\n2. **Contraintes de langue** : *\"Tu réponds TOUJOURS en français.\"*\n3. **Périmètre** : *\"Tu n'analyses que les fichiers dans /sandbox/.\"*\n4. **Format de sortie** : *\"Tu termines chaque réponse par une liste de fichiers consultés.\"*\n5. **Règles comportementales** : *\"Si tu n'as pas de source, dis 'je ne sais pas'.\"*\n6. **Guardrails** : *\"Ne partage jamais d'informations personnelles.\"*\n\n## Limites du prompting\n\nLe prompt système **ne peut pas garantir à 100%** que le modèle respectera toutes les instructions. Les modèles peuvent parfois dériver, \"oublier\" une contrainte en milieu de conversation, ou être induits en erreur par des techniques d'injection de prompt. C'est pourquoi les hooks (Chapitre 6) et les guardrails code existent en complément — ils forment une deuxième couche de protection indépendante.\n\n## Prompt système ≠ premier message\n\nLe premier message utilisateur fait partie de la conversation et peut être ignoré ou contredit par la suite. Le prompt système est distinct : il est traité différemment par le modèle et a une persistance plus forte. Cela dit, son effet varie selon les modèles et les implémentations.\n\n> **Dans l'orchestrateur :** Chaque agent a son propre prompt système dans `core/roles.py`. Le `PlannerAgent`, l'`ExecutorAgent` et le `VerifierAgent` ont des missions entièrement différentes — mais c'est le **même modèle** (`qwen2.5:0.5b`) qui joue tous ces rôles.\n\n## Exercice pratique — Tester l'impact du prompt système (Claude ou ChatGPT)\n\n1. Ouvrir https://claude.ai ou https://chat.openai.com\n2. **Version 1 :** Sans instruction particulière, demander : *\"C'est quoi une variable en Python ?\"*\n3. **Version 2 :** Nouveau chat. Commencer par : *\"Tu es un professeur sévère qui répond uniquement par des exemples de code commenté. Pas d'explications textuelles.\"* Puis reposer la même question.\n4. **Version 3 :** Nouveau chat. Commencer par : *\"Tu es un assistant pour enfants de 8 ans. Tu expliques tout avec des comparaisons liées aux animaux et aux jeux.\"* Même question.\n5. Observer comment le même modèle produit des réponses radicalement différentes selon le prompt système.\n6. Discussion : qu'est-ce que cela révèle sur la nature du \"caractère\" d'un LLM ?",
+      "questions": [
+        {
+          "text": "Quel est le rôle principal du prompt système dans une application avec un LLM ?",
+          "type": "single",
+          "options": [
+            { "text": "Définir la mission, le rôle, les règles et le périmètre de l'agent avant toute interaction utilisateur", "isCorrect": true },
+            { "text": "Augmenter la vitesse de réponse du modèle en lui donnant un contexte", "isCorrect": false },
+            { "text": "Protéger le modèle contre les attaques en limitant ses capacités", "isCorrect": false }
+          ],
+          "explanation": "Le prompt système configure le comportement de l'agent de façon persistante. Il précède tous les messages utilisateur et établit la \"personnalité\", les règles et les limites de l'agent pour toute la conversation."
+        },
+        {
+          "text": "Quels éléments peut-on inclure dans un prompt système bien conçu ? (plusieurs réponses possibles)",
+          "type": "multiple",
+          "options": [
+            { "text": "La définition du rôle de l'agent", "isCorrect": true },
+            { "text": "Des contraintes sur la langue de réponse", "isCorrect": true },
+            { "text": "Le format attendu pour les sorties (ex : JSON, liste à puces)", "isCorrect": true },
+            { "text": "Les données d'entraînement du modèle", "isCorrect": false }
+          ],
+          "explanation": "Un prompt système peut contenir le rôle, les règles de langue, le format de sortie, le périmètre d'action et les guardrails comportementaux. Il ne peut pas modifier les données d'entraînement — celles-ci sont fixées et ne peuvent être changées qu'en réentraînant ou fine-tunant le modèle."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 8 — MCP (Model Context Protocol)",
+      "body": "**MCP** = Model Context Protocol — un **standard ouvert** qui définit comment les applications IA se connectent à des sources de données et outils externes. Créé par **Anthropic**, annoncé le 25 novembre 2024, mis en open source immédiatement, et maintenant gouverné par **LF Projects LLC** (Linux Foundation).\n\n## Le problème avant MCP\n\nAvant MCP, chaque application IA devait écrire son propre connecteur pour chaque source de données : GitHub, Google Drive, Slack, PostgreSQL… N applications × M sources = N×M connecteurs personnalisés à maintenir.\n\nAvec MCP : N applications + M sources = N+M composants. Les connecteurs sont **réutilisables et interopérables** — une application peut utiliser n'importe quel serveur MCP existant sans code supplémentaire.\n\n## L'analogie USB-C (officielle Anthropic)\n\nAvant USB-C, chaque appareil avait son propre connecteur : micro-USB, Lightning, mini-Jack, propriétaire… USB-C a tout standardisé. MCP fait pareil pour les connexions IA ↔ outils : un seul standard = interopérabilité universelle.\n\n## Architecture — 3 participants\n\n1. **MCP Host** : l'application IA qui orchestre (ex : VS Code, Claude Desktop, Cursor). Gère plusieurs connexions client-serveur simultanément.\n2. **MCP Client** : composant interne au host. Chaque client maintient une connexion avec **un seul** serveur MCP.\n3. **MCP Server** : programme externe qui expose ses capacités. Peut être local (stdio) ou distant (HTTP + OAuth).\n\n## Les 3 primitives d'un serveur MCP\n\n- **Tools** — fonctions exécutables (créer un fichier, chercher des issues GitHub)\n- **Resources** — données lisibles (contenu de fichier, résultat de requête DB)\n- **Prompts** — templates de prompts réutilisables stockés côté serveur\n\n## Transport\n\n- **STDIO** : pour les serveurs locaux (processus enfant)\n- **HTTP streamable** : pour les serveurs distants\n- **VS Code** : support natif depuis VS Code 1.99+ via `settings.json`\n\n## Serveurs MCP disponibles (exemples)\n\n| Serveur | Ce qu'il expose | Source |\n|---------|----------------|--------|\n| Filesystem | Lire/écrire des fichiers locaux | Anthropic (officiel) |\n| GitHub | Issues, PRs, repos, commits | Anthropic (officiel) |\n| Google Drive | Fichiers Google Drive | Communauté |\n| Slack | Messages, canaux, fichiers | Communauté |\n| PostgreSQL | Requêtes SQL, schéma DB | Communauté |\n| Puppeteer | Web scraping, captures d'écran | Anthropic (officiel) |\n| Memory | Mémoire persistante via KV store | Anthropic (officiel) |\n\nRépertoire complet : https://github.com/modelcontextprotocol/servers\n\n> **Dans l'orchestrateur :** Le projet orchestrateur se connecte à Ollama via HTTP (`/api/generate`). Ce n'est pas encore MCP — mais c'est la même idée : standardiser la façon dont l'application IA parle au modèle. MCP va plus loin en standardisant aussi la façon dont le modèle parle aux outils externes.\n\n## Exercice pratique — Exploration conceptuelle\n\n1. Demander à Claude.ai ou ChatGPT : *\"Explique-moi ce qu'est le Model Context Protocol en 5 phrases simples.\"*\n2. Comparer la réponse avec ce chapitre — le modèle a-t-il bien compris le concept ?\n3. Discussion : si MCP est le \"USB-C de l'IA\", qu'est-ce que l'\"appareil\" (app IA) et qu'est-ce que le \"câble\" (serveur MCP) ?\n4. Réfléchir : pourquoi un standard ouvert est-il important vs chaque entreprise définissant son propre protocole ?",
+      "questions": [
+        {
+          "text": "Quelle est l'analogie officielle utilisée par Anthropic pour expliquer MCP ?",
+          "type": "single",
+          "options": [
+            { "text": "MCP est le USB-C de l'IA — un standard universel pour connecter les apps IA aux outils", "isCorrect": true },
+            { "text": "MCP est le HTTP de l'IA — un protocole de communication entre modèles", "isCorrect": false },
+            { "text": "MCP est le Git de l'IA — un système de versionnement pour les agents", "isCorrect": false }
+          ],
+          "explanation": "Anthropic a introduit l'analogie USB-C : avant USB-C, chaque appareil avait son propre connecteur. MCP standardise de la même façon les connexions entre applications IA et sources de données/outils externes."
+        },
+        {
+          "text": "Quels sont les 3 participants d'une architecture MCP ?",
+          "type": "single",
+          "options": [
+            { "text": "MCP Host (app IA), MCP Client (connecteur dans le host), MCP Server (source de données)", "isCorrect": true },
+            { "text": "MCP Producer, MCP Consumer, MCP Broker", "isCorrect": false },
+            { "text": "MCP API, MCP Database, MCP Interface", "isCorrect": false }
+          ],
+          "explanation": "L'architecture MCP est composée du Host (l'application IA qui orchestre), du Client (le connecteur interne qui maintient une connexion avec UN serveur) et du Server (le programme externe qui expose des tools, resources ou prompts)."
+        },
+        {
+          "text": "Quelles primitives un serveur MCP peut-il exposer ? (plusieurs réponses possibles)",
+          "type": "multiple",
+          "options": [
+            { "text": "Tools — fonctions exécutables", "isCorrect": true },
+            { "text": "Resources — données lisibles", "isCorrect": true },
+            { "text": "Prompts — templates de prompts réutilisables", "isCorrect": true },
+            { "text": "Models — modèles IA hébergés", "isCorrect": false }
+          ],
+          "explanation": "Un serveur MCP expose exactement trois primitives : Tools (actions), Resources (données) et Prompts (templates). Il n'héberge pas de modèles IA — les modèles restent dans le MCP Host."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 9 — Qu'est-ce qu'un paramètre ?",
+      "body": "Un **paramètre d'inférence** est un réglage qui contrôle **comment** le modèle génère du texte — indépendamment de ce qui est demandé dans le prompt. Même modèle, même prompt, paramètres différents = réponses différentes. Ce sont des **curseurs** que l'on peut ajuster sans modifier le modèle lui-même.\n\n## L'analogie du studio d'enregistrement\n\nImaginez un studio de musique. Le chanteur (= le modèle) chante toujours le même morceau. Les paramètres sont les curseurs du mixeur : basse, aigus, réverbération, volume. En changeant les curseurs, le résultat sonore change radicalement — sans que le chanteur chante différemment. C'est exactement la relation entre le modèle et ses paramètres d'inférence.\n\n## Les 4 catégories de paramètres\n\n**1. Paramètres d'échantillonnage** — contrôlent comment le modèle choisit le prochain mot :\n- `temperature` : créativité vs prévisibilité\n- `top_p` (nucleus sampling) : taille du pool de candidats en probabilité cumulée\n- `top_k` : nombre fixe de candidats considérés\n→ Détaillés au Chapitre 10\n\n**2. Paramètres de longueur et de limite** — contrôlent la longueur et l'arrêt :\n- `num_predict` / `max_tokens` : nombre maximum de tokens en sortie\n- `stop` : séquences qui déclenchent l'arrêt immédiat\n→ Détaillés au Chapitre 11\n\n**3. Paramètre de stabilité** — contrôle la répétition :\n- `repeat_penalty` : pénalise les tokens récemment générés\n- `seed` : fixe l'aléatoire pour reproduire une sortie\n→ Détaillé au Chapitre 11\n\n**4. Paramètres de session** — contrôlent le cycle de vie en mémoire :\n- `keep_alive` : durée de rétention du modèle chargé\n→ Spécifique à Ollama\n\n## Importance pour les agents\n\nLes agents utilisent souvent des paramètres très différents des chatbots créatifs. Un chatbot créatif peut utiliser `temperature: 0.9` pour des réponses variées et surprenantes. Un agent qui doit produire du JSON structuré utilisera `temperature: 0.2` ou même `0.0` pour la cohérence et la prévisibilité — car ses sorties sont parsées par d'autres programmes.\n\n> **Dans l'orchestrateur :** L'orchestrateur utilise `temperature: 0.2` et `num_predict: 96` pour forcer des sorties courtes et prévisibles, adaptées au petit modèle `qwen2.5:0.5b` qui opère en mode pipeline.\n\n## Exercice pratique — Observer l'impact des paramètres (Google AI Studio)\n\n1. Aller sur https://aistudio.google.com\n2. Dans le panneau de droite, trouver les curseurs **Temperature**, **Top P**, **Max output tokens**.\n3. Prompt simple : *\"Invente un prénom pour un personnage de roman fantastique.\"*\n4. Lancer 3 fois avec **temperature = 0.1** — observer la cohérence.\n5. Passer à **temperature = 1.5** — observer la variété (et parfois l'incohérence).\n6. Discussion : quelle température utiliser pour un agent qui doit produire un format JSON stable ?",
+      "questions": [
+        {
+          "text": "Que contrôle un paramètre d'inférence LLM ?",
+          "type": "single",
+          "options": [
+            { "text": "La manière dont le modèle génère du texte — indépendamment du contenu du prompt", "isCorrect": true },
+            { "text": "Les données sur lesquelles le modèle a été entraîné", "isCorrect": false },
+            { "text": "Les permissions d'accès aux outils de l'agent", "isCorrect": false }
+          ],
+          "explanation": "Les paramètres d'inférence contrôlent le processus de génération de texte (comment choisir le prochain mot, combien de tokens générer, quand s'arrêter). Ils n'affectent pas l'entraînement du modèle ni ses permissions d'accès aux outils."
+        },
+        {
+          "text": "Pourquoi un agent IA utilise-t-il souvent une temperature basse (ex: 0.2) ?",
+          "type": "single",
+          "options": [
+            { "text": "Pour produire des sorties cohérentes et prévisibles, nécessaires aux pipelines automatisés", "isCorrect": true },
+            { "text": "Pour réduire le temps de calcul et répondre plus vite", "isCorrect": false },
+            { "text": "Pour éviter que le modèle génère trop de tokens", "isCorrect": false }
+          ],
+          "explanation": "Une temperature basse rend les sorties plus déterministes et répétables. Dans un agent, les sorties doivent souvent être parsées par d'autres agents ou programmes — la cohérence du format est donc plus importante que la créativité."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 10 — Température et échantillonnage",
+      "body": "La **température** contrôle la \"créativité\" ou la \"prévisibilité\" du modèle. Mathématiquement, elle divise les scores de probabilité avant l'étape d'échantillonnage : une valeur basse rend les mots probables encore plus dominants ; une valeur haute aplatit la distribution et donne une chance aux mots moins probables.\n\n## L'analogie de la machine à café\n\n- Température trop basse → café tiède et fade : même résultat prévisible, aucune surprise.\n- Température trop haute → café brûlé : surprenant, mais souvent imbuvable (incohérent).\n- Température optimale → juste équilibre entre prévisibilité et créativité.\n\n## top_p (nucleus sampling)\n\n`top_p` restreint le pool de candidats à l'**ensemble minimal de mots** dont les probabilités cumulées atteignent `p`. À `top_p=0.9`, seuls les mots représentant 90% de la masse de probabilité sont considérés. La taille du pool varie dynamiquement selon la situation — parfois 3 mots, parfois 50.\n\nAnalogy : vote de classe — on ne vote que parmi les candidats \"sérieux\" (ceux qui représentent ensemble 90% des voix), pas parmi tous les élèves.\n\n## top_k\n\n`top_k` restreint le pool aux K mots les plus probables — un **nombre fixe**, contrairement à `top_p` qui est adaptatif.\n\nAnalogy : émission de téléréalité — seuls les 40 candidats (top_k=40) sont en compétition, quelle que soit leur distribution de scores.\n\n## Règle DAIR.AI\n\n**Ajuster temperature OU top_p — jamais les deux simultanément.** Leurs effets sont similaires sur la diversité des sorties. Les combiner rend le comportement imprévisible et difficile à interpréter.\n\n`top_k` et `top_p` sont souvent utilisés ensemble : `top_k` élimine la longue queue, puis `top_p` affine les candidats restants.\n\n## Valeurs de température\n\n| Valeur | Effet |\n|--------|-------|\n| 0.0 | Greedy — choisit toujours le mot le plus probable (déterministe) |\n| 0.2 | Très cohérent, suit les instructions précisément |\n| 0.7–0.8 | Bon équilibre cohérence / créativité |\n| 1.0 | Plus aléatoire, créatif, peut dériver hors sujet |\n| 2.0 | Très chaotique — souvent incohérent |\n\n## Valeurs de top_p\n\n| Valeur | Effet |\n|--------|-------|\n| 0.1 | Très conservateur — seuls les mots les plus sûrs |\n| 0.5 | Modéré — coupe environ la moitié du vocabulaire candidat |\n| 0.9 | Valeur par défaut courante — garde 90% de la masse de probabilité |\n| 1.0 | Pas de filtrage — équivaut à l'échantillonnage pur |\n\n## Exercice pratique 1 — Impact de la température (Google AI Studio)\n\n1. Aller sur https://aistudio.google.com\n2. Prompt : *\"Écris la suite de cette phrase : 'Il était une fois, dans un pays lointain…'\"*\n3. Envoyer 3 fois avec **temperature = 0.1** — noter la cohérence des suites.\n4. Envoyer 3 fois avec **temperature = 1.5** — noter la variété (et parfois l'étrangeté).\n5. Discussion : pour quel cas d'usage chaque valeur est-elle appropriée ?\n\n## Exercice pratique 2 — top_p vs température\n\n1. Fixer **temperature = 1.0**, faire varier **top_p** entre 0.1 et 0.9.\n2. L'effet est-il similaire à celui de varier la température ?\n3. Essayer de combiner les deux — le résultat est-il plus ou moins prévisible ?",
+      "questions": [
+        {
+          "text": "Que se passe-t-il quand la température est proche de 0 ?",
+          "type": "single",
+          "options": [
+            { "text": "Le modèle choisit toujours le mot le plus probable — les réponses sont très prévisibles et répétables", "isCorrect": true },
+            { "text": "Le modèle refuse de répondre car il n'a pas assez de confiance", "isCorrect": false },
+            { "text": "Le modèle génère des réponses plus longues et plus détaillées", "isCorrect": false }
+          ],
+          "explanation": "À temperature = 0, le modèle choisit systématiquement le token le plus probable (stratégie \"greedy\"). Cela rend les sorties déterministes et identiques pour le même prompt — utile pour des agents qui doivent produire un format stable."
+        },
+        {
+          "text": "Quelle est la recommandation DAIR.AI pour temperature et top_p ?",
+          "type": "single",
+          "options": [
+            { "text": "Ajuster l'un ou l'autre, mais pas les deux simultanément", "isCorrect": true },
+            { "text": "Toujours combiner les deux pour maximiser la qualité", "isCorrect": false },
+            { "text": "Utiliser top_p uniquement pour les tâches créatives", "isCorrect": false }
+          ],
+          "explanation": "Temperature et top_p ont des effets similaires sur la diversité des sorties. Les combiner rend le comportement imprévisible et difficile à interpréter. La recommandation est d'en ajuster un seul à la fois."
+        },
+        {
+          "text": "Quelle est la différence entre top_k et top_p ?",
+          "type": "single",
+          "options": [
+            { "text": "top_k fixe un nombre de candidats constant ; top_p varie dynamiquement selon les probabilités", "isCorrect": true },
+            { "text": "top_k s'applique aux images ; top_p s'applique au texte", "isCorrect": false },
+            { "text": "top_k est plus précis que top_p et doit toujours être préféré", "isCorrect": false }
+          ],
+          "explanation": "top_k retient exactement K candidats (ex : 40) à chaque étape. top_p retient un nombre variable de candidats selon leur distribution de probabilité — si les probabilités sont concentrées, peu de candidats suffisent ; si elles sont dispersées, plus sont inclus."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 11 — Contrôle des sorties",
+      "body": "Au-delà de la température et de l'échantillonnage, plusieurs paramètres permettent de **contrôler précisément la longueur, la structure et la cohérence** des sorties générées.\n\n## num_predict / max_tokens\n\n`num_predict` (Ollama) ou `max_tokens` (API OpenAI/Anthropic) fixe le **nombre maximum de tokens** que le modèle peut écrire en réponse. Le modèle s'arrête à cette limite, même en plein milieu d'une phrase — **sans indiquer** qu'il a été tronqué.\n\nRègle de base : 1 token ≈ ¾ d'un mot anglais ≈ 4 caractères. Un paragraphe typique = 100–200 tokens.\n\nL'analogie de la limite SMS : vous avez 160 caractères. Si votre message dépasse, il est coupé sans avertissement.\n\n> **Important :** `num_predict` limite l'OUTPUT seulement. La taille du prompt (input) est limitée par la **fenêtre de contexte** — un paramètre différent.\n\n## Séquences d'arrêt (stop)\n\nLes **stop sequences** sont des chaînes de texte spécifiques qui déclenchent l'arrêt **immédiat** de la génération dès que le modèle les génère. Usages :\n\n- Empêcher le modèle de simuler d'autres tours de conversation : `stop: [\"User:\", \"Human:\"]`\n- Limiter une liste numérotée à 10 items : `stop: [\"11.\"]`\n- Forcer un JSON valide : arrêter après le `}` fermant\n\n## repeat_penalty\n\n`repeat_penalty` pénalise les tokens récemment générés pour éviter les répétitions et les boucles. Valeur typique : 1.1. Une valeur de 1.0 = pas de pénalité.\n\nAnalogy : un correcteur qui sanctionne les répétitions dans une rédaction.\n\n## seed\n\n`seed` fixe le générateur aléatoire pour une **reproductibilité parfaite**. Même seed + même prompt + mêmes paramètres = sortie identique. Utile pour le débogage, les tests automatisés, et la comparaison de versions.\n\n## Tableau récapitulatif\n\n| Paramètre | Rôle | Valeur typique |\n|-----------|------|----------------|\n| `num_predict` / `max_tokens` | Limite max de tokens en sortie | 96–4096 selon le cas |\n| `stop` | Arrête sur une chaîne spécifique | `[\"User:\", \"\\n\\n\"]` |\n| `repeat_penalty` | Pénalise les répétitions | 1.1 (légère pénalité) |\n| `seed` | Fixe l'aléatoire | Entier positif (ex: 42) |\n\n> **Dans l'orchestrateur :** L'orchestrateur utilise `num_predict=96` et `RepoReadLimits` (max 12 000 octets par fichier, max 40 fichiers) pour éviter de dépasser la fenêtre de contexte du petit modèle `qwen2.5:0.5b`. C'est une gestion explicite de la pression de contexte.\n\n## Exercice pratique — Observer la troncature (Google AI Studio)\n\n1. Aller sur https://aistudio.google.com\n2. Fixer **Max output tokens** à 20.\n3. Demander : *\"Explique-moi en détail comment fonctionne un moteur à combustion.\"*\n4. Observer : la réponse est coupée en plein milieu d'une phrase, sans indication de fin.\n5. Passer à 500 tokens et reposer la même question.\n6. Discussion : pourquoi les agents utilisent-ils un `num_predict` bas pour les tâches internes (validation, classification) ?",
+      "questions": [
+        {
+          "text": "Que contrôle le paramètre num_predict (ou max_tokens) ?",
+          "type": "single",
+          "options": [
+            { "text": "Le nombre maximum de tokens que le modèle peut écrire en réponse", "isCorrect": true },
+            { "text": "La taille maximale du prompt envoyé au modèle", "isCorrect": false },
+            { "text": "La précision du modèle (plus c'est élevé, plus c'est précis)", "isCorrect": false }
+          ],
+          "explanation": "num_predict limite uniquement la longueur de l'output généré par le modèle. La taille du prompt (input) est limitée par la fenêtre de contexte, qui est un paramètre différent. Les deux n'ont pas de lien avec la précision du modèle."
+        },
+        {
+          "text": "À quoi servent les séquences d'arrêt (stop sequences) ?",
+          "type": "single",
+          "options": [
+            { "text": "Elles ordonnent au modèle de s'arrêter dès qu'il génère une chaîne de texte spécifique", "isCorrect": true },
+            { "text": "Elles empêchent le modèle de répondre à certains types de questions", "isCorrect": false },
+            { "text": "Elles réduisent la température automatiquement en fin de réponse", "isCorrect": false }
+          ],
+          "explanation": "Les stop sequences permettent de contrôler précisément où le modèle termine sa génération. C'est utile pour les sorties structurées (arrêter après le } d'un JSON) ou pour éviter que le modèle simule plusieurs tours de conversation."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 12 — Contexte et mémoire",
+      "body": "La **fenêtre de contexte** est la quantité maximale de texte (input + output) que le modèle peut traiter en une seule inférence. Au-delà de cette limite, les messages anciens sont silencieusement ignorés — le modèle \"oublie\" ce qui est sorti de la fenêtre.\n\nUnité : tokens. 1 token ≈ ¾ d'un mot. Un roman de 300 pages ≈ 150 000 tokens.\n\nAnalogy : le bureau de travail. La fenêtre de contexte est votre bureau — vous pouvez travailler avec les documents qui y sont posés. Les documents dans vos classeurs (mémoire externe) sont accessibles sur demande, mais pas automatiquement visibles.\n\n## Les 3 types de mémoire d'un agent\n\n**1. Mémoire en contexte (court terme)**\n- C'est l'historique de la conversation courante.\n- Limitée par la fenêtre de contexte.\n- Disparaît à la fin de la session (sauf si sauvegardée explicitement).\n\n**2. Mémoire externe (long terme)**\n- Base de données, fichiers, vecteurs — persiste entre les sessions.\n- L'agent récupère ce dont il a besoin via des tools.\n- Exemples : fichiers de session, base de données vectorielle pour RAG.\n\n**3. Mémoire procédurale**\n- Le prompt système lui-même — les \"règles\" que l'agent connaît toujours.\n- Ne varie pas selon les conversations.\n\n## RAG — Retrieval-Augmented Generation\n\nLe **RAG** est une technique où l'agent récupère des documents pertinents (via recherche vectorielle ou par mots-clés) et les injecte dans son contexte avant de répondre. Cela résout le problème des connaissances \"figées\" à la date d'entraînement : l'agent peut consulter des documents récents, des bases de données internes, ou des manuels techniques.\n\nAnalogy : chercher dans ses notes de cours avant de répondre à une question d'examen, plutôt que de tout mémoriser par cœur.\n\n## Tailles de fenêtres de contexte\n\n| Modèle | Fenêtre de contexte |\n|--------|--------------------|\n| qwen2.5:0.5b (orchestrateur) | 4 096 – 32 768 tokens |\n| Llama 3.2 (3B) | 128 000 tokens |\n| GPT-4o | 128 000 tokens |\n| Claude 3.5 Sonnet | 200 000 tokens |\n| Gemini 2.5 Flash | 1 000 000 tokens |\n\n## Gestion de la pression de contexte\n\nQuand une conversation est longue, les agents doivent \"compresser\" ou \"oublier\" les anciens messages pour rester dans la fenêtre. Stratégies communes : résumé des anciens messages, suppression des tours les moins importants, sliding window.\n\n> **Dans l'orchestrateur :** L'orchestrateur utilise `num_predict=96` et `RepoReadLimits` (max 12 000 octets/fichier, max 40 fichiers) pour éviter de dépasser la fenêtre du modèle `qwen2.5:0.5b`. C'est une gestion explicite de la pression de contexte.\n\n## Exercice pratique — Tester les limites du contexte (Claude ou ChatGPT)\n\n1. Démarrer une nouvelle conversation.\n2. Donner un fait fictif : *\"Dans ce monde fictif, ma couleur préférée est le violet néon.\"*\n3. Continuer sur d'autres sujets pendant 20 échanges (maths, histoire, recettes...).\n4. Demander : *\"Quelle est ma couleur préférée dans ce monde fictif ?\"*\n5. Observer si le modèle s'en souvient encore. Avec Claude (200k tokens), il devrait.\n6. Discussion : que se passerait-il avec un modèle ayant seulement 4 096 tokens de contexte ?",
+      "questions": [
+        {
+          "text": "Qu'est-ce que la \"fenêtre de contexte\" d'un LLM ?",
+          "type": "single",
+          "options": [
+            { "text": "La quantité maximale de texte (input + output) que le modèle peut traiter en une seule inférence", "isCorrect": true },
+            { "text": "Le nombre maximum d'utilisateurs simultanés que le modèle peut servir", "isCorrect": false },
+            { "text": "La durée pendant laquelle un modèle garde une session active", "isCorrect": false }
+          ],
+          "explanation": "La fenêtre de contexte est la mémoire de travail du modèle. Elle contient le prompt, l'historique de la conversation et la réponse en cours. Au-delà de cette limite, les messages anciens sont silencieusement ignorés."
+        },
+        {
+          "text": "Quels types de mémoire un agent IA peut-il utiliser ? (plusieurs réponses possibles)",
+          "type": "multiple",
+          "options": [
+            { "text": "Mémoire en contexte — l'historique de la conversation courante", "isCorrect": true },
+            { "text": "Mémoire externe — base de données ou fichiers persistants entre sessions", "isCorrect": true },
+            { "text": "Mémoire procédurale — les règles du prompt système", "isCorrect": true },
+            { "text": "Mémoire génétique — encodée dans les poids du modèle lors de l'entraînement", "isCorrect": false }
+          ],
+          "explanation": "Un agent peut combiner mémoire en contexte (court terme), mémoire externe (base de données, fichiers — persistante) et mémoire procédurale (prompt système). Les poids du modèle ne sont pas une forme de mémoire accessible dynamiquement — ils sont figés après l'entraînement."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 13 — Choisir son modèle",
+      "body": "Choisir un modèle implique deux décisions principales : la **taille** (nombre de paramètres) et la **quantization** (format de stockage des poids).\n\n## La taille — nombre de paramètres\n\nLe nombre de paramètres détermine la \"capacité intellectuelle brute\" du modèle. Plus il y a de paramètres, mieux le modèle peut raisonner, nuancer, mémoriser des connaissances… mais plus il exige de RAM et de calcul.\n\nAnalogy : équipe vs solo. Un modèle 70B est comme une équipe de spécialistes — plus de savoir, plus de nuance, mais plus cher et plus lent. Un modèle 0.5B est comme un stagiaire enthousiaste — rapide, léger, et efficace sur des tâches bien définies.\n\n## La quantization — comprimer le modèle\n\nLa **quantization** convertit les poids du modèle (normalement en 32 ou 16 bits) en représentations moins précises (8 ou 4 bits). Résultat : un modèle 7B à Q4_K_M passe de ~14 Go à ~4 Go — avec une perte de qualité souvent négligeable.\n\nAnalogy : compression JPEG. L'image originale (modèle plein) est parfaite mais volumineuse. L'image compressée (modèle quantizé) est légèrement moins nette, mais se charge en quelques secondes au lieu de minutes.\n\nRègle approximative : chaque paramètre en 16 bits ≈ 2 octets. Un modèle 7B non-quantizé ≈ 14 Go de RAM.\n\n**Format GGUF** : standard pour les modèles quantizés, utilisé par Ollama (basé sur `llama.cpp`). `ollama pull` télécharge un fichier GGUF.\n\n**Quantization recommandée : Q4_K_M** — meilleur rapport taille/qualité pour la plupart des usages.\n\n## Tiers de taille\n\n| Taille | Exemples | RAM requise (Q4) | CPU-only ? | Capacité |\n|--------|---------|-----------------|-----------|----------|\n| 0.5B | qwen2.5:0.5b | ~300 Mo | ✅ Oui | Tâches simples avec instructions claires |\n| 1.5–3B | qwen2.5:3b, llama3.2:3b | ~2 Go | ✅ Oui | Tâches légères, suivi d'instructions |\n| 7B | mistral:7b, llama3.2:8b | ~4–5 Go | ⚠️ Lent | Bonne performance générale |\n| 13B | llama3:13b | ~8 Go | ⚠️ Très lent | Meilleur raisonnement |\n| 70B | llama3:70b, qwen2.5:72b | ~40 Go | ❌ GPU requis | Proche GPT-4 pour la plupart des tâches |\n\n## Niveaux de quantization\n\n| Format | Bits/poids | Réduction vs FP16 | Perte de qualité | Usage recommandé |\n|--------|-----------|-------------------|-----------------|------------------|\n| F16 | 16 bits | Aucune | Nulle | Précision maximale requise |\n| Q8_0 | 8 bits | ~50% | Négligeable | Haute qualité + économie d'espace |\n| **Q4_K_M** | 4 bits | ~75% | Faible | **Défaut recommandé** |\n| Q2_K | 2 bits | ~87% | Significative | Contraintes matérielles extrêmes |\n\n> **Dans l'orchestrateur :** Le modèle `qwen2.5:0.5b` est choisi pour son accessibilité maximale : ~300 Mo, CPU-only, téléchargement en quelques secondes sur n'importe quel ordinateur. Ses limites en raisonnement sont compensées par des prompts très explicites et des tâches bien délimitées.\n\n## Exercice pratique — Comparer deux modèles Ollama *(Si Ollama est installé)*\n\n```bash\nollama pull qwen2.5:0.5b\nollama pull qwen2.5:3b\n```\n\n1. Poser aux deux modèles : *\"Explique la différence entre une liste et un dictionnaire en Python, avec un exemple concret.\"*\n2. Comparer : qualité de l'explication, clarté des exemples, précision technique.\n3. Mesurer approximativement le temps de réponse.\n4. Discussion : quand le 0.5b est-il suffisant ? Quand passer au 3b ou plus grand ?\n\n**Alternative sans Ollama :** tester GPT-4o mini vs GPT-4o sur un problème de maths complexe à https://chat.openai.com",
+      "questions": [
+        {
+          "text": "Qu'est-ce que la quantization d'un modèle LLM ?",
+          "type": "single",
+          "options": [
+            { "text": "Une technique qui réduit la taille du modèle en stockant ses poids avec moins de précision", "isCorrect": true },
+            { "text": "Un processus qui augmente le nombre de paramètres d'un modèle existant", "isCorrect": false },
+            { "text": "Un paramètre qui contrôle la quantité de texte généré par le modèle", "isCorrect": false }
+          ],
+          "explanation": "La quantization convertit les poids du modèle (normalement en 32 ou 16 bits) en représentations moins précises (8 ou 4 bits). Cela réduit massivement l'empreinte mémoire — un modèle 7B à Q4_K_M passe de ~14 Go à ~4 Go — avec une perte de qualité généralement négligeable."
+        },
+        {
+          "text": "Pourquoi un modèle 0.5b est-il un bon choix par défaut pour une démo accessible ?",
+          "type": "single",
+          "options": [
+            { "text": "Parce qu'il tient sur n'importe quel ordinateur (~300 Mo), sans GPU, avec un téléchargement rapide", "isCorrect": true },
+            { "text": "Parce que c'est le modèle le plus intelligent disponible sur Ollama", "isCorrect": false },
+            { "text": "Parce que les modèles plus grands ne supportent pas les tâches de code", "isCorrect": false }
+          ],
+          "explanation": "Le 0.5b est choisi pour son accessibilité maximale : n'importe quel ordinateur peut le faire tourner sans GPU, et il se télécharge en quelques secondes. Ses limites en raisonnement sont compensées par des prompts très explicites et des tâches bien délimitées."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 14 — Prompt engineering intermédiaire",
+      "body": "Ce chapitre enrichit les techniques de base (zero-shot) vues dans l'atelier précédent avec des méthodes plus puissantes : few-shot, Chain-of-Thought, role prompting, format prompting, et constraint stacking.\n\n## Few-shot prompting\n\nFournir **1 à 10 exemples input→output** dans le prompt avant la vraie question. Le modèle infère le pattern attendu à partir des exemples — sans réentraînement.\n\nAnalogy : recette de cuisine avec exemples. Au lieu de donner une recette abstraite (\"fais une tarte\"), on montre 3 exemples de tartes réussies, et le modèle comprend le style attendu.\n\nInsight DAIR.AI : même des exemples avec des **labels incorrects** produisent de meilleures sorties que l'absence d'exemples. Ce qui compte, c'est la **structure** et le **format** — pas la véracité des labels.\n\n## Chain-of-Thought (CoT)\n\nIntégrer des **étapes de raisonnement** dans le prompt pour que le modèle \"pense à voix haute\" avant de répondre. Deux variantes :\n\n- **Few-shot CoT** : exemples avec raisonnement inclus\n- **Zero-shot CoT** : simplement ajouter *\"Raisonne étape par étape.\"* au prompt\n\nAnalogy : montrer son travail en maths. En forçant le modèle à raisonner explicitement, on obtient des réponses plus précises sur les tâches logiques.\n\nLimitation importante : CoT donne un gain significatif principalement sur des modèles > ~100B paramètres. Sur de petits modèles, l'effet est limité.\n\n## Role prompting\n\nAssigner un **persona expert** au modèle pour activer les patterns comportementaux correspondants issus des données d'entraînement.\n\nAnalogy : costume de théâtre. Le prompt système \"Tu es un expert en cybersécurité avec 15 ans d'expérience\" active un style, une précision et des références différents de \"Tu es un rédacteur de blog débutant\".\n\nImportant : le role prompting **ne donne pas au modèle des connaissances qu'il n'a pas** — il modifie le style et l'approche, pas le savoir fondamental.\n\n## Format / constraint prompting\n\nSpécifier explicitement le **format de sortie attendu** : JSON, liste à puces, tableau Markdown, longueur maximale, langue. Indispensable pour les agents dont les sorties sont parsées par un pipeline.\n\n## Constraint stacking\n\nCombiner plusieurs techniques en un seul prompt : rôle + langue + format + preuves + exemples. Pour des missions complexes d'agents en production.\n\n## Anti-patterns à éviter\n\n| Anti-pattern | Ce qui se passe | Correction |\n|---|---|---|\n| Instructions vagues | \"Aide-moi avec le code\" → réponse générique | Spécifier : \"Explique pourquoi cette fonction retourne None\" |\n| Trop de contraintes | Certaines contraintes ignorées | Ajouter une contrainte à la fois, tester |\n| Suppositions implicites | \"Réponds correctement\" → le modèle ne sait pas ce que \"correct\" signifie | Définir explicitement le critère de qualité |\n| Demander des opinions | \"Est-ce bon ?\" → réponse consensuelle | \"Liste les problèmes potentiels dans ce code\" |\n| Ignorer la fenêtre de contexte | Coller 20 fichiers dans le prompt | Filtrer au contenu pertinent uniquement |\n\n## Exercice pratique 1 — Few-shot pour la classification (ChatGPT ou Claude)\n\n1. Ouvrir https://chat.openai.com ou https://claude.ai\n2. Construire un prompt avec 3 exemples de classification d'avis clients :\n   - *\"Livraison rapide, produit conforme. → POSITIF\"*\n   - *\"Produit cassé à la réception. → NÉGATIF\"*\n   - *\"Commande reçue, rien à signaler. → NEUTRE\"*\n3. Ajouter : *\"Mon colis est arrivé en retard mais le produit est super ! → ?\"*\n4. Observer comment le modèle applique le pattern.\n5. Tester avec des avis plus ambigus.\n\n## Exercice pratique 2 — Zero-shot Chain-of-Thought\n\n1. **Sans CoT** : *\"Si un train part à 9h et arrive à 13h30, et qu'il a fait un arrêt de 20 minutes, combien de temps a duré le trajet en mouvement ?\"*\n2. **Avec CoT** : même question, mais ajouter *\"Raisonne étape par étape.\"* au début.\n3. Comparer la qualité et la traçabilité du raisonnement.",
+      "questions": [
+        {
+          "text": "Qu'est-ce que le few-shot prompting ?",
+          "type": "single",
+          "options": [
+            { "text": "Fournir des exemples input→output dans le prompt pour que le modèle apprenne le pattern attendu", "isCorrect": true },
+            { "text": "Utiliser un modèle de petite taille (few parameters) pour réduire les coûts", "isCorrect": false },
+            { "text": "Limiter le nombre d'échanges dans une conversation", "isCorrect": false }
+          ],
+          "explanation": "Le few-shot prompting consiste à inclure des exemples de l'entrée-sortie attendue dans le prompt. Le modèle infère le pattern sans avoir besoin d'être réentraîné. C'est particulièrement utile pour les tâches de classification, de formatage ou de transformation."
+        },
+        {
+          "text": "Quelle est la formule zero-shot CoT la plus simple à utiliser ?",
+          "type": "single",
+          "options": [
+            { "text": "Ajouter 'Raisonne étape par étape.' à la fin du prompt", "isCorrect": true },
+            { "text": "Fournir 3 exemples de raisonnement complet avant la question", "isCorrect": false },
+            { "text": "Activer le mode 'reasoning' dans les paramètres du modèle", "isCorrect": false }
+          ],
+          "explanation": "La variante zero-shot du Chain-of-Thought consiste simplement à ajouter une instruction de raisonnement (\"Raisonne étape par étape\"). Aucun exemple n'est nécessaire — c'est la version la plus simple et souvent très efficace."
+        },
+        {
+          "text": "Quelles techniques de prompt engineering sont utiles pour des agents IA en production ? (plusieurs réponses possibles)",
+          "type": "multiple",
+          "options": [
+            { "text": "Role prompting — pour définir le persona et l'expertise de l'agent", "isCorrect": true },
+            { "text": "Format / constraint prompting — pour obtenir des sorties parsables (JSON, liste)", "isCorrect": true },
+            { "text": "Constraint stacking — combiner rôle, langue, format, preuves", "isCorrect": true },
+            { "text": "Limiter à zero shot pour éviter de consommer des tokens inutiles", "isCorrect": false }
+          ],
+          "explanation": "En production, les agents ont besoin d'un rôle clair (role prompting), de sorties structurées (format prompting) et souvent de plusieurs contraintes combinées (stacking). Le few-shot n'est pas à éviter — il peut grandement améliorer la fiabilité sur des tâches spécialisées."
+        }
+      ]
+    }
+  ]
+}
