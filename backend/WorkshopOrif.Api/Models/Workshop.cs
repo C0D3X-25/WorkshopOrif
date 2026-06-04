@@ -20,11 +20,39 @@ public class Question
     public string Explanation { get; set; } = string.Empty;
 }
 
+public class InlinePart
+{
+    public string Kind { get; set; } = "text";
+    public string Value { get; set; } = string.Empty;
+}
+
+public class ContentElement
+{
+    public string Type { get; set; } = string.Empty;
+    public int Level { get; set; }
+    public string Text { get; set; } = string.Empty;
+    public InlinePart[] Parts { get; set; } = [];
+    public bool Ordered { get; set; }
+    public InlinePart[][] Items { get; set; } = [];
+    public string Language { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
+}
+
+public class ContentBlock
+{
+    public string Type { get; set; } = "markdown";
+    public string Content { get; set; } = string.Empty;
+    public ContentElement[] Elements { get; set; } = [];
+    public string[] Headers { get; set; } = [];
+    public string[][] Rows { get; set; } = [];
+}
+
 public class Chapter
 {
     public string Section { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string Body { get; set; } = string.Empty;
+    public ContentBlock[] Blocks { get; set; } = [];
     public Question[] Questions { get; set; } = [];
 }
 
