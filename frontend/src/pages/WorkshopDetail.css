@@ -128,18 +128,6 @@
   background: none;
   padding: 0;
 }
-.detail-content table {
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 14px;
-}
-.detail-content th,
-.detail-content td {
-  border: 1px solid var(--border);
-  padding: 6px 10px;
-}
-.detail-content th { background: var(--code-bg); }
-
 /* Quiz answer blocks */
 .detail-content details {
   background: var(--code-bg);

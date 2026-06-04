@@ -26,8 +26,46 @@ This document describes the JSON structure required to create or import a worksh
 |---|---|---|---|
 | `section` | string | yes | Section label (e.g. `"Théorie"`, `"Exercice"`) |
 | `title` | string | yes | Chapter heading |
-| `body` | string | yes | Main content in Markdown |
+| `body` | string | yes* | Main content in Markdown (*optional if `blocks` is used) |
+| `blocks` | ContentBlock[] | no | Alternating markdown and structured tables (preferred for tables) |
 | `questions` | Question[] | no | Quiz questions for this chapter |
+
+### ContentBlock
+
+| Field | Type | When | Description |
+|---|---|---|---|
+| `type` | string | always | `"content"`, `"markdown"` (legacy), or `"table"` |
+| `elements` | ContentElement[] | `content` | Structured body (headings, paragraphs, lists, etc.) |
+| `content` | string | `markdown` | Legacy Markdown fragment |
+| `headers` | string[] | `table` | Column headers |
+| `rows` | string[][] | `table` | Cell values per row |
+
+### ContentElement
+
+| Field | Type | When | Description |
+|---|---|---|---|
+| `type` | string | always | `"heading"`, `"paragraph"`, `"blockquote"`, `"list"`, `"code"` |
+| `level` | number | `heading` | `2` or `3` |
+| `text` | string | `heading` | Heading text |
+| `parts` | InlinePart[] | `paragraph`, `blockquote` | Inline runs (`kind`: `text`, `strong`, `code`) |
+| `ordered` | boolean | `list` | Ordered (`true`) or bullet list |
+| `items` | InlinePart[][] | `list` | One inline run array per list item |
+| `language` | string | `code` | Code block language label |
+| `code` | string | `code` | Code block body |
+
+Example table block:
+
+```json
+{
+  "type": "table",
+  "headers": ["Niveau", "Correction"],
+  "rows": [
+    ["0", "agent-exercice/Niveau_0/corrige-formateur.md"]
+  ]
+}
+```
+
+The app renders `blocks` when present; otherwise it falls back to `body`. Helper: `node scripts/extract-markdown-tables.mjs path/to/workshop.json`.
 
 ## Question
 
@@ -115,7 +153,7 @@ This document describes the JSON structure required to create or import a worksh
 
 ## Notes
 
-- The `body` field supports **Markdown** (headings, bold, lists, links, etc.).
+- The `body` field supports **Markdown** (headings, bold, lists, links, etc.). **Tables** should use `blocks` with `type: "table"` (rendered as HTML in the app, not GFM).
 - `type` and `level` are case-insensitive (`"theory"` and `"Theory"` both work).
 - Setting `maxConcurrentParticipants` to `0` means no participant limit.
 - A workshop with no chapters is valid — chapters can be added later.

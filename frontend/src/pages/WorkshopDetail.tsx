@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import ReactMarkdown from 'react-markdown'
+import ChapterContent, { type ContentBlock } from '../components/ChapterContent'
 import QuestionCard, { type Question } from '../components/QuestionCard'
 import './WorkshopDetail.css'
 
@@ -8,6 +8,7 @@ interface Chapter {
   section: string
   title: string
   body: string
+  blocks?: ContentBlock[]
   questions: Question[]
 }
 
@@ -121,7 +122,7 @@ export default function WorkshopDetail() {
                   {showSectionHeader && <h2 className="section-heading">{chapter.section}</h2>}
                   {chapter.title && <h3 className="chapter-heading">{chapter.title}</h3>}
                   <div className="detail-content">
-                    <ReactMarkdown>{chapter.body}</ReactMarkdown>
+                    <ChapterContent body={chapter.body} blocks={chapter.blocks} />
                   </div>
                   {chapter.questions?.length > 0 && (
                     <div className="chapter-questions">
