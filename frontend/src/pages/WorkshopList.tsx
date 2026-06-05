@@ -44,7 +44,7 @@ export default function WorkshopList() {
     <main className="workshop-list-page">
       <header className="list-header">
         <h1>Ateliers</h1>
-        <Link to="/" className="change-profile">Changer de profil</Link>
+        <Link to="/profile" className="change-profile">Changer de profil</Link>
       </header>
       <ul className="workshop-list" data-testid="workshop-list">
         {workshops.map((w) => (

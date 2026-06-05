@@ -43,6 +43,8 @@ services:
     restart: unless-stopped
     depends_on:
       - api
+    environment:
+      VITE_API_PROXY_TARGET: http://api:8080
     ports:
       - "80:80"       # prod (nginx)
       - "5173:5173"   # dev (vite)

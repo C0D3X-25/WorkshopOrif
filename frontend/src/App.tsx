@@ -10,6 +10,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={hasProfile ? <Navigate to="/workshops" replace /> : <ProfilePicker />} />
+        <Route path="/profile" element={<ProfilePicker />} />
         <Route path="/workshops" element={<WorkshopList />} />
         <Route path="/workshops/:id" element={<WorkshopDetail />} />
       </Routes>
