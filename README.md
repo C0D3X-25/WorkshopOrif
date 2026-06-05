@@ -31,6 +31,8 @@ docker compose up
 
 The app is ready when the `api` container logs `Now listening on: http://[::]:8080`.
 
+Open the app at **http://localhost/** (or http://localhost:5173/ in dev mode).
+
 ---
 
 ## Ports

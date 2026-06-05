@@ -1,0 +1,77 @@
+{
+  "title": "TEMPLATE - Atelier théorique d'introduction",
+  "description": "Description courte de l'atelier en une ou deux phrases maximum.",
+  "type": "Theory",
+  "level": "Introduction",
+  "track": "Sensibilisation",
+  "authors": ["Votre Nom"],
+  "prerequisites": [],
+  "requiredMaterials": [],
+  "maxConcurrentParticipants": 20,
+  "estimatedDuration": 90,
+  "date": "2026-06-05",
+  "expectedOutcome": "À la fin de cet atelier, les participants seront capables de...",
+  "chapters": [
+    {
+      "section": "Théorie",
+      "title": "Chapitre 1 — Contexte et introduction",
+      "body": "Bienvenue dans cet atelier. Nous allons explorer les concepts fondamentaux de [sujet].\n\n## Objectifs\n\n- Comprendre les bases\n- Identifier les cas d'usage\n- Distinguer les opportunités des risques\n\n> **Note importante** : Ce chapitre pose les bases nécessaires pour la suite.",
+      "questions": [
+        {
+          "text": "Quel est l'objectif principal de cet atelier ?",
+          "type": "single",
+          "options": [
+            { "text": "Comprendre les concepts fondamentaux", "isCorrect": true },
+            { "text": "Devenir expert en une heure", "isCorrect": false },
+            { "text": "Programmer une application", "isCorrect": false }
+          ],
+          "explanation": "Cet atelier d'introduction vise à établir une compréhension des concepts de base, pas à créer des experts."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 2 — Concepts clés",
+      "body": "Dans ce chapitre, nous approfondissons les concepts essentiels.\n\n## Définitions\n\n- **Terme 1** : Définition claire et concise\n- **Terme 2** : Définition avec exemple\n\n## Applications concrètes\n\n1. Cas d'usage A\n2. Cas d'usage B\n3. Cas d'usage C",
+      "blocks": [
+        {
+          "type": "table",
+          "headers": ["Concept", "Description", "Exemple"],
+          "rows": [
+            ["Concept A", "Brève description", "Exemple concret"],
+            ["Concept B", "Autre description", "Autre exemple"]
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "text": "Quels concepts sont couverts dans ce chapitre ? (plusieurs réponses)",
+          "type": "multiple",
+          "options": [
+            { "text": "Concept A", "isCorrect": true },
+            { "text": "Concept B", "isCorrect": true },
+            { "text": "Concept inexistant", "isCorrect": false }
+          ],
+          "explanation": "Ce chapitre couvre les concepts A et B, illustrés par des exemples concrets."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 3 — Bonnes pratiques",
+      "body": "Résumons les points essentiels à retenir.\n\n## Points clés\n\n- ✅ Toujours vérifier...\n- ✅ Ne jamais oublier...\n- ✅ Privilégier...\n\n## Pièges à éviter\n\n- ❌ Erreur commune 1\n- ❌ Erreur commune 2",
+      "questions": [
+        {
+          "text": "Quelle pratique est recommandée ?",
+          "type": "single",
+          "options": [
+            { "text": "Toujours vérifier les sources", "isCorrect": true },
+            { "text": "Ignorer les avertissements", "isCorrect": false },
+            { "text": "Sauter les étapes de validation", "isCorrect": false }
+          ],
+          "explanation": "La vérification des sources est une pratique fondamentale pour garantir la qualité."
+        }
+      ]
+    }
+  ]
+}

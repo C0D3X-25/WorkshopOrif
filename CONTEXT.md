@@ -29,10 +29,12 @@ A single unit of learning — either a theory page or a practical exercise. Belo
 _Avoid_: Module, lesson, chapter, page
 
 **Level**:
-A field on a workshop indicating its depth: `introduction` or `advanced`. Applies to both Theory and Exercise workshops. Access matrix:
+A field on a workshop indicating its depth: `introduction` or `advanced`. Applies to both Theory and Exercise workshops. Default access matrix:
 - Intern: Theory introduction only
 - Observer: Theory introduction + Exercise introduction
 - Apprentice: all workshops (both levels, both types)
+
+Individual workshops may restrict access further based on complexity. Example: a Theory/Introduction workshop on tools is restricted to Observer+ because the concept is judged too abstract for a half-day Intern stage.
 _Avoid_: Difficulty, tier, grade
 
 **Track**:

@@ -16,10 +16,12 @@ Potentiellement deux workshops distincts adaptés à des profils différents (à
 
 ## Niveau : Introduction
 
-> Profils ciblés : à définir
+> Profils ciblés : **Observer, Apprentice** (pas Intern — concept jugé trop abstrait pour un stage d'une demi-journée)
 > Constat de départ : sans outils, un LLM ne peut que discuter — il est limité à ses connaissances internes.
 
 **Takeaway unique** : "Un modèle seul ne génère que du texte. Les outils le connectent au monde réel — et c'est l'application, pas le modèle, qui les exécute. Tous les modèles ne sont pas capables de les utiliser."
+
+**Structure** : 1 seul chapitre — concept + cycle + démo VS Code, tout en un bloc compact. 2 questions de self-assessment à la fin (vérifier les deux takeaways clés).
 
 **Exemple concret principal** : VS Code est disponible pour tous les apprenants. GitHub Copilot (version gratuite) est pré-installé depuis un workshop précédent — pas de setup requis, juste un prérequis à mentionner. Démonstration directe via Copilot en mode agent : demander à l'agent d'écrire ou modifier un fichier, observer le résultat dans l'explorateur en direct. Le modèle n'a pas écrit le fichier lui-même — il a émis un appel à un outil `write_file`, et c'est VS Code qui l'a exécuté.
 
@@ -31,6 +33,8 @@ Potentiellement deux workshops distincts adaptés à des profils différents (à
 
 > Profils ciblés : Apprentice (CFC)
 
+**Structure** : 4 chapitres (un concept par chapitre) + questions de self-assessment. Profils : Apprentice uniquement.
+
 **Concepts à couvrir :**
 - **La boucle agent** : le modèle appelle un outil, reçoit le résultat, décide de l'étape suivante, recommence — jusqu'à ce que la tâche soit terminée.
 - **Chaînage d'outils** : utiliser le résultat d'un outil comme entrée d'un autre.
@@ -38,46 +42,50 @@ Potentiellement deux workshops distincts adaptés à des profils différents (à
 - **Risques** : appels d'outils hallucinés (le modèle invente un outil qui n'existe pas), boucles infinies, usage non sécurisé d'outils (ex. suppression de fichiers sans confirmation).
 - **Créer son propre outil** : écrire une fonction, définir son schéma (nom, description, paramètres), la brancher dans un agent. L'apprenant voit les deux côtés du cycle.
 
-**Exercice envisagé** : créer un outil `get_current_datetime` en **Python** exposé comme serveur MCP local.
+**Exercice envisagé** : créer un outil `get_current_datetime` en **Python** avec le SDK OpenAI — approche "raw", chaque étape du cycle est visible dans le code.
 - Le modèle ne peut pas connaître l'heure courante seul (figé à sa date d'entraînement) → valeur de l'outil immédiatement évidente.
-- GitHub Copilot supporte MCP nativement dans VS Code → l'apprenant enregistre son serveur local, et Copilot peut l'appeler directement.
-- Fil rouge pédagogique : intro (qu'est-ce qu'un outil) → théorie avancée (boucle agent, risques) → exercice (écrire un serveur MCP Python, observer Copilot l'utiliser).
-- **Prérequis techniques** : Python installé, bibliothèque MCP Python (`mcp` / `fastmcp`), VS Code avec Copilot.
+- Chaque étape du cycle est du code explicite : définir le schéma, envoyer au modèle, intercepter l'appel, exécuter, réinjecter.
+- Fil rouge pédagogique : intro (qu'est-ce qu'un outil) → théorie avancée (boucle agent, risques) → exercice (écrire et brancher un outil, observer chaque étape).
+- **Prérequis techniques** : Python installé, bibliothèque `openai`, accès à un modèle.
+- **⚠️ À décider** : OpenAI API (clé fournie pour le workshop) ou modèle local via Ollama. Le SDK OpenAI est compatible avec les deux — seul le `base_url` change pour Ollama. Le code de l'exercice peut être écrit de façon à supporter les deux.
+- Note : MCP n'est pas utilisé ici — il fera l'objet d'un workshop dédié ultérieur.
 
-**Implémentation concrète :**
-
-`tools_server.py` — le serveur MCP :
+**Implémentation concrète (un seul fichier Python) :**
 ```python
-from mcp.server.fastmcp import FastMCP
+from openai import OpenAI
 from datetime import datetime
 
-mcp = FastMCP("my-tools")
+client = OpenAI()  # utilise la variable d'environnement OPENAI_API_KEY
 
-@mcp.tool()
-def get_current_datetime() -> str:
-    """Returns the current date and time."""
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-if __name__ == "__main__":
-    mcp.run(transport="stdio")
-```
-Le décorateur `@mcp.tool()` génère automatiquement le schéma (nom, description, paramètres) depuis le nom de la fonction, sa docstring et ses types. Aucun JSON à écrire à la main.
-
-`.vscode/mcp.json` — enregistrement dans VS Code :
-```json
-{
-  "servers": {
-    "my-tools": {
-      "type": "stdio",
-      "command": "python",
-      "args": ["tools_server.py"]
+# 1. Définir le schéma de l'outil
+tools = [{
+    "type": "function",
+    "function": {
+        "name": "get_current_datetime",
+        "description": "Returns the current date and time.",
+        "parameters": {"type": "object", "properties": {}, "required": []}
     }
-  }
-}
-```
-VS Code démarre le serveur comme sous-processus (transport `stdio`). Copilot peut alors l'appeler en mode agent.
+}]
 
-**Ce que l'apprenant observe** : il demande "Quelle heure est-il ?" à Copilot en mode agent → Copilot appelle `get_current_datetime` → reçoit l'heure réelle → répond. Sans l'outil, le modèle ne peut pas connaître l'heure courante.
+# 2. Envoyer la question + la liste d'outils au modèle
+messages = [{"role": "user", "content": "Quelle heure est-il ?"}]
+response = client.chat.completions.create(model="gpt-4o-mini", messages=messages, tools=tools)
+
+# 3. Le modèle demande à appeler l'outil
+tool_call = response.choices[0].message.tool_calls[0]
+print(f"Outil appelé : {tool_call.function.name}")
+
+# 4. On exécute la vraie fonction
+result = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+# 5. On réinjecte le résultat et on obtient la réponse finale
+messages += [
+    response.choices[0].message,
+    {"role": "tool", "tool_call_id": tool_call.id, "content": result}
+]
+final = client.chat.completions.create(model="gpt-4o-mini", messages=messages)
+print(final.choices[0].message.content)
+```
 
 ---
 
