@@ -1,0 +1,173 @@
+﻿{
+  "title": "Atelier IA : C'est quoi l'IA ?",
+  "description": "Découvrir les fondements de l'intelligence artificielle : définition, distinction avec l'informatique classique, hiérarchie des technologies IA, ANI vs AGI, écosystème 2026 et applications concrètes. Inclut des exercices pratiques d'identification, de comparaison et d'expérimentation avec l'IA générative.",
+  "type": "Theory",
+  "level": "Introduction",
+  "track": "Sensibilisation",
+  "authors": ["Ken Cacciabue"],
+  "prerequisites": [],
+  "requiredMaterials": [
+    "Ordinateur avec accès internet",
+    "Accès à ChatGPT, Claude ou Gemini (gratuit)"
+  ],
+  "maxConcurrentParticipants": 0,
+  "estimatedDuration": 180,
+  "date": "2026-06-04",
+  "expectedOutcome": "Comprendre ce qu'est l'IA, la distinguer de la programmation classique, connaître la hiérarchie des technologies IA (ML, DL, GenAI), différencier ANI et AGI, et identifier les applications concrètes de l'IA dans la vie quotidienne.",
+  "chapters": [
+    {
+      "section": "Théorie",
+      "title": "Chapitre 1 : Définitions et concepts",
+      "body": "L'intelligence artificielle est un **terme parapluie**. C'est-à-dire qu'elle englobe plusieurs technologies différentes, toutes liées par un objectif commun : **simuler l'intelligence humaine**.\n\n> **Définition (IBM, 2026) :** \"L'intelligence artificielle est une technologie qui permet aux ordinateurs et aux machines de simuler l'apprentissage, la compréhension, la résolution de problèmes, la prise de décision, la créativité et l'autonomie humaines.\"\n\nEn termes simples : **l'IA permet aux machines de faire des choses qui nécessitent normalement l'intelligence humaine.**\n\n## La hiérarchie des technologies IA\n\nL'IA n'est pas une seule technologie. C'est une famille, organisée en \"poupées russes\" :\n\n| Niveau | Technologie | Description | Exemple |\n|--------|-------------|-------------|---------|\n| 1 | Intelligence Artificielle | Terme global | Tous les systèmes \"intelligents\" |\n| 2 | Apprentissage Automatique (Machine Learning) | Systèmes qui apprennent des données | Recommandations Netflix |\n| 3 | Apprentissage Profond (Deep Learning) | Réseaux de neurones complexes | Reconnaissance faciale |\n| 4 | IA Générative | Crée du contenu nouveau | ChatGPT, Midjourney |\n\n## Les capacités de l'IA\n\nL'IA moderne peut :\n\n- **👁️ Voir** : Reconnaître des objets, des visages, des maladies sur des radiographies\n- **👂 Entendre** : Comprendre la parole, identifier des voix, transcrire des conversations\n- **🗣️ Parler** : Générer du texte, traduire des langues, répondre à des questions\n- **🧠 Apprendre** : S'améliorer avec l'expérience, s'adapter à de nouvelles situations\n- **🎯 Décider** : Faire des recommandations, prendre des décisions, automatiser des tâches\n- **🎨 Créer** : Générer des images, du texte, de la musique, des vidéos\n\n## ANI vs AGI : deux types d'intelligence\n\n**ANI : Intelligence Artificielle Étroite (Artificial Narrow Intelligence)**\n\nC'est ce que nous avons aujourd'hui. L'ANI excelle dans **une tâche spécifique** :\n- Jouer aux échecs (mais ne sait pas jouer à d'autres jeux)\n- Reconnaître des visages (mais ne comprend pas ce qu'est un visage)\n- Générer du texte (mais ne \"comprend\" pas vraiment le sens)\n\n**AGI : Intelligence Artificielle Générale (Artificial General Intelligence)**\n\nC'est l'IA théorique qui pourrait faire **tout ce qu'un humain peut faire**. Elle n'existe pas encore. Les estimations varient : certains pensent qu'elle arrivera d'ici 2030, d'autres pensent qu'elle n'arrivera jamais.\n\n> **Point important :** Toute l'IA que nous utilisons en 2026 est de l'ANI. Même ChatGPT, aussi impressionnant soit-il, reste une IA étroite : spécialisée dans le traitement du langage.",
+      "questions": [
+        {
+          "text": "Qu'est-ce que l'intelligence artificielle ?",
+          "type": "single",
+          "options": [
+            { "text": "Des robots conscients comme dans les films de science-fiction", "isCorrect": false },
+            { "text": "Une technologie qui permet aux machines de simuler l'intelligence humaine", "isCorrect": true },
+            { "text": "Uniquement des chatbots comme ChatGPT", "isCorrect": false },
+            { "text": "Un concept purement théorique qui n'existe pas encore", "isCorrect": false }
+          ],
+          "explanation": "L'IA est un terme parapluie qui englobe toutes les technologies permettant aux machines de simuler l'intelligence humaine : apprentissage, compréhension, résolution de problèmes, créativité, etc."
+        },
+        {
+          "text": "Quel est le bon ordre de la hiérarchie des technologies IA (du plus large au plus spécifique) ?",
+          "type": "single",
+          "options": [
+            { "text": "IA → Machine Learning → Deep Learning → IA Générative", "isCorrect": true },
+            { "text": "IA Générative → Deep Learning → Machine Learning → IA", "isCorrect": false },
+            { "text": "Machine Learning → IA → Deep Learning → IA Générative", "isCorrect": false }
+          ],
+          "explanation": "La hiérarchie va du terme le plus large (IA) au plus spécifique (IA Générative) : IA englobe le Machine Learning, qui englobe le Deep Learning, qui englobe l'IA Générative."
+        },
+        {
+          "text": "Quel type d'IA avons-nous aujourd'hui ?",
+          "type": "single",
+          "options": [
+            { "text": "AGI : Intelligence Artificielle Générale", "isCorrect": false },
+            { "text": "ANI : Intelligence Artificielle Étroite", "isCorrect": true },
+            { "text": "ASI : Super Intelligence Artificielle", "isCorrect": false },
+            { "text": "Aucune IA n'existe vraiment", "isCorrect": false }
+          ],
+          "explanation": "Toute l'IA actuelle est de l'ANI (Intelligence Artificielle Étroite) : elle excelle dans une tâche spécifique mais ne peut pas généraliser comme un humain. L'AGI reste théorique."
+        },
+        {
+          "text": "Laquelle de ces capacités n'est PAS une capacité de l'IA actuelle ?",
+          "type": "single",
+          "options": [
+            { "text": "Apprendre à partir de données", "isCorrect": false },
+            { "text": "Créer du contenu original", "isCorrect": false },
+            { "text": "Avoir une conscience et des sentiments", "isCorrect": true },
+            { "text": "Résoudre des problèmes", "isCorrect": false }
+          ],
+          "explanation": "L'IA peut apprendre, créer et résoudre des problèmes, mais elle n'a ni conscience ni sentiments. Elle simule l'intelligence humaine sans l'éprouver."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 2 : IA vs Programmation classique",
+      "body": "Pour comprendre l'IA, il faut d'abord comprendre comment fonctionne l'informatique \"classique\".\n\n## La différence fondamentale\n\n**Programmation classique :**\n```\nEntrées + Règles → Résultats\n```\nLe programmeur écrit explicitement les règles. L'ordinateur les suit.\n\n**IA / Apprentissage automatique :**\n```\nEntrées + Résultats → Règles (apprises)\n```\nL'algorithme découvre les règles en analysant les données.\n\n## Exemple concret : le filtre anti-spam\n\n**Approche classique (règles explicites) :**\n```\nSI le sujet contient \"GRATUIT\" → SPAM\nSI le sujet contient \"GAGNEZ\" → SPAM\nSI l'expéditeur est inconnu ET le sujet est vide → SPAM\n```\n\nProblèmes : les spammeurs adaptent leurs messages, il faut des milliers de règles, les règles deviennent obsolètes.\n\n**Approche IA (apprentissage automatique) :**\n1. On fournit à l'algorithme **des milliers d'emails** déjà étiquetés \"spam\" ou \"non-spam\"\n2. L'algorithme **analyse les patterns** : mots, structure, expéditeur, timing...\n3. L'algorithme **crée son propre modèle** de décision\n4. Le modèle **s'améliore** avec chaque nouvel email\n\n## Tableau comparatif\n\n| Aspect | Programmation classique | IA / Machine Learning |\n|--------|------------------------|----------------------|\n| **Logique** | Programmée explicitement | Apprise des données |\n| **Apprentissage** | Aucun : règles fixes | Continu : s'améliore |\n| **Flexibilité** | Faible : règles rigides | Élevée : s'adapte |\n| **Interprétabilité** | Haute : règles visibles | Variable : parfois \"boîte noire\" |\n| **Données nécessaires** | Minimales | Grandes quantités |\n| **Quand l'utiliser ?** | Règles claires et stables | Patterns complexes ou changeants |\n\n> \"L'IA apprend à partir des données, elle n'est pas explicitement programmée.\"\n> : Principe fondamental du Machine Learning",
+      "questions": [
+        {
+          "text": "Quelle est la différence principale entre la programmation classique et l'IA ?",
+          "type": "single",
+          "options": [
+            { "text": "La programmation classique est plus rapide", "isCorrect": false },
+            { "text": "L'IA apprend à partir des données, la programmation classique suit des règles explicites", "isCorrect": true },
+            { "text": "L'IA ne peut pas faire d'erreurs", "isCorrect": false },
+            { "text": "Il n'y a pas de différence", "isCorrect": false }
+          ],
+          "explanation": "En programmation classique, le développeur écrit les règles explicitement. En IA, l'algorithme découvre les règles en analysant des données. C'est la différence fondamentale."
+        },
+        {
+          "text": "Dans l'exemple du filtre anti-spam, pourquoi l'approche IA est-elle supérieure à l'approche par règles ?",
+          "type": "multiple",
+          "options": [
+            { "text": "Elle s'adapte automatiquement aux nouvelles tactiques de spam", "isCorrect": true },
+            { "text": "Elle détecte des patterns invisibles aux humains", "isCorrect": true },
+            { "text": "Elle ne nécessite aucune donnée pour fonctionner", "isCorrect": false },
+            { "text": "Elle s'améliore continuellement avec le temps", "isCorrect": true }
+          ],
+          "explanation": "L'IA s'adapte, détecte des patterns complexes et s'améliore avec le temps. En revanche, elle nécessite de grandes quantités de données pour l'entraînement : ce n'est pas \"sans données\"."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 3 : L'écosystème IA en 2026",
+      "body": "En juin 2026, plusieurs modèles d'IA dominent le paysage :\n\n| Modèle | Créateur | Spécialité |\n|--------|----------|------------|\n| **GPT-5.5** | OpenAI | Tâches professionnelles complexes |\n| **Claude** | Anthropic | Analyse et raisonnement |\n| **Gemini** | Google | Multimodal (texte, images, code) |\n| **DeepSeek** | Chine | Open source, performant |\n| **Qwen** | Alibaba | Multilingue, open source |\n\n## IA Générative vs IA Agentique\n\n**IA Générative** : Crée du contenu\n- 📝 Texte : articles, résumés, traductions\n- 🖼️ Images : illustrations, designs, art\n- 🎵 Audio : musique, voix, sons\n- 🎬 Vidéo : animations, clips\n\n**IA Agentique** : Agit de manière autonome\n- 🤖 Exécute des tâches complexes\n- 🔧 Utilise des outils (navigateur, applications)\n- 📋 Planifie et orchestre des actions\n- 🎯 Poursuit des objectifs sans intervention humaine\n\n> **Analogie :** L'IA générative est comme un consultant qui vous donne des conseils. L'IA agentique est comme un assistant qui exécute les tâches pour vous.\n\n## Les capacités multimodales\n\nLes modèles modernes ne se limitent plus au texte. Ils sont **multimodaux** :\n- **Entrée** : texte + image + audio + vidéo\n- **Sortie** : texte + image + audio + vidéo\n\n## Les modèles de raisonnement\n\nUne avancée majeure de 2025-2026 : les modèles capables de **raisonner**.\nAu lieu de répondre immédiatement, ces modèles :\n1. Décomposent le problème\n2. Planifient les étapes\n3. Vérifient leur raisonnement\n4. Corrigent si nécessaire\n5. Produisent une réponse réfléchie",
+      "questions": [
+        {
+          "text": "Quelle est la différence entre IA générative et IA agentique ?",
+          "type": "single",
+          "options": [
+            { "text": "L'IA générative crée du contenu, l'IA agentique agit de manière autonome", "isCorrect": true },
+            { "text": "L'IA générative est plus intelligente", "isCorrect": false },
+            { "text": "L'IA agentique ne peut pas créer de texte", "isCorrect": false },
+            { "text": "Il n'y a pas de différence", "isCorrect": false }
+          ],
+          "explanation": "L'IA générative produit du contenu (texte, images, vidéo). L'IA agentique va plus loin : elle planifie, utilise des outils et exécute des tâches de manière autonome."
+        },
+        {
+          "text": "Que signifie \"multimodal\" dans le contexte des modèles IA ?",
+          "type": "single",
+          "options": [
+            { "text": "Le modèle peut traiter plusieurs types de données (texte, image, audio, vidéo)", "isCorrect": true },
+            { "text": "Le modèle peut fonctionner sur plusieurs appareils simultanément", "isCorrect": false },
+            { "text": "Le modèle utilise plusieurs langages de programmation", "isCorrect": false }
+          ],
+          "explanation": "Multimodal signifie que le modèle accepte et produit plusieurs modalités : texte, images, audio et vidéo. Cela n'a pas de lien avec les appareils ou les langages de programmation."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 4 : Applications concrètes de l'IA",
+      "body": "L'IA n'est pas qu'une technologie de laboratoire. Elle transforme déjà de nombreux secteurs.\n\n## Santé 🏥\n- **Diagnostic assisté** : L'IA analyse des radiographies, IRM, scanners et détecte des cancers à des stades précoces\n- **Découverte de médicaments** : Analyse de millions de molécules, prédiction de l'efficacité des traitements\n- **Suivi des patients** : Capteurs connectés, télémédecine intelligente\n\n## Finance 💰\n- **Détection de fraude** : Analyse des transactions en temps réel, blocage automatique\n- **Évaluation des risques** : Analyse de solvabilité, prédiction de défauts de paiement\n- **Service client** : Chatbots, assistants virtuels\n\n## Industrie et fabrication 🏭\n- **Maintenance prédictive** : Capteurs IoT, prédiction des pannes avant qu'elles ne surviennent\n- **Contrôle qualité** : Caméras qui inspectent les produits, détection des défauts\n- **Robotique** : Robots adaptatifs, logistique automatisée\n\n## Création et médias 🎨\n- **Génération de contenu** : Articles, images, musique, vidéo\n- **Assistance à la création** : Suggestions d'écriture, retouche photo, montage vidéo\n\n## Vie quotidienne 📱\n- **Recommandations personnalisées** : Netflix, YouTube, Spotify\n- **Assistants vocaux** : Siri, Alexa, Google\n- **Navigation** : Google Maps, Waze, véhicules autonomes\n\n## Cas pratique : Comment Netflix utilise l'IA 🎬\n\nNetflix propose des milliers de films et séries. Chaque utilisateur a une **page d'accueil personnalisée**, adaptée à ses goûts uniques.\n\n**Comment ça marche :**\n1. **Collecte de données** : Ce que vous regardez, recherchez, ajoutez à votre liste, notez\n2. **Analyse et apprentissage** : L'algorithme détecte vos patterns de visionnage\n3. **Personnalisation** : Comparaison avec d'autres utilisateurs similaires\n4. **Recommandations** : Classement personnalisé, images de couverture adaptées\n\n**Résultats :**\n- **80%** du contenu regardé vient des recommandations de l'IA\n- **1 milliard de dollars** économisés par an en réduisant les désabonnements\n- Chaque utilisateur voit une **page d'accueil unique**",
+      "questions": [
+        {
+          "text": "Dans le cas Netflix, quel pourcentage du contenu regardé provient des recommandations de l'IA ?",
+          "type": "single",
+          "options": [
+            { "text": "20%", "isCorrect": false },
+            { "text": "50%", "isCorrect": false },
+            { "text": "80%", "isCorrect": true },
+            { "text": "95%", "isCorrect": false }
+          ],
+          "explanation": "80% du contenu regardé sur Netflix provient des recommandations de l'IA. C'est un exemple concret de la puissance de l'apprentissage automatique appliqué à la personnalisation."
+        },
+        {
+          "text": "Quels secteurs sont déjà transformés par l'IA ? (plusieurs réponses possibles)",
+          "type": "multiple",
+          "options": [
+            { "text": "Santé : diagnostic assisté et découverte de médicaments", "isCorrect": true },
+            { "text": "Finance : détection de fraude et évaluation des risques", "isCorrect": true },
+            { "text": "Industrie : maintenance prédictive et contrôle qualité", "isCorrect": true },
+            { "text": "Agriculture : l'IA n'a aucune application dans ce secteur", "isCorrect": false }
+          ],
+          "explanation": "L'IA transforme déjà la santé, la finance, l'industrie, les médias et la vie quotidienne. L'agriculture utilise aussi l'IA (surveillance des cultures, optimisation de l'irrigation, etc.), donc la dernière option est fausse."
+        }
+      ]
+    },
+    {
+      "section": "Exercice",
+      "title": "Exercice 1 : Identifier l'IA dans votre quotidien",
+      "body": "**Objectif :** Prendre conscience de l'omniprésence de l'IA.\n\n**Consignes :**\n\n1. Réfléchissez à votre journée d'hier\n2. Identifiez au moins **5 situations** où vous avez interagi avec l'IA\n3. Remplissez le tableau suivant :\n\n| Application / Service | Contexte | Comment l'IA vous a aidé |\n|----------------------|----------|-------------------------|\n| *Exemple : Netflix* | *Soirée, choix d'une série* | *Recommandations basées sur mes goûts* |\n| | | |\n| | | |\n| | | |\n| | | |\n\n**Questions de réflexion :**\n- Y a-t-il des situations qui vous surprennent ?\n- Quelles applications utilisez-vous sans savoir qu'elles contiennent de l'IA ?\n- Pourriez-vous vous passer de ces services ?",
+      "questions": []
+    },
+    {
+      "section": "Exercice",
+      "title": "Exercice 2 : Comparer approche classique vs IA",
+      "body": "**Objectif :** Comprendre la différence entre règles programmées et apprentissage.\n\n**Scénario :** Comparez un thermostat classique et un thermostat intelligent (type Nest).\n\n**Thermostat classique :**\n- Règle : SI température < 19°C ALORS chauffer\n- Comportement : Toujours la même règle, été comme hiver\n\n**Thermostat intelligent (IA) :**\n- Apprend vos habitudes (heures de présence, préférences)\n- Détecte si vous êtes à la maison ou absent\n- S'adapte aux conditions météo\n- Optimise la consommation énergétique\n\n**Questions :**\n1. Comment chaque système prend-il ses décisions ?\n2. Lequel s'adapte à votre mode de vie ? Pourquoi ?\n3. Quels sont les avantages et inconvénients de chaque approche ?\n\n| Critère | Thermostat classique | Thermostat intelligent |\n|---------|---------------------|----------------------|\n| **Comment décide-t-il ?** | | |\n| **S'adapte-t-il ?** | | |\n| **A-t-il besoin de programmation ?** | | |\n| **Avantages** | | |\n| **Inconvénients** | | |",
+      "questions": []
+    },
+    {
+      "section": "Exercice",
+      "title": "Exercice 3 : Expérimenter avec l'IA générative",
+      "body": "**Objectif :** Découvrir les capacités et limites de l'IA générative.\n\n**Consignes :**\n\n1. Choisissez un outil : ChatGPT, Claude, Gemini, ou autre\n2. Testez les prompts suivants et notez les résultats :\n\n**Prompt 1 :** \"Explique l'intelligence artificielle à un enfant de 10 ans.\"\n\n**Prompt 2 :** \"Donne-moi 5 idées originales pour un repas du dimanche.\"\n\n**Prompt 3 :** \"Traduis cette phrase en allemand, espagnol et italien : 'L'intelligence artificielle transforme notre quotidien.'\"\n\n**Prompt 4 :** \"Raconte une histoire courte sur un robot qui apprend à cuisiner.\"\n\n**Questions de réflexion :**\n- Qu'est-ce qui vous a surpris dans les réponses ?\n- Avez-vous remarqué des erreurs ou des approximations ?\n- Quelles sont les limites de l'IA générative selon vous ?\n- À votre avis, peut-on faire confiance à ces outils ? Pour quelles tâches ?",
+      "questions": []
+    }
+  ]
+}

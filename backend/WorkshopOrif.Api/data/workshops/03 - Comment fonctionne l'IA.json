@@ -1,0 +1,205 @@
+﻿{
+  "title": "Atelier IA : Comment fonctionne l'IA",
+  "description": "Comprendre le fonctionnement interne des modèles IA : préapprentissage auto-supervisé, mécanismes d'attention et embeddings, pipeline d'alignement post-entraînement (SFT, RLHF/RLAIF, DPO), évaluation moderne (saturation, contamination, LLM-as-Judge), lois d'échelle et limites fondamentales. Inclut des exercices de conception de données de préférences, d'analyse de benchmarks et de réflexion critique.",
+  "type": "Theory",
+  "level": "Advanced",
+  "track": "Sensibilisation",
+  "authors": ["Ken Cacciabue"],
+  "prerequisites": [
+    "Atelier IA : C'est quoi l'IA ?",
+    "Atelier IA : Les différents types d'IA"
+  ],
+  "requiredMaterials": [
+    "Ordinateur avec accès internet",
+    "Accès à ChatGPT, Claude ou Gemini (gratuit)"
+  ],
+  "maxConcurrentParticipants": 0,
+  "estimatedDuration": 180,
+  "date": "2026-06-04",
+  "expectedOutcome": "Expliquer le rôle du préapprentissage auto-supervisé, décrire le pipeline d'alignement (SFT → RL/RLAIF), analyser les enjeux de l'évaluation moderne, identifier les limites des lois d'échelle et les risques des boucles de données synthétiques, et concevoir un jeu de données de préférences.",
+  "chapters": [
+    {
+      "section": "Théorie",
+      "title": "Chapitre 1 : Des données aux représentations",
+      "body": "Le préapprentissage (pretraining) reste, en 2026, le pilier dominant de l'apprentissage des modèles de fondation. Contrairement à l'apprentissage supervisé classique, le préapprentissage auto-supervisé (Self-Supervised Learning, SSL) exploite la structure intrinsèque des données brutes.\n\n## Mécanismes principaux\n\n- **Modélisation du langage masqué (Masked Language Modeling)** : 15 % des tokens sont masqués ; le modèle doit les prédire à partir du contexte.\n  *Analogie* : Apprendre une langue en lisant des milliards de livres dont on a recouvert certains mots avec du blanc correcteur.\n\n- **Objectifs contrastifs** : Le modèle apprend à rapprocher les représentations d'exemples similaires et à éloigner celles d'exemples différents.\n\n- **Reconstruction et prédiction** : Prédire la suite (next-token prediction) ou reconstruire des parties corrompues.\n\nCes mécanismes produisent des **représentations générales** (embeddings) qui capturent des concepts, des relations et des patterns réutilisables.\n\n## L'attention et les embeddings\n\n- **Embeddings** : Chaque token est transformé en un vecteur dense dans un espace à haute dimension. Ces vecteurs agissent comme des « coordonnées conceptuelles ».\n- **Mécanisme d'attention** : Pour prédire le mot suivant, le modèle « regarde » simultanément tous les tokens précédents et pondère leur importance. Ce n'est pas une recherche exacte, mais une similarité douce.",
+      "questions": [
+        {
+          "text": "Quel mécanisme de préapprentissage consiste à masquer 15 % des tokens et à demander au modèle de les prédire ?",
+          "type": "single",
+          "options": [
+            { "text": "La modélisation du langage masqué (Masked Language Modeling)", "isCorrect": true },
+            { "text": "L'apprentissage par renforcement (RLHF)", "isCorrect": false },
+            { "text": "La classification supervisée", "isCorrect": false }
+          ],
+          "explanation": "Le Masked Language Modeling (MLM) est un mécanisme de préapprentissage auto-supervisé où le modèle doit prédire les tokens masqués à partir du contexte. C'est le mécanisme utilisé par BERT et d'autres modèles."
+        },
+        {
+          "text": "Que sont les embeddings dans un modèle de langage ?",
+          "type": "single",
+          "options": [
+            { "text": "Des vecteurs denses représentant les tokens dans un espace conceptuel de haute dimension", "isCorrect": true },
+            { "text": "Des fichiers texte stockés dans la base de données du modèle", "isCorrect": false },
+            { "text": "Des couches de neurones dédiées à la sortie du modèle", "isCorrect": false }
+          ],
+          "explanation": "Les embeddings sont des représentations vectorielles (listes de nombres) qui capturent le sens des tokens. Des mots proches sémantiquement ont des embeddings proches dans l'espace vectoriel."
+        },
+        {
+          "text": "Comment fonctionne le mécanisme d'attention ?",
+          "type": "single",
+          "options": [
+            { "text": "Le modèle regarde tous les tokens précédents et pondère leur importance pour prédire le suivant", "isCorrect": true },
+            { "text": "Le modèle lit les tokens un par un de gauche à droite sans revenir en arrière", "isCorrect": false },
+            { "text": "Le modèle sélectionne aléatoirement quelques tokens pour faire sa prédiction", "isCorrect": false }
+          ],
+          "explanation": "L'attention permet au modèle de considérer simultanément tous les tokens précédents et d'attacher plus d'importance à ceux qui sont pertinents pour la prédiction en cours."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 2 : Le pipeline d'alignement moderne (2026)",
+      "body": "Le préapprentissage produit un modèle « brut » capable de continuer du texte. Pour qu'il devienne utile, sûr et aligné sur les intentions humaines, un pipeline d'alignement post-entraînement est nécessaire.\n\n## Les étapes du pipeline\n\n1. **Supervised Fine-Tuning (SFT)**\n   Entraînement supervisé sur des paires (instruction, réponse souhaitée). Les données proviennent d'humains + données synthétiques.\n\n2. **Modélisation des préférences**\n   - **RLHF** (Reinforcement Learning from Human Feedback) : Des humains classent des paires de réponses. Un modèle de récompense est entraîné sur ces préférences.\n   - **RLAIF** (Reinforcement Learning from AI Feedback) : Des modèles plus forts génèrent les préférences, permettant d'augmenter l'échelle.\n\n3. **Optimisation par renforcement ou alternatives**\n   - RL classique (PPO) avec récompenses vérifiables (résultats d'exécution de code, réponses mathématiques exactes)\n   - DPO (Direct Preference Optimization) : optimisation directe sur les préférences sans modèle de récompense explicite\n\n4. **Boucle itérative synthétique (data flywheel)**\n   Generate → Filter → Control → Replay\n\n## Humain vs synthétique : le dilemme de l'échelle\n\n- **Données humaines** : Qualité élevée, nuance, capture des valeurs humaines. Coût élevé, lenteur, biais des annotateurs.\n- **Données synthétiques** : Échelle massive, coût faible, possibilité de cibler des cas rares. Risque de **model collapse** si la boucle n'est pas contrôlée.",
+      "questions": [
+        {
+          "text": "Quelle est la première étape du pipeline d'alignement après le préapprentissage ?",
+          "type": "single",
+          "options": [
+            { "text": "Le Reinforcement Learning from Human Feedback (RLHF)", "isCorrect": false },
+            { "text": "Le Supervised Fine-Tuning (SFT)", "isCorrect": true },
+            { "text": "La Direct Preference Optimization (DPO)", "isCorrect": false }
+          ],
+          "explanation": "Le SFT est la première étape d'alignement : le modèle est fine-tuné sur des paires (instruction, réponse souhaitée) pour apprendre à suivre des instructions."
+        },
+        {
+          "text": "Quelle est la différence entre RLHF et RLAIF ?",
+          "type": "single",
+          "options": [
+            { "text": "RLHF utilise des préférences humaines, RLAIF utilise des préférences générées par des IA", "isCorrect": true },
+            { "text": "RLHF est plus rapide mais moins précis que RLAIF", "isCorrect": false },
+            { "text": "Il n'y a pas de différence, ce sont des synonymes", "isCorrect": false }
+          ],
+          "explanation": "RLHF (Reinforcement Learning from Human Feedback) repose sur des annotateurs humains pour classer les réponses. RLAIF (Reinforcement Learning from AI Feedback) utilise des modèles IA plus puissants pour générer les préférences, permettant de passer à l'échelle."
+        },
+        {
+          "text": "Quel est le risque principal des boucles de données synthétiques ?",
+          "type": "single",
+          "options": [
+            { "text": "Le model collapse : rétrécissement de la distribution des données", "isCorrect": true },
+            { "text": "La surchauffe des serveurs d'entraînement", "isCorrect": false },
+            { "text": "L'augmentation du coût des GPU", "isCorrect": false }
+          ],
+          "explanation": "Le model collapse survient quand un modèle est entraîné sur ses propres sorties, ce qui rétrécit progressivement la diversité des données. C'est le risque principal des boucles synthétiques non contrôlées."
+        },
+        {
+          "text": "Qu'est-ce que la DPO (Direct Preference Optimization) ?",
+          "type": "single",
+          "options": [
+            { "text": "Une méthode d'optimisation directe sur les préférences sans modèle de récompense explicite", "isCorrect": true },
+            { "text": "Une technique de préapprentissage auto-supervisé", "isCorrect": false },
+            { "text": "Un benchmark d'évaluation des modèles de langage", "isCorrect": false }
+          ],
+          "explanation": "La DPO optimise directement le modèle sur les préférences humaines (ou IA) sans passer par un modèle de récompense intermédiaire, contrairement au RLHF classique."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 3 : Mesurer ce qui compte : l'évaluation en 2026",
+      "body": "Les benchmarks classiques (MMLU, HumanEval, etc.) atteignent rapidement des plafonds. Deux phénomènes expliquent cela :\n\n- **Saturation** : Les modèles les plus récents obtiennent des scores > 90 % ; la métrique ne discrimine plus.\n- **Contamination** : Les données de test ont fuité dans les corpus d'entraînement (souvent involontairement).\n\n## L'évolution de l'évaluation en 2026\n\n- **Évaluation par processus vs résultat** : Ne pas seulement regarder la réponse finale, mais la qualité du raisonnement étape par étape (step-level credit assignment).\n- **Jugement par rubriques (rubric-based judging)** : Des grilles de critères explicites (exactitude, sécurité, clarté, respect des instructions) sont utilisées par des juges humains ou des LLM calibrés.\n- **LLM-as-a-Judge avec calibration humaine** : Un modèle plus fort note les réponses, mais ses jugements sont régulièrement comparés à ceux d'humains pour corriger les biais.",
+      "questions": [
+        {
+          "text": "Pourquoi les benchmarks classiques comme MMLU saturent-ils ?",
+          "type": "multiple",
+          "options": [
+            { "text": "Les modèles récents obtiennent > 90% et la métrique ne discrimine plus", "isCorrect": true },
+            { "text": "Les données de test ont fuité dans les corpus d'entraînement (contamination)", "isCorrect": true },
+            { "text": "Les benchmarks sont mal conçus et ne mesurent rien d'utile", "isCorrect": false },
+            { "text": "Les modèles trichent en utilisant internet pendant l'évaluation", "isCorrect": false }
+          ],
+          "explanation": "La saturation (scores > 90%) et la contamination (fuite des données de test dans l'entraînement) sont les deux phénomènes principaux. Les benchmarks ne sont pas \"mal conçus\" : ils étaient utiles mais sont devenus insuffisants."
+        },
+        {
+          "text": "Quelle métrique privilégier pour évaluer un agent de raisonnement médical ?",
+          "type": "single",
+          "options": [
+            { "text": "L'accuracy sur un benchmark statique", "isCorrect": false },
+            { "text": "Le score de processus (rubrique étape par étape) + calibration humaine", "isCorrect": true },
+            { "text": "La vitesse de génération", "isCorrect": false }
+          ],
+          "explanation": "Pour un agent médical, la qualité du raisonnement étape par étape est plus importante que la réponse finale seule. L'évaluation par rubriques avec calibration humaine est la méthode recommandée en 2026."
+        },
+        {
+          "text": "Qu'est-ce que le \"LLM-as-a-Judge\" ?",
+          "type": "single",
+          "options": [
+            { "text": "Un modèle IA plus puissant qui évalue les réponses d'autres modèles, avec calibration humaine", "isCorrect": true },
+            { "text": "Un juge humain qui utilise un LLM pour accélérer son travail", "isCorrect": false },
+            { "text": "Un benchmark où les modèles s'évaluent mutuellement", "isCorrect": false }
+          ],
+          "explanation": "Le LLM-as-a-Judge utilise un modèle IA puissant pour noter les réponses d'autres modèles selon des rubriques. Ses jugements sont calibrés régulièrement avec des évaluations humaines pour corriger les biais."
+        }
+      ]
+    },
+    {
+      "section": "Théorie",
+      "title": "Chapitre 4 : Limites, scaling et l'avenir",
+      "body": "Les lois d'échelle (scaling laws) guident encore les décisions d'entraînement, mais avec des raffinements.\n\n## Lois d'échelle raffinées\n\n- **Scaling au niveau des étapes (step-level)** : Plus d'étapes de raisonnement par agent améliore les performances.\n- **Scaling post-entraînement** : L'alignement lui-même suit des lois d'échelle (plus de préférences de qualité → meilleur alignement).\n- **Qualité des données** : La qualité doit croître avec le compute ; ajouter des données bruitées nuit au-delà d'un certain seuil.\n\n## Limites fondamentales\n\n- **Apprentissage de raccourcis (shortcut learning)** : Le modèle exploite des corrélations spurieuses présentes dans les données.\n- **Brittleness hors-distribution (OOD)** : Performance effondrée face à des données légèrement différentes de l'entraînement.\n- **Limites de la prédiction du token suivant** : Pour les raisonnements longs et multi-étapes, la prédiction locale n'est pas suffisante.\n- **Risques des boucles synthétiques** : Model collapse, rétrécissement de la diversité, amplification des biais.",
+      "questions": [
+        {
+          "text": "Qu'est-ce que le \"shortcut learning\" ?",
+          "type": "single",
+          "options": [
+            { "text": "Le modèle exploite des corrélations spurieuses dans les données au lieu d'apprendre les vraies règles", "isCorrect": true },
+            { "text": "Le modèle utilise des raccourcis clavier pour répondre plus vite", "isCorrect": false },
+            { "text": "Une technique pour accélérer l'entraînement des modèles", "isCorrect": false }
+          ],
+          "explanation": "Le shortcut learning survient quand le modèle apprend des corrélations superficielles (ex : un mot spécifique dans le prompt) au lieu de comprendre le problème en profondeur. Cela le rend fragile hors distribution."
+        },
+        {
+          "text": "Que se passe-t-il quand on ajoute des données bruitées au-delà d'un certain seuil ?",
+          "type": "single",
+          "options": [
+            { "text": "Le modèle devient plus robuste grâce à la diversité", "isCorrect": false },
+            { "text": "Les performances du modèle se dégradent malgré l'augmentation des données", "isCorrect": true },
+            { "text": "Le modèle ignore automatiquement les données bruitées", "isCorrect": false }
+          ],
+          "explanation": "Les lois d'échelle montrent que la qualité des données doit croître avec le compute. Au-delà d'un seuil, ajouter des données bruitées nuit au modèle au lieu de l'améliorer."
+        },
+        {
+          "text": "Le scaling seul peut-il résoudre le problème de l'alignement ?",
+          "type": "single",
+          "options": [
+            { "text": "Non : l'alignement nécessite des données de préférences de qualité, des boucles de vérification et des garde-fous indépendants du modèle", "isCorrect": true },
+            { "text": "Oui : il suffit d'augmenter la taille du modèle pour qu'il soit aligné", "isCorrect": false },
+            { "text": "Oui : les lois d'échelle garantissent que l'alignement s'améliore automatiquement avec la taille", "isCorrect": false }
+          ],
+          "explanation": "Le scaling améliore les capacités brutes mais ne garantit pas l'alignement. Un modèle plus grand peut être plus capable mais aussi plus dangereux s'il n'est pas correctement aligné. L'alignement nécessite des processus spécifiques (RLHF, DPO, guardrails)."
+        }
+      ]
+    },
+    {
+      "section": "Exercice",
+      "title": "Exercice 1 : Micro-exercice sur les patterns statistiques (5 min)",
+      "body": "**Objectif** : Comprendre ce que le modèle apprend pendant le préapprentissage.\n\n**Consigne** :\n\nPrenez la phrase : « Le chat noir sauta sur le ___ ».\n\nImaginez masquer 15 % des mots. Quels patterns statistiques le modèle apprend-il ?\n\nNotez 3 patterns que vous identifiez :\n\n1. _______________________________________________\n2. _______________________________________________\n3. _______________________________________________\n\n**Exemples de patterns attendus :**\n- « sauta » implique souvent un sujet animé\n- « sur le » appelle un objet physique (table, mur, toit...)\n- « chat noir » est un nom composé qui forme une unité sémantique\n- Le verbe au passé composé suggère une action terminée",
+      "questions": []
+    },
+    {
+      "section": "Exercice",
+      "title": "Exercice 2 : Concevoir un jeu de données de préférences (15 min)",
+      "body": "**Objectif** : Comprendre la modélisation des préférences en concevant des paires de réponses.\n\n**Scénario** : Un utilisateur demande un conseil médical sur un symptôme inhabituel.\n\n**Consigne** : Concevez 5 paires de préférences. Pour chaque paire, fournissez :\n- L'instruction (la question de l'utilisateur)\n- Réponse A (la meilleure réponse)\n- Réponse B (la moins bonne réponse)\n- Justification courte (sécurité, précision, empathie, refus approprié)\n\n**Paire 1 :**\n- Instruction : _______________________________________________\n- Réponse A : _______________________________________________\n- Réponse B : _______________________________________________\n- Justification : _______________________________________________\n\n**Paire 2 :**\n- Instruction : _______________________________________________\n- Réponse A : _______________________________________________\n- Réponse B : _______________________________________________\n- Justification : _______________________________________________\n\n**Paire 3 :**\n- Instruction : _______________________________________________\n- Réponse A : _______________________________________________\n- Réponse B : _______________________________________________\n- Justification : _______________________________________________\n\n**Paire 4 :**\n- Instruction : _______________________________________________\n- Réponse A : _______________________________________________\n- Réponse B : _______________________________________________\n- Justification : _______________________________________________\n\n**Paire 5 :**\n- Instruction : _______________________________________________\n- Réponse A : _______________________________________________\n- Réponse B : _______________________________________________\n- Justification : _______________________________________________\n\n**Critères de qualité :**\n- La meilleure réponse doit recommander de consulter un professionnel de santé\n- La moins bonne réponse doit donner un diagnostic ou un traitement spécifique\n- Chaque paire doit illustrer un aspect différent : sécurité, empathie, précision, refus, orientation",
+      "questions": []
+    },
+    {
+      "section": "Exercice",
+      "title": "Exercice 3 : Analyser un benchmark public (15 min)",
+      "body": "**Objectif** : Développer un regard critique sur les benchmarks d'évaluation.\n\n**Consigne** :\n\n1. Choisissez un benchmark public parmi : MMLU, HumanEval, GSM8K, ARC, TruthfulQA\n2. Recherchez en ligne ses caractéristiques (domaine, nombre de questions, scores des modèles récents)\n3. Identifiez 3 risques de contamination ou de saturation\n\n**Benchmark choisi :** _______________________________________________\n\n**Description :**\n_______________________________________________\n_______________________________________________\n\n**Scores des modèles récents :**\n_______________________________________________\n\n**Risque 1 : Contamination ou saturation :**\n_______________________________________________\n_______________________________________________\n\n**Risque 2 : Contamination ou saturation :**\n_______________________________________________\n_______________________________________________\n\n**Risque 3 : Contamination ou saturation :**\n_______________________________________________\n_______________________________________________\n\n**Question de réflexion :** Ce benchmark est-il encore utile en 2026 ? Pourquoi ?\n_______________________________________________\n_______________________________________________",
+      "questions": []
+    },
+    {
+      "section": "Exercice",
+      "title": "Exercice 4 : Réflexion critique : données synthétiques et model collapse",
+      "body": "**Objectif** : Réfléchir aux limites des boucles de données synthétiques.\n\n**Consigne** : Répondez aux questions suivantes par écrit (1-2 paragraphes chacune).\n\n**Question 1 :** Où tracez-vous la ligne entre l'utilisation bénéfique de données synthétiques et le risque dangereux de model collapse ?\n\n_______________________________________________\n_______________________________________________\n_______________________________________________\n_______________________________________________\n\n**Question 2 :** Quels mécanismes de contrôle mettriez-vous en place pour utiliser des données synthétiques de manière sûre ?\n\n_______________________________________________\n_______________________________________________\n_______________________________________________\n_______________________________________________\n\n**Question 3 :** « Le scaling seul peut-il résoudre le problème de l'alignement ? » Argumentez votre réponse.\n\n_______________________________________________\n_______________________________________________\n_______________________________________________\n_______________________________________________\n\n**Éléments de réflexion :**\n- Le model collapse survient quand le modèle est entraîné sur ses propres sorties\n- Les données synthétiques sont utiles pour augmenter le volume mais doivent être filtrées\n- L'alignement nécessite des préférences de qualité, pas seulement du volume",
+      "questions": []
+    }
+  ]
+}
