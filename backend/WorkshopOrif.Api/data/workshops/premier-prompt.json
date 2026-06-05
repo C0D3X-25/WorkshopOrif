@@ -1,22 +1,720 @@
 {
   "title": "Premier prompt",
-  "description": "Rédiger et tester son premier prompt avec un assistant IA.",
+  "description": "Rédiger et tester son premier prompt avec un assistant IA — trois niveaux progressifs sur le projet sandbox (livre d'or).",
   "type": "Exercise",
   "level": "Introduction",
   "track": "Formation",
-  "authors": ["Formateur ORIF"],
-  "prerequisites": [],
-  "requiredMaterials": [],
+  "authors": ["Adrien Wavelet"],
+  "prerequisites": ["Atelier IA — Théorie et Quizz"],
+  "requiredMaterials": [
+    "Ordinateur avec accès internet",
+    "Cursor, ChatGPT, Claude ou autre assistant IA avec accès au workspace",
+    "Dépôt WorkshopOrif cloné localement (dossier agent-exercice/sandbox)"
+  ],
   "maxConcurrentParticipants": 0,
-  "estimatedDuration": 45,
-  "date": null,
-  "expectedOutcome": "",
+  "estimatedDuration": 120,
+  "date": "2026-06-04",
+  "expectedOutcome": "Savoir formuler une consigne testable, connecter l'assistant au dossier sandbox, et produire une réponse vérifiable avec preuves fichier.",
   "chapters": [
     {
+      "section": "Préparation",
+      "title": "Mise en route — sandbox et protocole de test",
+      "body": "",
+      "questions": [],
+      "blocks": [
+        {
+          "type": "content",
+          "elements": [
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Cet atelier pratique vous guide en " },
+                { "kind": "strong", "value": "trois niveaux" },
+                { "kind": "text", "value": " pour apprendre à piloter un assistant IA : d'abord la " },
+                { "kind": "strong", "value": "forme" },
+                { "kind": "text", "value": " de la réponse (langue), puis la " },
+                { "kind": "strong", "value": "fiabilité" },
+                { "kind": "text", "value": " (lecture du projet), enfin la " },
+                { "kind": "strong", "value": "traçabilité" },
+                { "kind": "text", "value": " (citations de fichiers)." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Fil rouge" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Tous les niveaux utilisent le même projet de démonstration :" }
+              ]
+            },
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                [
+                  { "kind": "text", "value": "Dossier : " },
+                  { "kind": "code", "value": "agent-exercice/sandbox" }
+                ],
+                [
+                  { "kind": "text", "value": "Produit : " },
+                  { "kind": "strong", "value": "livre d'or" },
+                  { "kind": "text", "value": " (messages invités)" }
+                ],
+                [
+                  { "kind": "text", "value": "Stack : backend " },
+                  { "kind": "strong", "value": "Python / FastAPI" },
+                  { "kind": "text", "value": ", frontend " },
+                  { "kind": "strong", "value": "React (Vite)" },
+                  { "kind": "text", "value": ", base " },
+                  { "kind": "strong", "value": "SQLite" }
+                ]
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Lancer le sandbox (optionnel)" },
+            {
+              "type": "paragraph",
+              "parts": [
+                {
+                  "kind": "text",
+                  "value": "Le sandbox sert de cible concrète pour les questions. Vous pouvez le lancer pour vérifier visuellement le produit ; l'exercice IA fonctionne aussi en lisant les fichiers seuls."
+                }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "powershell",
+              "code": "# Depuis agent-exercice/sandbox (Windows)\n.\\dev.ps1 all"
+            },
+            {
+              "type": "code",
+              "language": "bash",
+              "code": "# Depuis agent-exercice/sandbox (Linux/macOS)\nchmod +x dev.sh && ./dev.sh all"
+            },
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                [{ "kind": "text", "value": "Frontend : http://localhost:5173" }],
+                [{ "kind": "text", "value": "API : http://localhost:8000/docs" }]
+              ]
+            },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Détails : voir " },
+                { "kind": "code", "value": "agent-exercice/sandbox/README.md" },
+                { "kind": "text", "value": "." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Protocole avant / après" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Pour chaque niveau, tenez un " },
+                { "kind": "strong", "value": "tableau de tests" },
+                { "kind": "text", "value": " :" }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "headers": ["Run", "Prompt", "Résultat attendu", "Observé", "Conforme"],
+          "rows": [["…", "…", "…", "…", "Oui / Non"]]
+        },
+        {
+          "type": "content",
+          "elements": [
+            {
+              "type": "paragraph",
+              "parts": [
+                {
+                  "kind": "text",
+                  "value": "Ne passez au niveau suivant que si le critère de validation du niveau courant est atteint."
+                }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Où configurer l'assistant" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Selon votre outil (Cursor Agent, règles projet, prompt système, fiche agent JSON, etc.), placez les consignes dans la zone " },
+                { "kind": "strong", "value": "effectivement lue" },
+                { "kind": "text", "value": " au runtime — mission, guardrails ou instructions persistantes." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Parcours des chapitres" },
+            {
+              "type": "list",
+              "ordered": true,
+              "items": [
+                [
+                  { "kind": "strong", "value": "Niveau 0" },
+                  { "kind": "text", "value": " — Réponses toujours en français (contrainte de forme)." }
+                ],
+                [
+                  { "kind": "strong", "value": "Niveau 1" },
+                  { "kind": "text", "value": " — Description factuelle du sandbox via exploration de fichiers (tool)." }
+                ],
+                [
+                  { "kind": "strong", "value": "Niveau 2" },
+                  { "kind": "text", "value": " — Chaque fait technique accompagné d'un chemin de preuve." }
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "section": "Exercice",
-      "title": "Rédiger un premier prompt",
-      "body": "Rédigez un prompt pour obtenir une réponse précise d'un assistant IA. Comparez différentes formulations et observez l'impact sur la qualité des réponses.",
-      "questions": []
+      "title": "Niveau 0 — Imposer la langue de réponse",
+      "body": "",
+      "questions": [
+        {
+          "text": "À ce niveau, que valide-t-on principalement ?",
+          "type": "single",
+          "options": [
+            { "text": "La contrainte de forme (langue de réponse), pas la véracité des faits", "isCorrect": true },
+            { "text": "Que l'assistant cite au moins trois fichiers sources", "isCorrect": false },
+            { "text": "Que la stack technique décrite soit exacte à 100 %", "isCorrect": false }
+          ],
+          "explanation": "Le niveau 0 porte sur la langue et la testabilité de la consigne. Une réponse en français peut encore être factuellement incorrecte."
+        }
+      ],
+      "blocks": [
+        {
+          "type": "content",
+          "elements": [
+            { "type": "heading", "level": 2, "text": "Contexte" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Vous disposez d'un assistant conversationnel ayant accès au dépôt. À ce stade, le " },
+                { "kind": "strong", "value": "contenu exact" },
+                { "kind": "text", "value": " de la réponse importe peu : l'objectif est de faire respecter une " },
+                { "kind": "strong", "value": "consigne de langue" },
+                { "kind": "text", "value": "." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Objectif" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Faire en sorte que l'assistant réponde " },
+                { "kind": "strong", "value": "toujours en français" },
+                { "kind": "text", "value": ", même lorsque la question est posée en anglais ou qu'on lui demande explicitement une autre langue." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Baseline (avant modification)" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Posez " },
+                { "kind": "strong", "value": "sans rien modifier" },
+                { "kind": "text", "value": " :" }
+              ]
+            },
+            {
+              "type": "blockquote",
+              "parts": [
+                { "kind": "text", "value": "Que peux-tu me dire du projet " },
+                { "kind": "code", "value": "agent-exercice/sandbox" },
+                { "kind": "text", "value": " ?" }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "parts": [
+                {
+                  "kind": "text",
+                  "value": "Consignez 3 exécutions dans votre tableau (langue observée : FR / EN / mixte). Une réponse partielle ou imprécise est normale à cette étape."
+                }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Tâche" },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "Ajoutez une règle explicite, par exemple :" }]
+            },
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                [{ "kind": "text", "value": "« Réponds toujours en français. »" }],
+                [{ "kind": "text", "value": "« Si la question est dans une autre langue, garde la réponse en français. »" }]
+              ]
+            },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "Formulation robuste acceptée :" }]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "code": "Langue de sortie obligatoire : français.\nRéponds toujours en français, quelle que soit la langue du prompt utilisateur."
+            },
+            { "type": "heading", "level": 2, "text": "Vérification (après modification)" }
+          ]
+        },
+        {
+          "type": "table",
+          "headers": ["#", "Prompt"],
+          "rows": [
+            ["1", "Que peux-tu me dire du projet `agent-exercice/sandbox` ?"],
+            ["2", "Can you explain what the sandbox project is?"],
+            ["3", "Reply in English only: what is the sandbox project?"],
+            ["4", "Responde en español: ¿qué hace el sandbox?"]
+          ]
+        },
+        {
+          "type": "content",
+          "elements": [
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "strong", "value": "Critère de validation" },
+                { "kind": "text", "value": " : 4/4 réponses en français ; règle visible dans la configuration ; vous savez expliquer la différence entre " },
+                { "kind": "strong", "value": "forme" },
+                { "kind": "text", "value": " (langue) et " },
+                { "kind": "strong", "value": "fond" },
+                { "kind": "text", "value": " (vérité du contenu)." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Livrable" },
+            {
+              "type": "list",
+              "ordered": true,
+              "items": [
+                [{ "kind": "text", "value": "Configuration modifiée avec la règle de langue." }],
+                [{ "kind": "text", "value": "Tableau avant / après." }],
+                [
+                  {
+                    "kind": "text",
+                    "value": "Debrief court (5–10 lignes) : ce qui a changé, un cas ambigu, une piste d'amélioration (ton, longueur, format)."
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "Exercice",
+      "title": "Niveau 1 — Explorer le dossier avec un tool",
+      "body": "",
+      "questions": [
+        {
+          "text": "Quel noyau factuel minimal est attendu pour le sandbox ?",
+          "type": "single",
+          "options": [
+            { "text": "Livre d'or — Python/FastAPI — React — SQLite", "isCorrect": true },
+            { "text": "Blog Next.js — PostgreSQL — Django", "isCorrect": false },
+            { "text": "CRM Java — Angular — MongoDB", "isCorrect": false }
+          ],
+          "explanation": "Ces éléments sont vérifiables dans agent-exercice/sandbox/README.md et les fichiers de dépendances du projet."
+        }
+      ],
+      "blocks": [
+        {
+          "type": "content",
+          "elements": [
+            { "type": "heading", "level": 2, "text": "Contexte" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Au niveau 0, vous avez contraint la langue. Ici, vous augmentez la " },
+                { "kind": "strong", "value": "qualité factuelle" },
+                { "kind": "text", "value": " en donnant à l'assistant un moyen de " },
+                { "kind": "strong", "value": "lire" },
+                { "kind": "text", "value": " le dossier " },
+                { "kind": "code", "value": "agent-exercice/sandbox" },
+                { "kind": "text", "value": "." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Objectif" },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "Pour la demande :" }]
+            },
+            {
+              "type": "blockquote",
+              "parts": [
+                { "kind": "text", "value": "Que peux-tu me dire du projet " },
+                { "kind": "code", "value": "agent-exercice/sandbox" },
+                { "kind": "text", "value": " ?" }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "la réponse doit contenir au minimum l'idée :" }]
+            },
+            {
+              "type": "blockquote",
+              "parts": [
+                { "kind": "text", "value": "Le projet sandbox est un " },
+                { "kind": "strong", "value": "livre d'or" },
+                { "kind": "text", "value": " en " },
+                { "kind": "strong", "value": "Python / FastAPI" },
+                { "kind": "text", "value": ", " },
+                { "kind": "strong", "value": "React" },
+                { "kind": "text", "value": ", " },
+                { "kind": "strong", "value": "SQLite" },
+                { "kind": "text", "value": "." }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "(La formulation exacte peut varier.)" }]
+            },
+            { "type": "heading", "level": 2, "text": "Étape 1 — Baseline sans tool" },
+            {
+              "type": "paragraph",
+              "parts": [
+                {
+                  "kind": "text",
+                  "value": "Posez la demande ci-dessus. Notez si la réponse est vague ou hallucinée (certitude faible)."
+                }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Étape 2 — Ajouter un tool de lecture" },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "Activez un outil permettant au minimum de :" }]
+            },
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                [{ "kind": "text", "value": "lister un dossier cible ;" }],
+                [
+                  { "kind": "text", "value": "lire des fichiers clés (" },
+                  { "kind": "code", "value": "README.md" },
+                  { "kind": "text", "value": ", " },
+                  { "kind": "code", "value": "package.json" },
+                  { "kind": "text", "value": ", " },
+                  { "kind": "code", "value": "requirements.txt" },
+                  { "kind": "text", "value": ", etc.)." }
+                ]
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Étape 3 — Consigne « lire puis répondre »" },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "Exemple :" }]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "code": "Pour toute question sur un dossier local, commence par explorer le dossier cible.\nLis les fichiers clés pour identifier : objectif fonctionnel, backend, frontend, base de données.\nSi une information manque, dis-le explicitement au lieu d'inventer."
+            },
+            { "type": "heading", "level": 2, "text": "Étape 4 — Méthode de description (mini skill)" },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "Guidez la synthèse en 5 points :" }]
+            },
+            {
+              "type": "list",
+              "ordered": true,
+              "items": [
+                [{ "kind": "text", "value": "Objectif fonctionnel (quel produit ?)" }],
+                [{ "kind": "text", "value": "Backend (langage / framework)" }],
+                [{ "kind": "text", "value": "Frontend (langage / framework)" }],
+                [{ "kind": "text", "value": "Persistance (base de données)" }],
+                [{ "kind": "text", "value": "Synthèse en 2–4 phrases" }]
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Étape 5 — Retest" }
+          ]
+        },
+        {
+          "type": "table",
+          "headers": ["Prompt", "Livre d'or", "Backend", "Frontend", "DB", "Conforme"],
+          "rows": [
+            ["Demande principale", "Oui/Non", "Oui/Non", "Oui/Non", "Oui/Non", "Oui/Non"],
+            ["Décris le sandbox en citant les technologies détectées", "Oui/Non", "Oui/Non", "Oui/Non", "Oui/Non", "Oui/Non"]
+          ]
+        },
+        {
+          "type": "content",
+          "elements": [
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "strong", "value": "Critère de validation" },
+                { "kind": "text", "value": " : traces d'exploration (ou équivalent) ; noyau attendu présent ; réponse cohérente avec les fichiers lus." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Livrable" },
+            {
+              "type": "paragraph",
+              "parts": [
+                {
+                  "kind": "text",
+                  "value": "Debrief (6–10 lignes) : effet du tool, limite avant la méthode structurée, amélioration proposée pour le niveau 2 (ex. citations de fichiers)."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "Exercice",
+      "title": "Niveau 2 — Répondre avec preuves (citations fichiers)",
+      "body": "",
+      "questions": [
+        {
+          "text": "Quelle règle définit le niveau 2 ?",
+          "type": "single",
+          "options": [
+            { "text": "Pas de fait technique sans chemin de fichier source", "isCorrect": true },
+            { "text": "Répondre toujours en anglais pour plus de précision", "isCorrect": false },
+            { "text": "Ne jamais utiliser d'outil de lecture de fichiers", "isCorrect": false }
+          ],
+          "explanation": "Le niveau 2 transforme une réponse plausible en réponse justifiable par des sources observables dans le dépôt."
+        }
+      ],
+      "blocks": [
+        {
+          "type": "content",
+          "elements": [
+            { "type": "heading", "level": 2, "text": "Contexte" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Au niveau 1, l'assistant lit le dossier. Au niveau 2, la réponse doit être " },
+                { "kind": "strong", "value": "auditable" },
+                { "kind": "text", "value": " : chaque fait important est relié à un " },
+                { "kind": "strong", "value": "chemin de fichier" },
+                { "kind": "text", "value": "." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Objectif" },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "Pour la demande :" }]
+            },
+            {
+              "type": "blockquote",
+              "parts": [
+                { "kind": "text", "value": "Que peux-tu me dire du projet " },
+                { "kind": "code", "value": "agent-exercice/sandbox" },
+                { "kind": "text", "value": " ? Réponds avec les preuves." }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "Attendu :" }]
+            },
+            {
+              "type": "list",
+              "ordered": true,
+              "items": [
+                [
+                  { "kind": "strong", "value": "Synthèse" },
+                  { "kind": "text", "value": " (fonction + stack principale)" }
+                ],
+                [
+                  { "kind": "text", "value": "Section " },
+                  { "kind": "strong", "value": "Preuves" },
+                  { "kind": "text", "value": " (chemins de fichiers)" }
+                ],
+                [
+                  { "kind": "strong", "value": "Inconnues" },
+                  { "kind": "text", "value": " explicites si une information n'a pas été trouvée" }
+                ]
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Étape 1 — Baseline sans règle de preuve" },
+            {
+              "type": "paragraph",
+              "parts": [
+                {
+                  "kind": "text",
+                  "value": "Notez si la réponse contient déjà des sources, ou seulement des affirmations non reliées."
+                }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Étape 2 — Règle « pas de fait sans source »" },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "Exemple :" }]
+            },
+            {
+              "type": "code",
+              "language": "text",
+              "code": "Chaque affirmation technique doit être appuyée par au moins un chemin de fichier consulté.\nSi aucune preuve n'est trouvée, indiquer explicitement « non observé ».\nNe pas extrapoler au-delà des fichiers lus."
+            },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "Format de sortie suggéré :" }]
+            },
+            {
+              "type": "list",
+              "ordered": true,
+              "items": [
+                [{ "kind": "text", "value": "Résumé (2–4 lignes)" }],
+                [{ "kind": "text", "value": "Faits vérifiés" }],
+                [{ "kind": "text", "value": "Preuves (liste de chemins)" }],
+                [{ "kind": "text", "value": "Inconnues / limites" }]
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Étape 3 — Vérification guidée" },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "Relancez la demande n°2, puis :" }]
+            },
+            {
+              "type": "blockquote",
+              "parts": [
+                {
+                  "kind": "text",
+                  "value": "Décris le sandbox et cite les fichiers qui prouvent chaque technologie mentionnée."
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Complétez un tableau " },
+                { "kind": "strong", "value": "Fait | Preuve | Chemin valide ?" },
+                { "kind": "text", "value": " pour au moins trois faits." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Étape 4 — Test anti-hallucination" },
+            {
+              "type": "blockquote",
+              "parts": [
+                {
+                  "kind": "text",
+                  "value": "Le projet sandbox utilise-t-il PostgreSQL et Next.js ? Justifie."
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "parts": [
+                {
+                  "kind": "text",
+                  "value": "Comportement attendu : vérification des fichiers, refus des affirmations non observées, prudence explicite."
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "strong", "value": "Critère de validation" },
+                { "kind": "text", "value": " : au moins " },
+                { "kind": "strong", "value": "3 chemins pertinents" },
+                { "kind": "text", "value": " ; chaque fait principal lié à une preuve ; zones incertaines signalées." }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "parts": [{ "kind": "text", "value": "Exemples de preuves acceptables :" }]
+            },
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                [{ "kind": "code", "value": "agent-exercice/sandbox/README.md" }],
+                [{ "kind": "code", "value": "agent-exercice/sandbox/backend/requirements.txt" }],
+                [{ "kind": "code", "value": "agent-exercice/sandbox/frontend/package.json" }]
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Livrable" },
+            {
+              "type": "paragraph",
+              "parts": [
+                {
+                  "kind": "text",
+                  "value": "Debrief (6–10 lignes) : impact de la contrainte de preuve, exemple de fait corrigé grâce aux fichiers, évolution possible (ex. format JSON des preuves)."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "section": "Ressources",
+      "title": "Suite, sandbox et support formateur",
+      "body": "",
+      "questions": [],
+      "blocks": [
+        {
+          "type": "content",
+          "elements": [
+            { "type": "heading", "level": 2, "text": "Projet sandbox" },
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                [
+                  { "kind": "text", "value": "Code et instructions : " },
+                  { "kind": "code", "value": "agent-exercice/sandbox/" }
+                ],
+                [
+                  { "kind": "text", "value": "Démarrage rapide : " },
+                  { "kind": "code", "value": "dev.ps1" },
+                  { "kind": "text", "value": " (Windows) ou " },
+                  { "kind": "code", "value": "dev.sh" },
+                  { "kind": "text", "value": " (Unix)" }
+                ]
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Documents formateur (hors application apprenant)" }
+          ]
+        },
+        {
+          "type": "table",
+          "headers": ["Niveau", "Correction", "Grille (/10)"],
+          "rows": [
+            ["0", "agent-exercice/Niveau_0/corrige-formateur.md", "Niveau_0/grille-evaluation.md"],
+            ["1", "agent-exercice/Niveau_1/corrige-formateur.md", "Niveau_1/grille-evaluation.md"],
+            ["2", "agent-exercice/Niveau_2/corrige-formateur.md", "Niveau_2/grille-evaluation.md"]
+          ]
+        },
+        {
+          "type": "content",
+          "elements": [
+            { "type": "heading", "level": 2, "text": "Importer ou mettre à jour cet atelier" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Fichier source : " },
+                { "kind": "code", "value": "agent-exercice/workshops/premier-prompt.json" }
+              ]
+            },
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                [
+                  { "kind": "strong", "value": "Seed Docker" },
+                  {
+                    "kind": "text",
+                    "value": " : copie synchronisée dans backend/WorkshopOrif.Api/data/workshops/premier-prompt.json (rechargée au démarrage API si le titre existe déjà)."
+                  }
+                ],
+                [
+                  { "kind": "strong", "value": "Admin" },
+                  { "kind": "text", "value": " : import via l'interface /admin ou POST /api/workshops/import." }
+                ]
+              ]
+            },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Schéma JSON : " },
+                { "kind": "code", "value": "docs/workshop-json-format.md" },
+                { "kind": "text", "value": "." }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,23 @@
+.content-table-scroll {
+  overflow-x: auto;
+  margin: 12px 0 16px;
+}
+
+.content-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+}
+
+.content-table th,
+.content-table td {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.content-table th {
+  background: var(--code-bg);
+  font-weight: 600;
+}

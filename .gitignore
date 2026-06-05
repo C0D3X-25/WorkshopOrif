@@ -13,3 +13,5 @@ frontend/node_modules/
 .vs/
 .vscode/
 *.user
+.cursor/
+agent-exercice/*
