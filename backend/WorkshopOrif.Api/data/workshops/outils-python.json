@@ -1,0 +1,187 @@
+{
+  "title": "Créer un outil IA en Python",
+  "description": "Implémentez l'outil get_current_datetime avec le SDK OpenAI et observez chaque étape du cycle : définir le schéma, envoyer au modèle, intercepter l'appel, exécuter, réinjecter.",
+  "type": "Exercise",
+  "level": "Advanced",
+  "track": "Formation",
+  "authors": ["Formateur ORIF"],
+  "prerequisites": ["Atelier Outils IA — Théorie"],
+  "requiredMaterials": ["Docker Desktop", "Companion App ORIF", "Clé API OpenAI (fournie par le formateur)"],
+  "maxConcurrentParticipants": 0,
+  "estimatedDuration": 45,
+  "date": null,
+  "expectedOutcome": "Un outil get_current_datetime fonctionnel branché sur un agent OpenAI — chaque étape du cycle visible dans le code.",
+  "chapters": [
+    {
+      "section": "Exercice",
+      "title": "Créer et brancher un outil get_current_datetime",
+      "body": "",
+      "questions": [
+        {
+          "text": "Dans le cycle outil, qui exécute réellement la fonction Python ?",
+          "type": "single",
+          "options": [
+            { "text": "L'application hôte (votre code Python)", "isCorrect": true },
+            { "text": "Le modèle OpenAI lui-même", "isCorrect": false },
+            { "text": "Docker Desktop", "isCorrect": false }
+          ],
+          "explanation": "Le modèle émet un appel structuré (tool_call) mais ne touche jamais le monde réel. C'est votre code qui intercepte cet appel, exécute la vraie fonction et réinjecte le résultat."
+        },
+        {
+          "text": "Pourquoi get_current_datetime est-il un bon outil de démonstration ?",
+          "type": "single",
+          "options": [
+            { "text": "Parce que le modèle ne peut pas connaître l'heure courante seul — ses connaissances sont figées à sa date d'entraînement", "isCorrect": true },
+            { "text": "Parce que c'est la seule fonction que Python peut exécuter", "isCorrect": false },
+            { "text": "Parce que OpenAI l'inclut par défaut dans tous les modèles", "isCorrect": false }
+          ],
+          "explanation": "La valeur d'un outil est immédiatement visible : sans lui, le modèle répond par une date approximative ou refuse de répondre. Avec l'outil, il obtient l'heure exacte en temps réel."
+        }
+      ],
+      "blocks": [
+        {
+          "type": "content",
+          "elements": [
+            { "type": "heading", "level": 2, "text": "Contexte" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "L'environnement de développement se lance automatiquement via le bouton ci-dessous. Un container " },
+                { "kind": "code", "value": "python:3.11-slim" },
+                { "kind": "text", "value": " démarre ; le SDK " },
+                { "kind": "code", "value": "openai" },
+                { "kind": "text", "value": " est installé automatiquement (" },
+                { "kind": "code", "value": "pip install openai" },
+                { "kind": "text", "value": "). Aucun autre paquet n'est requis : " },
+                { "kind": "code", "value": "datetime" },
+                { "kind": "text", "value": " fait partie de la bibliothèque standard. Le fichier " },
+                { "kind": "code", "value": "main.py" },
+                { "kind": "text", "value": " s'ouvre dans votre éditeur — prêt à coder." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Configuration" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Avant de lancer " },
+                { "kind": "code", "value": "python main.py" },
+                { "kind": "text", "value": ", définissez la variable d'environnement " },
+                { "kind": "code", "value": "OPENAI_API_KEY" },
+                { "kind": "text", "value": " (clé fournie par le formateur). Dans le terminal du container : " },
+                { "kind": "code", "value": "export OPENAI_API_KEY=sk-..." },
+                { "kind": "text", "value": ". Pas de " },
+                { "kind": "code", "value": "requirements.txt" },
+                { "kind": "text", "value": " ni de " },
+                { "kind": "code", "value": "python-dotenv" },
+                { "kind": "text", "value": " — " },
+                { "kind": "code", "value": "main.py" },
+                { "kind": "text", "value": " lit la clé directement depuis l'environnement via " },
+                { "kind": "code", "value": "OpenAI()" },
+                { "kind": "text", "value": "." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Objectif" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Compléter les quatre " },
+                { "kind": "code", "value": "TODO" },
+                { "kind": "text", "value": " dans " },
+                { "kind": "code", "value": "main.py" },
+                { "kind": "text", "value": " pour que le programme produise une réponse du type : « Il est 14h32. »" }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "TODO 1 — Définir le schéma de l'outil" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Complétez la liste " },
+                { "kind": "code", "value": "tools" },
+                { "kind": "text", "value": " avec un objet de type " },
+                { "kind": "code", "value": "function" },
+                { "kind": "text", "value": " décrivant " },
+                { "kind": "code", "value": "get_current_datetime" },
+                { "kind": "text", "value": ". Le modèle lira cette description pour décider s'il doit appeler l'outil." }
+              ]
+            },
+            {
+              "type": "code",
+              "language": "python",
+              "code": "tools = [{\n    \"type\": \"function\",\n    \"function\": {\n        \"name\": \"get_current_datetime\",\n        \"description\": \"Returns the current date and time.\",\n        \"parameters\": {\"type\": \"object\", \"properties\": {}, \"required\": []}\n    }\n}]"
+            },
+            { "type": "heading", "level": 2, "text": "TODO 2 — Envoyer la question au modèle" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Appelez " },
+                { "kind": "code", "value": "client.chat.completions.create" },
+                { "kind": "text", "value": " en passant " },
+                { "kind": "code", "value": "messages" },
+                { "kind": "text", "value": " et " },
+                { "kind": "code", "value": "tools" },
+                { "kind": "text", "value": ". Le modèle retournera un " },
+                { "kind": "code", "value": "tool_call" },
+                { "kind": "text", "value": " au lieu d'une réponse directe." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "TODO 3 — Exécuter la vraie fonction" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Interceptez le " },
+                { "kind": "code", "value": "tool_call" },
+                { "kind": "text", "value": " et appelez " },
+                { "kind": "code", "value": "datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")" },
+                { "kind": "text", "value": ". C'est vous — pas le modèle — qui touchez l'horloge système." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "TODO 4 — Réinjecter le résultat" },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "text", "value": "Ajoutez le message assistant (avec le " },
+                { "kind": "code", "value": "tool_call" },
+                { "kind": "text", "value": ") et le message " },
+                { "kind": "code", "value": "tool" },
+                { "kind": "text", "value": " (avec le résultat) dans " },
+                { "kind": "code", "value": "messages" },
+                { "kind": "text", "value": ", puis relancez " },
+                { "kind": "code", "value": "chat.completions.create" },
+                { "kind": "text", "value": ". Le modèle produira maintenant une réponse en langage naturel." }
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Lancer le programme" },
+            {
+              "type": "code",
+              "language": "bash",
+              "code": "python main.py"
+            },
+            {
+              "type": "paragraph",
+              "parts": [
+                { "kind": "strong", "value": "Résultat attendu" },
+                { "kind": "text", "value": " : une ligne du type « Il est 14h32, le 9 juin 2026. »" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dockerEnvironment": {
+    "image": "python:3.11-slim",
+    "devContainer": {
+      "extensions": ["ms-python.python"],
+      "postCreateCommand": "pip install openai"
+    },
+    "workspaceFiles": [
+      {
+        "name": "main.py",
+        "content": "from openai import OpenAI\nfrom datetime import datetime\n\nclient = OpenAI()  # Lit OPENAI_API_KEY depuis l'environnement\n\n# TODO 1 : Définir le schéma de l'outil get_current_datetime\ntools = []\n\n# TODO 2 : Envoyer la question + outils au modèle\nmessages = [{\"role\": \"user\", \"content\": \"Quelle heure est-il ?\"}]\nresponse = None  # remplacer par l'appel à client.chat.completions.create(...)\n\n# TODO 3 : Intercepter le tool_call et exécuter la vraie fonction\n# tool_call = response.choices[0].message.tool_calls[0]\n# print(f\"Outil appelé : {tool_call.function.name}\")\n# result = datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")\n\n# TODO 4 : Réinjecter le résultat et obtenir la réponse finale\n# messages += [\n#     response.choices[0].message,\n#     {\"role\": \"tool\", \"tool_call_id\": tool_call.id, \"content\": result}\n# ]\n# final = client.chat.completions.create(model=\"gpt-4o-mini\", messages=messages)\n# print(final.choices[0].message.content)\n",
+        "gitUrl": null
+      }
+    ],
+    "ports": [],
+    "env": {}
+  }
+}

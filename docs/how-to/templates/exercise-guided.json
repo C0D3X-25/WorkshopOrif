@@ -1,0 +1,123 @@
+{
+  "title": "TEMPLATE - Atelier pratique guidé",
+  "description": "Description de l'exercice pratique et de ce que les participants vont accomplir.",
+  "type": "Exercise",
+  "level": "Introduction",
+  "track": "Exercices guidés",
+  "authors": ["Votre Nom"],
+  "prerequisites": ["Atelier théorique préalable recommandé"],
+  "requiredMaterials": [
+    "Ordinateur avec accès Internet",
+    "Navigateur moderne (Chrome/Firefox)",
+    "Compte nécessaire pour l'outil utilisé"
+  ],
+  "maxConcurrentParticipants": 15,
+  "estimatedDuration": 120,
+  "date": "2026-06-05",
+  "expectedOutcome": "À la fin de cet atelier, les participants auront pratiqué...",
+  "chapters": [
+    {
+      "section": "Théorie",
+      "title": "Rappel des concepts",
+      "body": "Avant de commencer la pratique, revoyons les concepts essentiels.\n\n## Prérequis\n\nAssurez-vous de maîtriser:\n\n- Concept 1\n- Concept 2\n\n## Objectifs de l'exercice\n\n1. Appliquer la théorie\n2. Résoudre des problèmes concrets\n3. Valider vos compétences",
+      "questions": [
+        {
+          "text": "Quels prérequis sont nécessaires pour cet exercice ?",
+          "type": "multiple",
+          "options": [
+            { "text": "Maîtrise du concept 1", "isCorrect": true },
+            { "text": "Maîtrise du concept 2", "isCorrect": true },
+            { "text": "10 ans d'expérience", "isCorrect": false }
+          ],
+          "explanation": "Seuls les concepts 1 et 2 sont nécessaires. L'exercice est conçu pour les débutants."
+        }
+      ]
+    },
+    {
+      "section": "Exercice",
+      "title": "Mise en situation",
+      "body": "Vous êtes confronté(e) au scénario suivant...\n\n## Scénario\n\n[Description du contexte et du problème à résoudre]\n\n## Énoncé\n\nVotre mission consiste à...",
+      "blocks": [
+        {
+          "type": "content",
+          "elements": [
+            { "type": "heading", "level": 2, "text": "Consignes" },
+            {
+              "type": "list",
+              "ordered": true,
+              "items": [
+                [{ "kind": "text", "value": "Lire attentivement le scénario" }],
+                [{ "kind": "text", "value": "Identifier les contraintes" }],
+                [{ "kind": "text", "value": "Proposer une solution" }]
+              ]
+            },
+            { "type": "heading", "level": 2, "text": "Critères d'évaluation" },
+            {
+              "type": "list",
+              "ordered": false,
+              "items": [
+                [{ "kind": "text", "value": "Solution fonctionnelle" }],
+                [{ "kind": "text", "value": "Respect des contraintes" }],
+                [{ "kind": "text", "value": "Clarté de la démarche" }]
+              ]
+            }
+          ]
+        }
+      ]
+      
+    },
+    {
+      "section": "Exercice",
+      "title": "Solution guidée",
+      "body": "Suivez ces étapes pour réaliser l'exercice.\n\n## Étape 1 : Préparation\n\nDécrivez ce qui doit être préparé...\n\n## Étape 2 : Exécution\n\nExpliquez la démarche étape par étape...\n\n## Étape 3 : Validation\n\nComment vérifier que tout fonctionne correctement...",
+      "blocks": [
+        {
+          "type": "content",
+          "elements": [
+            { "type": "heading", "level": 2, "text": "Commandes à exécuter" },
+            { "type": "code", "language": "bash", "code": "# Exemple de commandes\necho \"Étape 1\"\ncommande --option valeur" }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "text": "Quelle est la première étape de la solution ?",
+          "type": "single",
+          "options": [
+            { "text": "La préparation", "isCorrect": true },
+            { "text": "La validation", "isCorrect": false },
+            { "text": "L'exécution", "isCorrect": false }
+          ],
+          "explanation": "La préparation est toujours la première étape avant de pouvoir exécuter et valider."
+        },
+        {
+          "text": "Quels éléments faut-il vérifier à la fin ?",
+          "type": "multiple",
+          "options": [
+            { "text": "Fonctionnalité", "isCorrect": true },
+            { "text": "Contraintes respectées", "isCorrect": true },
+            { "text": "Couleur du texte", "isCorrect": false }
+          ],
+          "explanation": "On vérifie la fonctionnalité et le respect des contraintes, pas des aspects esthétiques secondaires."
+        }
+      ]
+    },
+    {
+      "section": "Exercice",
+      "title": "Exercice autonome",
+      "body": "Maintenant, appliquez ce que vous avez appris de manière indépendante.\n\n## Nouveau scénario\n\n[Description d'un problème similaire mais différent]\n\n## Consignes\n\nRéalisez la tâche sans aide en appliquant la méthode apprise.",
+      "questions": [
+        {
+          "text": "Avez-vous réussi à compléter l'exercice autonome ?",
+          "type": "single",
+          "options": [
+            { "text": "Oui, complètement", "isCorrect": true },
+            { "text": "Partiellement", "isCorrect": false },
+            { "text": "Non, j'ai besoin de plus de pratique", "isCorrect": false }
+          ],
+          "explanation": "Si vous avez des difficultés, n'hésitez pas à revoir le chapitre de solution guidée."
+        }
+      ]
+    }
+  ]
+}

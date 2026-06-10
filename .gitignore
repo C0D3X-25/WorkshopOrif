@@ -5,9 +5,11 @@
 backend/**/bin/
 backend/**/obj/
 frontend/dist/
+companion-app/dist/
 
 # Node
 frontend/node_modules/
+companion-app/node_modules/
 
 # IDE
 .vs/

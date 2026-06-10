@@ -1,0 +1,37 @@
+{
+  "name": "workshop-orif-companion",
+  "version": "0.1.0",
+  "description": "Companion App — bridges the browser to Docker Desktop for Workshop ORIF exercise environments",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && electron .",
+    "dev": "npm run build && electron . --dev",
+    "test": "tsx --test test/userid.test.ts test/settings.test.ts test/workspace.test.ts test/server.test.ts test/errors.test.ts",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json --noEmit"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "uuid": "^11.1.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.0",
+    "electron": "^34.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "keywords": [
+    "electron",
+    "docker",
+    "vscode",
+    "devcontainer",
+    "workshop"
+  ],
+  "license": "MIT",
+  "allowScripts": {
+    "electron@34.5.8": true
+  }
+}

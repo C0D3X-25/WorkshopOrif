@@ -65,7 +65,9 @@ public class WorkshopsController : ControllerBase
             _ => Builders<Workshop>.Filter.Empty, // apprentice: all workshops
         };
 
-        var result = await _workshops.Find(filter).ToListAsync();
+        var result = await _workshops.Find(filter)
+            .Project<Workshop>(Builders<Workshop>.Projection.Exclude(w => w.DockerEnvironment))
+            .ToListAsync();
         return Ok(result);
     }
 }

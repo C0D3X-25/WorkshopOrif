@@ -1,0 +1,228 @@
+.docker-launch {
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 32px 0;
+  background: var(--code-bg);
+}
+
+.docker-launch-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.docker-launch-icon {
+  font-size: 28px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.docker-launch-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.docker-launch-image {
+  font-size: 13px;
+  color: var(--text-muted, #666);
+  background: transparent;
+  padding: 0;
+}
+
+.docker-launch-meta {
+  font-size: 13px;
+  color: var(--text-muted, #666);
+  margin: 4px 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.docker-launch-meta code {
+  background: var(--code-bg, rgba(0,0,0,0.06));
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.docker-file-chip {
+  background: var(--code-bg, rgba(0,0,0,0.06));
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* ── Action area ──────────────────────────────────────────────────── */
+
+.docker-launch-action {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.docker-launch-status {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted, #666);
+  line-height: 1.5;
+}
+
+.docker-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.docker-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.docker-btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.docker-btn-primary:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.docker-btn-secondary {
+  background: var(--border, #e5e7eb);
+  color: var(--text, #111);
+}
+
+.docker-btn-secondary:hover {
+  background: #d1d5db;
+}
+
+/* ── Spinner ──────────────────────────────────────────────────────── */
+
+.docker-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: docker-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes docker-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Alert / error ────────────────────────────────────────────────── */
+
+.docker-launch-alert {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 14px;
+}
+
+.docker-launch-alert--error {
+  background: rgba(239, 68, 68, 0.07);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.docker-launch-alert strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.docker-launch-alert p {
+  margin: 4px 0 12px;
+  color: var(--text, #444);
+  line-height: 1.5;
+}
+
+/* ── Ready state ──────────────────────────────────────────────────── */
+
+.docker-launch-ready-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #10b981;
+}
+
+.docker-ready-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* ── Restart confirmation dialog ──────────────────────────────────── */
+
+.docker-restart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 1000;
+}
+
+.docker-restart-dialog {
+  width: min(480px, 100%);
+  background: var(--bg, #fff);
+  border: 1.5px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+}
+
+.docker-restart-title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.docker-restart-text {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text, #334155);
+}
+
+.docker-restart-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.docker-btn-danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.docker-btn-danger:hover {
+  background: #b91c1c;
+}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import ChapterContent, { type ContentBlock } from '../components/ChapterContent'
 import QuestionCard, { type Question } from '../components/QuestionCard'
+import DockerLaunchButton from '../components/DockerLaunchButton'
 import './WorkshopDetail.css'
 
 interface Chapter {
@@ -10,6 +11,31 @@ interface Chapter {
   body: string
   blocks?: ContentBlock[]
   questions: Question[]
+}
+
+interface DevContainerConfig {
+  extensions: string[]
+  features: Record<string, string>
+  postCreateCommand: string
+}
+
+interface WorkspaceFile {
+  name: string
+  content?: string
+  gitUrl?: string
+}
+
+interface PortMapping {
+  containerPort: number
+  hostPort: number
+}
+
+interface DockerEnvironment {
+  image: string
+  devContainer: DevContainerConfig
+  workspaceFiles: WorkspaceFile[]
+  ports: PortMapping[]
+  env: Record<string, string>
 }
 
 interface Workshop {
@@ -27,6 +53,7 @@ interface Workshop {
   expectedOutcome: string
   date: string
   chapters: Chapter[]
+  dockerEnvironment?: DockerEnvironment
 }
 
 const TYPE_LABELS: Record<number, string> = { 0: 'Theory', 1: 'Exercise' }
@@ -135,6 +162,13 @@ export default function WorkshopDetail() {
               )
             })}
           </div>
+        )}
+
+        {workshop.dockerEnvironment && (
+          <DockerLaunchButton
+            workshopId={workshop.id}
+            dockerEnvironment={workshop.dockerEnvironment}
+          />
         )}
 
         {workshop.expectedOutcome && (

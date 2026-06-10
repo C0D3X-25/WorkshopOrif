@@ -29,10 +29,12 @@ A single unit of learning — either a theory page or a practical exercise. Belo
 _Avoid_: Module, lesson, chapter, page
 
 **Level**:
-A field on a workshop indicating its depth: `introduction` or `advanced`. Applies to both Theory and Exercise workshops. Access matrix:
+A field on a workshop indicating its depth: `introduction` or `advanced`. Applies to both Theory and Exercise workshops. Default access matrix:
 - Intern: Theory introduction only
 - Observer: Theory introduction + Exercise introduction
 - Apprentice: all workshops (both levels, both types)
+
+Individual workshops may restrict access further based on complexity. Example: a Theory/Introduction workshop on tools is restricted to Observer+ because the concept is judged too abstract for a half-day Intern stage.
 _Avoid_: Difficulty, tier, grade
 
 **Track**:
@@ -44,8 +46,16 @@ A workshop that presents concepts and may include questions at the end. Question
 _Avoid_: Theory module, lecture, reading
 
 **Exercise Workshop**:
-A workshop that presents a hands-on task for the learner to complete.
+A workshop that presents a hands-on task for the learner to complete. May optionally include a `dockerEnvironment` for containerized development.
 _Avoid_: Exercise module, lab, practical
+
+**dockerEnvironment**:
+An optional field on an Exercise Workshop that specifies a containerized development environment. Contains: Docker image reference, Dev Container configuration, workspace files (inline or git-sourced), port mappings, and environment variables. When present, learners use the Companion App to start a local container and connect via VS Code Dev Containers.
+_Avoid_: Container config, Docker setup, runtime environment
+
+**Companion App**:
+A lightweight native application (Tauri/Electron) installed by learners alongside Docker Desktop. Bridges the browser (where the Workshop web app runs) to the local Docker Desktop installation. Handles container lifecycle (start, stop, destroy), VS Code Dev Container launch, and Docker Desktop auto-start. Communicates with the browser over localhost HTTP. Stores a persistent anonymous user ID for container identification.
+_Avoid_: Desktop app, native client, Docker helper
 
 **Question**:
 A self-assessment item embedded in a Theory Workshop. Fields: chapterTitle (groups the question under its chapter heading in the UI), text, type (single-choice or multiple-choice), options (each with text and isCorrect), and explanation shown after answering. Stored as an embedded array in the workshop document. Rendered as a grouped interactive self-assessment section after the workshop content body.
