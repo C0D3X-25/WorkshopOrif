@@ -168,20 +168,15 @@
       ]
     }
   ],
-  "dockerEnvironment": {
-    "image": "python:3.11-slim",
-    "devContainer": {
-      "extensions": ["ms-python.python"],
-      "postCreateCommand": "pip install openai"
-    },
+  "exerciseRuntime": {
+    "compose": "services:\n  workshop:\n    image: python:3.11-slim\n    volumes:\n      - .:/workspace\n    working_dir: /workspace\n    command: sh -c \"pip install -q openai && sleep infinity\"\n",
+    "devService": "workshop",
     "workspaceFiles": [
       {
         "name": "main.py",
         "content": "from openai import OpenAI\nfrom datetime import datetime\n\nclient = OpenAI()  # Lit OPENAI_API_KEY depuis l'environnement\n\n# TODO 1 : Définir le schéma de l'outil get_current_datetime\ntools = []\n\n# TODO 2 : Envoyer la question + outils au modèle\nmessages = [{\"role\": \"user\", \"content\": \"Quelle heure est-il ?\"}]\nresponse = None  # remplacer par l'appel à client.chat.completions.create(...)\n\n# TODO 3 : Intercepter le tool_call et exécuter la vraie fonction\n# tool_call = response.choices[0].message.tool_calls[0]\n# print(f\"Outil appelé : {tool_call.function.name}\")\n# result = datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")\n\n# TODO 4 : Réinjecter le résultat et obtenir la réponse finale\n# messages += [\n#     response.choices[0].message,\n#     {\"role\": \"tool\", \"tool_call_id\": tool_call.id, \"content\": result}\n# ]\n# final = client.chat.completions.create(model=\"gpt-4o-mini\", messages=messages)\n# print(final.choices[0].message.content)\n",
         "gitUrl": null
       }
-    ],
-    "ports": [],
-    "env": {}
+    ]
   }
 }

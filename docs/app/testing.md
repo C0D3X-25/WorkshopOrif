@@ -25,7 +25,9 @@ backend/WorkshopOrif.Api.Tests/
 ├── WorkshopCrudTests.cs          # CRUD operations (GET, POST, PUT, DELETE)
 ├── WorkshopsEndpointsTests.cs    # Listing and filtering endpoints
 ├── AdminAuthTests.cs             # Login and JWT authentication
-└── WorkshopImportExportTests.cs  # Import/export JSON functionality
+├── WorkshopImportExportTests.cs  # Import/export JSON functionality
+├── ExerciseRuntimeTests.cs       # Exercise Runtime CRUD + validation integration
+└── ExerciseRuntimeValidatorTests.cs  # Compose validation unit tests
 ```
 
 ---
@@ -101,6 +103,55 @@ Tests JSON round-trip:
 - Import with `force=true` updates existing
 - Import without `force` returns 409 Conflict for duplicates
 - Export returns workshop in import-compatible format
+
+### 5. Exercise Runtime Tests (`ExerciseRuntimeTests.cs`, `ExerciseRuntimeValidatorTests.cs`)
+
+Tests the ADR 0008 compose-only model:
+
+- POST/GET/PUT round-trip for `exerciseRuntime`
+- Import/export preserves compose and workspace files
+- List endpoint omits `exerciseRuntime`
+- Validator rejects privileged mode, host network, `docker.sock`, absolute volume mounts
+- POST with invalid compose returns `400 Bad Request`
+
+---
+
+## Companion App Tests
+
+The Companion App uses Node's built-in test runner with injectable dependencies (no Docker required for unit tests):
+
+```bash
+cd companion-app
+npm test
+```
+
+| File | Coverage |
+|------|----------|
+| `test/workspace.test.ts` | `compose.yml` materialisation, devcontainer generation, editor URI |
+| `test/server.test.ts` | Launch SSE phases, reset flow, error handling |
+| `test/settings.test.ts` | Editor preference persistence |
+| `test/userid.test.ts` | Anonymous learner ID |
+| `test/errors.test.ts` | User-facing reset error messages |
+
+See [Companion App Architecture](./companion/companion-architecture.md#testing).
+
+---
+
+## Frontend E2E Tests (Playwright)
+
+Exercise launch UI is covered by Playwright specs that mock the Companion HTTP API (no real Docker or Electron):
+
+```bash
+cd frontend
+npx playwright install chromium   # first run only
+npx playwright test
+```
+
+| Spec | Coverage |
+|------|----------|
+| `e2e/workshop-detail-docker.spec.ts` | Exercise runtime card, launch, restart confirmation, reset |
+
+Playwright starts the Vite dev server automatically (`playwright.config.ts`).
 
 ---
 
@@ -265,7 +316,12 @@ Each test is isolated:
 
 ## Frontend Testing
 
-Currently minimal frontend testing. To add:
+Component-level unit tests are minimal. Exercise launch behaviour is covered by:
+
+- **Playwright e2e** — `frontend/e2e/workshop-detail-docker.spec.ts` (mocked Companion)
+- **Companion unit tests** — launch handler SSE contract
+
+To add React component tests:
 
 ```bash
 cd frontend
@@ -375,5 +431,6 @@ docker pull mongo:8.0
 ## Related Documentation
 
 - [Backend Architecture](./backend/backend-architecture.md) — Code being tested
+- [Companion App Architecture](./companion/companion-architecture.md) — Companion test strategy
 - [API Reference](./api/api-reference.md) — Endpoints under test
 - [Docker Deployment](./docker/docker-deployment.md) — Testing in containers

@@ -23,6 +23,56 @@ For practical guidance on writing content, see the [Workshop Style Guide](./work
 | `date` | `string` | No | Workshop date in ISO format: `"YYYY-MM-DD"`. |
 | `expectedOutcome` | `string` | No | Learning objective statement: "After this workshop, learners will..." |
 | `chapters` | `Chapter[]` | **Yes** | Ordered array of content chapters. Can be empty `[]` for drafts. |
+| `exerciseRuntime` | `ExerciseRuntime` | No | Containerised environment for **Exercise** workshops. Omit for theory-only or non-container exercises. See [Exercise Runtime](#exercise-runtime-object) below. |
+
+---
+
+## Exercise Runtime Object
+
+Optional on **Exercise** workshops. Defines the containerised **Coding Surface** launched by the [Companion App](../app/companion/companion-architecture.md).
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `compose` | `string` | **Yes** (if runtime present) | Docker Compose YAML. Use `\n` for newlines in JSON. |
+| `devService` | `string` | **Yes** (if runtime present) | Name of the compose service the learner's IDE attaches to (e.g. `"workshop"`). Must match a key under `services:` in `compose`. |
+| `workspaceFiles` | `WorkspaceFile[]` | No | Starter files written on first Launch. |
+
+### WorkspaceFile
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | `string` | Relative path in the workspace (e.g. `"main.py"`, `"src/app.py"`) |
+| `content` | `string` | Inline file content (preferred for small starters) |
+| `gitUrl` | `string \| null` | Reserved — git-sourced files not yet supported by the Companion |
+
+### Compose authoring rules
+
+The backend validates compose on import and admin save. Rejected patterns include:
+
+- `privileged: true`
+- `network_mode: host`
+- Mounting `docker.sock`
+- Volume host paths that are not workspace-relative (must start with `.`)
+
+**Example** (equivalent to the Python tools workshop):
+
+```json
+"exerciseRuntime": {
+  "compose": "services:\n  workshop:\n    image: python:3.11-slim\n    volumes:\n      - .:/workspace\n    working_dir: /workspace\n    command: sh -c \"pip install -q openai && sleep infinity\"\n",
+  "devService": "workshop",
+  "workspaceFiles": [
+    {
+      "name": "main.py",
+      "content": "print('hello')\n",
+      "gitUrl": null
+    }
+  ]
+}
+```
+
+Authors never write `.devcontainer/devcontainer.json` — the Companion generates it at Launch from `compose` + `devService`.
+
+> **Deprecated:** The former `dockerEnvironment` object (`image`, `devContainer`, `ports`, `env`) was removed in ADR 0008. Use compose-only `exerciseRuntime` for all containerised exercises.
 
 ---
 
@@ -364,3 +414,4 @@ python -c "import json; json.load(open('workshop.json')); print('Valid JSON!')"
 - [Workshop Style Guide](./workshop-style-guide.md) — Best practices for content
 - [How-To Overview](./workshop-creation-guide.md) — Creating and importing workshops
 - [Templates](./templates/) — Starter workshop JSON files
+- [Companion App Architecture](../app/companion/companion-architecture.md) — Launch flow and compose authoring

@@ -14,47 +14,34 @@ type Phase =
   | 'ready'
   | 'error'
 
-interface DevContainerConfig {
-  extensions: string[]
-  features: Record<string, string>
-  postCreateCommand: string
-}
-
 interface WorkspaceFile {
   name: string
   content?: string
   gitUrl?: string
 }
 
-interface PortMapping {
-  containerPort: number
-  hostPort: number
-}
-
-interface DockerEnvironment {
-  image: string
-  devContainer: DevContainerConfig
+interface ExerciseRuntime {
+  compose: string
+  devService: string
   workspaceFiles: WorkspaceFile[]
-  ports: PortMapping[]
-  env: Record<string, string>
 }
 
 interface Props {
   workshopId: string
-  dockerEnvironment: DockerEnvironment
+  exerciseRuntime: ExerciseRuntime
 }
 
 const PHASE_LABELS: Record<Phase, string> = {
   idle:         'Lancer l\'exercice',
   checking:     'Vérification de la Companion App…',
   'no-companion': '',
-  pulling:      'Téléchargement de l\'image Docker…',
-  starting:     'Démarrage du container…',
+  pulling:      'Démarrage de la stack Docker…',
+  starting:     'Préparation de l\'espace de travail…',
   ready:        'VS Code ouvert',
   error:        'Erreur',
 }
 
-export default function DockerLaunchButton({ workshopId, dockerEnvironment }: Props) {
+export default function DockerLaunchButton({ workshopId, exerciseRuntime }: Props) {
   const [phase, setPhase] = useState<Phase>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [pullMessage, setPullMessage] = useState<string | null>(null)
@@ -86,11 +73,9 @@ export default function DockerLaunchButton({ workshopId, dockerEnvironment }: Pr
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           workshopId,
-          image:          dockerEnvironment.image,
-          devContainer:   dockerEnvironment.devContainer,
-          workspaceFiles: dockerEnvironment.workspaceFiles,
-          ports:          dockerEnvironment.ports,
-          env:            dockerEnvironment.env,
+          compose:          exerciseRuntime.compose,
+          devService:       exerciseRuntime.devService,
+          workspaceFiles:   exerciseRuntime.workspaceFiles,
         }),
       })
 
@@ -224,32 +209,16 @@ export default function DockerLaunchButton({ workshopId, dockerEnvironment }: Pr
         <span className="docker-launch-icon" aria-hidden="true">🐳</span>
         <div>
           <h2 className="docker-launch-title">Environnement de l'exercice</h2>
-          <code className="docker-launch-image" data-testid="docker-image">
-            {dockerEnvironment.image}
+          <code className="docker-launch-image" data-testid="docker-dev-service">
+            Service : {exerciseRuntime.devService}
           </code>
         </div>
       </div>
 
-      {dockerEnvironment.devContainer?.extensions?.length > 0 && (
-        <p className="docker-launch-meta">
-          Extensions VS Code :&nbsp;
-          <span>{dockerEnvironment.devContainer.extensions.join(', ')}</span>
-        </p>
-      )}
-
-      {dockerEnvironment.devContainer?.postCreateCommand && (
-        <p className="docker-launch-meta">
-          Setup :&nbsp;
-          <code data-testid="docker-post-create-command">
-            {dockerEnvironment.devContainer.postCreateCommand}
-          </code>
-        </p>
-      )}
-
-      {dockerEnvironment.workspaceFiles?.length > 0 && (
+      {exerciseRuntime.workspaceFiles?.length > 0 && (
         <p className="docker-launch-meta">
           Fichiers fournis :&nbsp;
-          {dockerEnvironment.workspaceFiles.map(f => (
+          {exerciseRuntime.workspaceFiles.map(f => (
             <code key={f.name} className="docker-file-chip">{f.name}</code>
           ))}
         </p>

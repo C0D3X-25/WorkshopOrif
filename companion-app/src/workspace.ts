@@ -4,15 +4,13 @@ import { execFile } from 'node:child_process';
 import { BASE_DIR } from './userid';
 import { getEditorPreference } from './settings';
 import type { EditorPreference } from './settings';
-import type { WorkshopEnv } from './types';
+import type { ExerciseRuntime } from './types';
 
 export interface DevcontainerJson {
   name: string;
-  image: string;
-  customizations?: { vscode: { extensions: string[] } };
-  postCreateCommand?: string;
-  forwardPorts?: number[];
-  remoteEnv?: Record<string, string>;
+  dockerComposeFile: string;
+  service: string;
+  workspaceFolder: string;
 }
 
 export interface FsLike {
@@ -39,51 +37,35 @@ export interface CloseEditorResult {
   closed: boolean;
 }
 
-// ── Pure builder ──────────────────────────────────────────────────────────────
+const DEFAULT_WORKSPACE_FOLDER = '/workspace';
 
-export function buildDevcontainerJson(workshopId: string, env: WorkshopEnv): DevcontainerJson {
-  const dc: DevcontainerJson = {
+export function buildDevcontainerJson(workshopId: string, runtime: ExerciseRuntime): DevcontainerJson {
+  return {
     name: `Workshop ORIF — ${workshopId}`,
-    image: env.image,
+    dockerComposeFile: '../compose.yml',
+    service: runtime.devService,
+    workspaceFolder: DEFAULT_WORKSPACE_FOLDER,
   };
-
-  const extensions = env.devContainer?.extensions ?? [];
-  if (extensions.length > 0) {
-    dc.customizations = { vscode: { extensions } };
-  }
-
-  if (env.devContainer?.postCreateCommand) {
-    dc.postCreateCommand = env.devContainer.postCreateCommand;
-  }
-
-  if (env.ports && env.ports.length > 0) {
-    dc.forwardPorts = env.ports.map((p) => p.containerPort);
-  }
-
-  const remoteEnv = env.env ?? {};
-  if (Object.keys(remoteEnv).length > 0) {
-    dc.remoteEnv = remoteEnv;
-  }
-
-  return dc;
 }
 
-// ── Injectable factories ──────────────────────────────────────────────────────
+export function buildDevContainerFolderUri(wsDir: string, workspaceFolder = DEFAULT_WORKSPACE_FOLDER): string {
+  const configPath = path.join(wsDir, '.devcontainer', 'devcontainer.json');
+  const encoded = Buffer.from(configPath).toString('base64url');
+  return `vscode-remote://dev-container+${encoded}${workspaceFolder}`;
+}
 
-/**
- * Creates workspace operations backed by the given fsModule and baseDir.
- * Accepts injectable fs for testability.
- */
 export function makeWorkspace(fsModule: FsLike, baseDir: string) {
   function workshopDir(workshopId: string): string {
     return path.join(baseDir, 'workspaces', workshopId);
   }
 
-  function prepareWorkspace(workshopId: string, env: WorkshopEnv): string {
+  function prepareWorkspace(workshopId: string, runtime: ExerciseRuntime): string {
     const wsDir = workshopDir(workshopId);
     fsModule.mkdirSync(wsDir, { recursive: true });
 
-    for (const file of env.workspaceFiles ?? []) {
+    fsModule.writeFileSync(path.join(wsDir, 'compose.yml'), runtime.compose, 'utf8');
+
+    for (const file of runtime.workspaceFiles ?? []) {
       if (!file.name) continue;
 
       if (file.gitUrl) {
@@ -103,7 +85,7 @@ export function makeWorkspace(fsModule: FsLike, baseDir: string) {
     const dcDir = path.join(wsDir, '.devcontainer');
     fsModule.mkdirSync(dcDir, { recursive: true });
 
-    const devcontainer = buildDevcontainerJson(workshopId, env);
+    const devcontainer = buildDevcontainerJson(workshopId, runtime);
     fsModule.writeFileSync(
       path.join(dcDir, 'devcontainer.json'),
       JSON.stringify(devcontainer, null, 2),
@@ -114,18 +96,18 @@ export function makeWorkspace(fsModule: FsLike, baseDir: string) {
   }
 
   function hasWorkspace(workshopId: string): boolean {
-    const dcPath = path.join(workshopDir(workshopId), '.devcontainer', 'devcontainer.json');
-    return fsModule.existsSync(dcPath);
+    const composePath = path.join(workshopDir(workshopId), 'compose.yml');
+    return fsModule.existsSync(composePath);
   }
 
   async function resetWorkspace(
     workshopId: string,
-    removeContainers: (wsDir: string) => Promise<void>,
+    tearDownStack: (wsDir: string) => Promise<void>,
   ): Promise<void> {
     const wsDir = workshopDir(workshopId);
     if (!fsModule.existsSync(wsDir)) return;
 
-    await removeContainers(wsDir);
+    await tearDownStack(wsDir);
     fsModule.rmSync(wsDir, { recursive: true, force: true });
   }
 
@@ -175,6 +157,20 @@ export function buildCloseEditorCommand(wsDir: string): [string, string[]] {
   return ['bash', ['-lc', script]];
 }
 
+export function devContainerLaunchCandidates(
+  preference: EditorPreference,
+  folderUri: string,
+): [string, string[]][] {
+  const make = (cli: 'code' | 'cursor'): [string, string[]] =>
+    process.platform === 'win32'
+      ? ['cmd', ['/c', cli, '--folder-uri', folderUri]]
+      : [cli, ['--folder-uri', folderUri]];
+
+  const primary = preference === 'vscode' ? 'code' : 'cursor';
+  const fallback = preference === 'vscode' ? 'cursor' : 'code';
+  return [make(primary), make(fallback)];
+}
+
 export function editorLaunchCandidates(
   preference: EditorPreference,
   wsDir: string,
@@ -189,10 +185,6 @@ export function editorLaunchCandidates(
   return [make(primary), make(fallback)];
 }
 
-/**
- * Creates an editor launcher backed by the given execFileFn.
- * Accepts injectable execFile and preference getter for testability.
- */
 export function makeEditorLauncher(
   execFileFn: ExecFileFn,
   execFileWithOutputFn?: ExecFileWithOutputFn,
@@ -215,7 +207,8 @@ export function makeEditorLauncher(
   }
 
   function openInVSCode(wsDir: string): Promise<void> {
-    return tryNext(editorLaunchCandidates(getPreference(), wsDir));
+    const folderUri = buildDevContainerFolderUri(wsDir);
+    return tryNext(devContainerLaunchCandidates(getPreference(), folderUri));
   }
 
   function closeEditorForWorkspace(wsDir: string): Promise<CloseEditorResult> {
@@ -238,8 +231,6 @@ export function makeEditorLauncher(
 
   return { openInVSCode, closeEditorForWorkspace };
 }
-
-// ── Default instances backed by real fs + child_process ──────────────────────
 
 const defaultExecFileWithOutput: ExecFileWithOutputFn = (file, args, options, callback) => {
   execFile(file, args, options, callback);

@@ -3,10 +3,12 @@ using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using System.Text;
 using WorkshopOrif.Api;
+using WorkshopOrif.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddSingleton<IExerciseRuntimeValidator, ExerciseRuntimeValidator>();
 
 var jwtSecret = builder.Configuration["Jwt:Secret"]
     ?? throw new InvalidOperationException("Jwt:Secret is required");

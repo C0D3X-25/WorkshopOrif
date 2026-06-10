@@ -1,10 +1,6 @@
 import { execFile as defaultExecFile, spawn as defaultSpawn } from 'node:child_process';
 import type { DockerStatus } from './types';
 
-/**
- * Creates Docker operations backed by the given execFileFn and spawnFn.
- * Accepts injectable child_process functions for testability.
- */
 export function makeDockerOps(
   execFileFn: typeof defaultExecFile,
   spawnFn: typeof defaultSpawn,
@@ -31,9 +27,13 @@ export function makeDockerOps(
     }
   }
 
-  function pullImage(image: string, onLine: (line: string) => void): Promise<void> {
+  function composeUp(wsDir: string, onLine: (line: string) => void): Promise<void> {
     return new Promise((resolve, reject) => {
-      const proc = spawnFn('docker', ['pull', image]);
+      const proc = spawnFn(
+        'docker',
+        ['compose', '-f', 'compose.yml', 'up', '-d', '--remove-orphans'],
+        { cwd: wsDir },
+      );
 
       proc.stdout.on('data', (chunk: Buffer | string) => {
         for (const line of chunk.toString().split('\n')) {
@@ -49,43 +49,35 @@ export function makeDockerOps(
 
       proc.on('close', (code) => {
         if (code === 0) resolve();
-        else reject(new Error(`docker pull exited with code ${code}`));
+        else reject(new Error(`docker compose up exited with code ${code}`));
       });
 
       proc.on('error', reject);
     });
   }
 
-  function removeDevContainersForPath(localFolder: string): Promise<void> {
+  function composeDown(wsDir: string): Promise<void> {
     return new Promise((resolve) => {
       execFileFn(
         'docker',
-        ['ps', '-aq', '--filter', `label=devcontainer.local_folder=${localFolder}`],
-        { encoding: 'utf8' },
-        (err, stdout) => {
-          if (err) {
-            resolve();
-            return;
-          }
-
-          const ids = stdout.trim().split('\n').filter(Boolean);
-          if (ids.length === 0) {
-            resolve();
-            return;
-          }
-
-          execFileFn('docker', ['rm', '-f', ...ids], {}, () => resolve());
-        },
+        ['compose', '-f', 'compose.yml', 'down', '--remove-orphans'],
+        { cwd: wsDir, timeout: 60_000 },
+        () => resolve(),
       );
     });
   }
 
-  return { checkDocker, startDockerDesktop, pullImage, removeDevContainersForPath };
+  function removeDevContainersForPath(localFolder: string): Promise<void> {
+    return composeDown(localFolder);
+  }
+
+  return { checkDocker, startDockerDesktop, composeUp, composeDown, removeDevContainersForPath };
 }
 
 const defaultOps = makeDockerOps(defaultExecFile, defaultSpawn);
 
 export const checkDocker = defaultOps.checkDocker;
 export const startDockerDesktop = defaultOps.startDockerDesktop;
-export const pullImage = defaultOps.pullImage;
+export const composeUp = defaultOps.composeUp;
+export const composeDown = defaultOps.composeDown;
 export const removeDevContainersForPath = defaultOps.removeDevContainersForPath;

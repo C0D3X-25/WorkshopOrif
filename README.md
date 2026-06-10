@@ -2,7 +2,9 @@
 
 A web app that teaches IT professionals what AI is, through theory workshops, exercise workshops, and an awareness track. Content is gated by learner profile (Intern, Observer, Apprentice).
 
-**Stack:** React (Vite + TypeScript) · ASP.NET Core 10 · MongoDB 8 · Docker Compose
+**Stack:** React (Vite + TypeScript) · ASP.NET Core 10 · MongoDB 8 · Docker Compose · Companion App (Electron)
+
+Exercise workshops with a containerised environment also require the **[Companion App](companion-app/README.md)** on each learner machine — see [docs/app/companion/companion-architecture.md](docs/app/companion/companion-architecture.md).
 
 ---
 
@@ -99,3 +101,19 @@ Backend integration tests (requires Docker for TestContainers):
 cd backend
 dotnet test
 ```
+
+Companion App unit tests:
+
+```sh
+cd companion-app
+npm test
+```
+
+Frontend e2e (Playwright, mocks Companion — first run: `npx playwright install chromium`):
+
+```sh
+cd frontend
+npx playwright test
+```
+
+See [docs/app/testing.md](docs/app/testing.md) for details.

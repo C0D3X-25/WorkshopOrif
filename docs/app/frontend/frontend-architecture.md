@@ -32,7 +32,8 @@ frontend/
 │       ├── ChapterContent.tsx   # Renders chapter body/blocks
 │       ├── StructuredContent.tsx # Renders structured elements
 │       ├── ContentTable.tsx     # Renders table blocks
-│       └── QuestionCard.tsx     # Quiz question UI
+│       ├── QuestionCard.tsx     # Quiz question UI
+│       └── DockerLaunchButton.tsx # Exercise Runtime launch UI
 ├── public/                   # Static assets
 ├── index.html                # HTML template
 ├── nginx.conf                # Production server config
@@ -115,9 +116,22 @@ const hasProfile = Boolean(localStorage.getItem('profile'))
   - Materials list
   - Chapters (with section headers)
   - Questions
+  - **Exercise Runtime launch** (when `exerciseRuntime` is present)
   - Expected outcome
 
 **Print Support:** Includes a "Print / Export PDF" button and `no-print` CSS classes for interactive elements.
+
+#### DockerLaunchButton
+
+**Location:** [`components/DockerLaunchButton.tsx`](../../../frontend/src/components/DockerLaunchButton.tsx)
+
+Renders the **Lancer l'exercice** flow for workshops with an `exerciseRuntime`:
+
+1. Probes `GET /companion/health` (proxied to the learner's Companion App on port 37428)
+2. Streams `POST /companion/containers/launch` (SSE) with `compose`, `devService`, and `workspaceFiles` from the workshop
+3. Shows restart confirmation dialog → `POST /companion/containers/reset`
+
+The Companion runs `docker compose up` and opens VS Code/Cursor directly into the dev service — see [Companion App Architecture](../companion/companion-architecture.md).
 
 ### Shared Components
 
@@ -296,17 +310,14 @@ interface Chapter {
 
 ## Testing
 
-Integration tests are in the backend project (TestContainers-based). Frontend testing can be added via:
-
-```bash
-npm install -D vitest @testing-library/react
-```
+Integration tests are in the backend and companion projects. Frontend e2e uses Playwright with a mocked Companion API — see [Testing Guide](../testing.md).
 
 ---
 
 ## Related Documentation
 
 - [API Reference](../api/api-reference.md) — Backend endpoints consumed by these components
-- [Docker Deployment](../docker/docker-deployment.md) — Frontend container configuration
-- [Testing Guide](../testing.md) — Running and writing tests
-- [Workshop JSON Format](../../workshop-json-format.md) — Data structure rendered by these components
+- [Companion App Architecture](../companion/companion-architecture.md) — Launch flow behind DockerLaunchButton
+- [Docker Deployment](../docker/docker-deployment.md) — Frontend container and `/companion` proxy
+- [Testing Guide](../testing.md) — Playwright e2e specs
+- [Workshop JSON Reference](../../how-to/json-reference.md) — Data structure rendered by these components

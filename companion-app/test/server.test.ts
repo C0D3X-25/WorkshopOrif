@@ -10,8 +10,6 @@ import {
 } from '../src/server';
 import type { DockerStatus } from '../src/types';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
 interface SseEvent {
   phase: string;
   message?: string;
@@ -36,6 +34,12 @@ interface MockResponse extends EventEmitter {
   _statusBody?: unknown;
   _events_collected: SseEvent[];
 }
+
+const sampleBody = {
+  workshopId: 'ws1',
+  compose: 'services:\n  workshop:\n    image: python:3.11\n',
+  devService: 'workshop',
+};
 
 function mockReq(body: unknown, params: Record<string, string> = {}): MockRequest {
   const emitter = new EventEmitter() as MockRequest;
@@ -82,33 +86,33 @@ function defaultDeps(overrides: Partial<LaunchHandlerDeps> = {}): LaunchHandlerD
   return {
     checkDocker: async () => 'running' as DockerStatus,
     startDockerDesktop: noop,
-    pullImage: async () => {},
+    composeUp: async () => {},
     prepareWorkspace: () => '/tmp/ws1',
     openInVSCode: async () => {},
     ...overrides,
   };
 }
 
-// ── Tests ─────────────────────────────────────────────────────────────────────
-
 describe('launch handler', () => {
   test('rejects with 400 when workshopId is missing', async () => {
     const handler = createLaunchHandler(defaultDeps());
-    const req = mockReq({ image: 'python:3.11' });
+    const req = mockReq({ compose: sampleBody.compose, devService: 'workshop' });
     const res = mockRes();
 
     await handler(req as unknown as Request, res as unknown as Response);
 
     assert.equal(res._statusCode, 400);
-    assert.equal((res._statusBody as { error?: string })?.error, 'workshopId and image are required');
+    assert.equal(
+      (res._statusBody as { error?: string })?.error,
+      'workshopId, compose, and devService are required',
+    );
   });
 
   test('still streams events after the POST body has been read', async () => {
     const handler = createLaunchHandler(defaultDeps());
-    const req = mockReq({ workshopId: 'ws1', image: 'python:3.11' });
+    const req = mockReq(sampleBody);
     const res = mockRes();
 
-    // Mimics Node: 'close' on the request fires once the body is consumed.
     req.emit('close');
 
     await handler(req as unknown as Request, res as unknown as Response);
@@ -118,23 +122,23 @@ describe('launch handler', () => {
     assert.ok(phases.includes('ready'), 'must emit ready after req close');
   });
 
-  test('streams pulling → starting → ready on success', async () => {
+  test('streams starting → pulling → ready on success', async () => {
     const handler = createLaunchHandler(defaultDeps());
-    const req = mockReq({ workshopId: 'ws1', image: 'python:3.11' });
+    const req = mockReq(sampleBody);
     const res = mockRes();
 
     await handler(req as unknown as Request, res as unknown as Response);
 
     const phases = res._events_collected.map((e) => e.phase);
-    assert.ok(phases.includes('pulling'), 'must emit pulling');
     assert.ok(phases.includes('starting'), 'must emit starting');
+    assert.ok(phases.includes('pulling'), 'must emit pulling');
     assert.ok(phases.includes('ready'), 'must emit ready');
     assert.ok(res.writableEnded, 'response must be closed');
   });
 
   test('streams error phase when Docker is stopped', async () => {
     const handler = createLaunchHandler(defaultDeps({ checkDocker: async () => 'stopped' }));
-    const req = mockReq({ workshopId: 'ws1', image: 'python:3.11' });
+    const req = mockReq(sampleBody);
     const res = mockRes();
 
     await handler(req as unknown as Request, res as unknown as Response);
@@ -144,33 +148,32 @@ describe('launch handler', () => {
     assert.ok(!phases.includes('ready'), 'must not emit ready');
   });
 
-  test('streams error phase when pull fails', async () => {
+  test('streams error phase when compose up fails', async () => {
     const handler = createLaunchHandler(defaultDeps({
-      pullImage: async () => { throw new Error('network error'); },
+      composeUp: async () => { throw new Error('compose failed'); },
     }));
-    const req = mockReq({ workshopId: 'ws1', image: 'python:3.11' });
+    const req = mockReq(sampleBody);
     const res = mockRes();
 
     await handler(req as unknown as Request, res as unknown as Response);
 
     const err = res._events_collected.find((e) => e.phase === 'error');
     assert.ok(err, 'must emit error event');
-    assert.ok(err?.message?.includes('network error'));
+    assert.ok(err?.message?.includes('compose failed'));
   });
 
   test('does not crash when client disconnects and socket emits EPIPE', async () => {
     let resolveP: () => void = () => {};
-    const pullBarrier = new Promise<void>((r) => { resolveP = r; });
+    const composeBarrier = new Promise<void>((r) => { resolveP = r; });
 
     const handler = createLaunchHandler(defaultDeps({
-      pullImage: () => pullBarrier,
+      composeUp: () => composeBarrier,
     }));
-    const req = mockReq({ workshopId: 'ws1', image: 'python:3.11' });
+    const req = mockReq(sampleBody);
     const res = mockRes();
 
     const handlerDone = handler(req as unknown as Request, res as unknown as Response);
 
-    // Simulate client disconnect + socket EPIPE while pull is in progress
     req.emit('aborted');
     res.socket.emit('error', Object.assign(new Error('write EPIPE'), { code: 'EPIPE' }));
 
@@ -181,9 +184,7 @@ describe('launch handler', () => {
 
 describe('status handler', () => {
   test('returns ready true when workspace exists', () => {
-    const handler = createStatusHandler({
-      hasWorkspace: () => true,
-    });
+    const handler = createStatusHandler({ hasWorkspace: () => true });
     const req = mockReq({}, { workshopId: 'ws1' });
     const res = mockRes();
 
@@ -193,9 +194,7 @@ describe('status handler', () => {
   });
 
   test('returns ready false when workspace does not exist', () => {
-    const handler = createStatusHandler({
-      hasWorkspace: () => false,
-    });
+    const handler = createStatusHandler({ hasWorkspace: () => false });
     const req = mockReq({}, { workshopId: 'ws1' });
     const res = mockRes();
 

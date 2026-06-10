@@ -10,7 +10,7 @@ using WorkshopOrif.Api.Models;
 
 namespace WorkshopOrif.Api.Tests;
 
-public class DockerEnvironmentTests : IAsyncLifetime
+public class ExerciseRuntimeTests : IAsyncLifetime
 {
     private readonly MongoDbContainer _mongoContainer = new MongoDbBuilder()
         .WithImage("mongo:8.0")
@@ -21,6 +21,12 @@ public class DockerEnvironmentTests : IAsyncLifetime
     private const string AdminPassword = "secret123";
     private const string JwtSecret = "test-jwt-secret-that-is-at-least-32-chars!!";
 
+    private const string MinimalCompose = """
+        services:
+          workshop:
+            image: python:3.11
+        """;
+
     public async Task InitializeAsync()
     {
         await _mongoContainer.StartAsync();
@@ -30,7 +36,7 @@ public class DockerEnvironmentTests : IAsyncLifetime
             {
                 builder.UseSetting("environment", "Testing");
                 builder.UseSetting("MongoDB:ConnectionString", _mongoContainer.GetConnectionString());
-                builder.UseSetting("MongoDB:DatabaseName", "workshoporif_docker_test");
+                builder.UseSetting("MongoDB:DatabaseName", "workshoporif_exercise_runtime_test");
                 builder.UseSetting("AdminPassword", AdminPassword);
                 builder.UseSetting("Jwt:Secret", JwtSecret);
             });
@@ -66,7 +72,7 @@ public class DockerEnvironmentTests : IAsyncLifetime
     // ── Cycle 1: Tracer Bullet ────────────────────────────────────────────
 
     [Fact]
-    public async Task PostWorkshop_WithDockerEnvironment_GetDetailReturnsDockerEnvironment()
+    public async Task PostWorkshop_WithExerciseRuntime_GetDetailReturnsExerciseRuntime()
     {
         await AuthenticateAsync();
 
@@ -75,7 +81,11 @@ public class DockerEnvironmentTests : IAsyncLifetime
             title = "Python Tools",
             type = 1,   // Exercise
             level = 0,  // Introduction
-            dockerEnvironment = new { image = "python:3.11" }
+            exerciseRuntime = new
+            {
+                compose = MinimalCompose,
+                devService = "workshop"
+            }
         });
 
         postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -85,14 +95,14 @@ public class DockerEnvironmentTests : IAsyncLifetime
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var workshop = await getResponse.Content.ReadFromJsonAsync<Workshop>();
 
-        workshop!.DockerEnvironment.Should().NotBeNull();
-        workshop.DockerEnvironment!.Image.Should().Be("python:3.11");
+        workshop!.ExerciseRuntime!.DevService.Should().Be("workshop");
+        workshop.ExerciseRuntime.Compose.Should().Contain("python:3.11");
     }
 
-    // ── Cycle 2: PUT replaces dockerEnvironment ───────────────────────────
+    // ── Cycle 2: PUT replaces exerciseRuntime ─────────────────────────────
 
     [Fact]
-    public async Task PutWorkshop_UpdatesDockerEnvironment()
+    public async Task PutWorkshop_UpdatesExerciseRuntime()
     {
         using var scope = _factory!.Services.CreateScope();
         var col = scope.ServiceProvider.GetRequiredService<IMongoDatabase>()
@@ -100,15 +110,23 @@ public class DockerEnvironmentTests : IAsyncLifetime
 
         var workshop = new Workshop
         {
-            Title = "Docker Update Test",
+            Title = "Exercise Runtime Update Test",
             Type = WorkshopType.Exercise,
             Level = WorkshopLevel.Introduction,
-            DockerEnvironment = new DockerEnvironment { Image = "python:3.10" }
+            ExerciseRuntime = new ExerciseRuntime
+            {
+                Compose = "services:\n  workshop:\n    image: python:3.10\n",
+                DevService = "workshop"
+            }
         };
         await col.InsertOneAsync(workshop);
 
         await AuthenticateAsync();
-        workshop.DockerEnvironment = new DockerEnvironment { Image = "python:3.12" };
+        workshop.ExerciseRuntime = new ExerciseRuntime
+        {
+            Compose = "services:\n  workshop:\n    image: python:3.12\n",
+            DevService = "workshop"
+        };
 
         var putResponse = await _client!.PutAsJsonAsync($"/workshops/{workshop.Id}", workshop);
         putResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -116,36 +134,29 @@ public class DockerEnvironmentTests : IAsyncLifetime
         var getResponse = await _client.GetAsync($"/workshops/{workshop.Id}");
         var updated = await getResponse.Content.ReadFromJsonAsync<Workshop>();
 
-        updated!.DockerEnvironment!.Image.Should().Be("python:3.12");
+        updated!.ExerciseRuntime!.Compose.Should().Contain("python:3.12");
     }
 
     // ── Cycle 3: Import/export round-trip ────────────────────────────────
 
     [Fact]
-    public async Task ImportWorkshop_WithDockerEnvironment_ExportReturnsSameDockerEnvironment()
+    public async Task ImportWorkshop_WithExerciseRuntime_ExportReturnsSameExerciseRuntime()
     {
         await AuthenticateAsync();
 
         var importPayload = new
         {
-            title = "Docker Import Test",
+            title = "Exercise Runtime Import Test",
             type = "Exercise",
             level = "Introduction",
-            dockerEnvironment = new
+            exerciseRuntime = new
             {
-                image = "python:3.11",
-                devContainer = new
-                {
-                    extensions = new[] { "ms-python.python" },
-                    features = new Dictionary<string, string>(),
-                    postCreateCommand = "pip install openai"
-                },
+                compose = MinimalCompose,
+                devService = "workshop",
                 workspaceFiles = new[]
                 {
                     new { name = "main.py", content = "print('hello')", gitUrl = (string?)null }
-                },
-                ports = new[] { new { containerPort = 8000, hostPort = 8000 } },
-                env = new Dictionary<string, string> { ["OPENAI_KEY"] = "test" }
+                }
             }
         };
 
@@ -158,21 +169,17 @@ public class DockerEnvironmentTests : IAsyncLifetime
         exportResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var dto = await exportResponse.Content.ReadFromJsonAsync<WorkshopImportDto>();
 
-        dto!.DockerEnvironment.Should().NotBeNull();
-        dto.DockerEnvironment!.Image.Should().Be("python:3.11");
-        dto.DockerEnvironment.DevContainer.Extensions.Should().Contain("ms-python.python");
-        dto.DockerEnvironment.DevContainer.PostCreateCommand.Should().Be("pip install openai");
-        dto.DockerEnvironment.WorkspaceFiles.Should().HaveCount(1);
-        dto.DockerEnvironment.WorkspaceFiles[0].Name.Should().Be("main.py");
-        dto.DockerEnvironment.Ports.Should().HaveCount(1);
-        dto.DockerEnvironment.Ports[0].ContainerPort.Should().Be(8000);
-        dto.DockerEnvironment.Env["OPENAI_KEY"].Should().Be("test");
+        dto!.ExerciseRuntime.Should().NotBeNull();
+        dto.ExerciseRuntime!.DevService.Should().Be("workshop");
+        dto.ExerciseRuntime.Compose.Should().Contain("python:3.11");
+        dto.ExerciseRuntime.WorkspaceFiles.Should().HaveCount(1);
+        dto.ExerciseRuntime.WorkspaceFiles[0].Name.Should().Be("main.py");
     }
 
-    // ── Cycle 4: null dockerEnvironment — no breakage ────────────────────
+    // ── Cycle 4: null exerciseRuntime — no breakage ──────────────────────
 
     [Fact]
-    public async Task GetWorkshop_WithNullDockerEnvironment_ReturnsOkWithNullDockerEnvironment()
+    public async Task GetWorkshop_WithNullExerciseRuntime_ReturnsOkWithNullExerciseRuntime()
     {
         using var scope = _factory!.Services.CreateScope();
         var col = scope.ServiceProvider.GetRequiredService<IMongoDatabase>()
@@ -180,7 +187,7 @@ public class DockerEnvironmentTests : IAsyncLifetime
 
         var workshop = new Workshop
         {
-            Title = "Theory Without Docker",
+            Title = "Theory Without Exercise Runtime",
             Type = WorkshopType.Theory,
             Level = WorkshopLevel.Introduction
         };
@@ -190,13 +197,13 @@ public class DockerEnvironmentTests : IAsyncLifetime
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<Workshop>();
-        result!.DockerEnvironment.Should().BeNull();
+        result!.ExerciseRuntime.Should().BeNull();
     }
 
-    // ── Cycle 5: list omits dockerEnvironment ────────────────────────────
+    // ── Cycle 5: list omits exerciseRuntime ──────────────────────────────
 
     [Fact]
-    public async Task GetWorkshops_ListResponse_OmitsDockerEnvironmentField()
+    public async Task GetWorkshops_ListResponse_OmitsExerciseRuntimeField()
     {
         using var scope = _factory!.Services.CreateScope();
         var col = scope.ServiceProvider.GetRequiredService<IMongoDatabase>()
@@ -204,18 +211,49 @@ public class DockerEnvironmentTests : IAsyncLifetime
 
         await col.InsertOneAsync(new Workshop
         {
-            Title = "Exercise With Docker",
+            Title = "Exercise With Runtime",
             Type = WorkshopType.Exercise,
             Level = WorkshopLevel.Introduction,
-            DockerEnvironment = new DockerEnvironment { Image = "python:3.11" }
+            ExerciseRuntime = new ExerciseRuntime
+            {
+                Compose = MinimalCompose,
+                DevService = "workshop"
+            }
         });
 
         var response = await _client!.GetAsync("/workshops?profile=apprentice");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var json = await response.Content.ReadFromJsonAsync<JsonElement[]>();
-        var item = json!.First(w => w.GetProperty("title").GetString() == "Exercise With Docker");
+        var item = json!.First(w => w.GetProperty("title").GetString() == "Exercise With Runtime");
 
-        item.TryGetProperty("dockerEnvironment", out var envProp).Should().BeFalse();
+        item.TryGetProperty("exerciseRuntime", out _).Should().BeFalse();
+    }
+
+    // ── Cycle 6: compose validation on save ──────────────────────────────
+
+    [Fact]
+    public async Task PostWorkshop_WithPrivilegedCompose_ReturnsBadRequest()
+    {
+        await AuthenticateAsync();
+
+        var postResponse = await _client!.PostAsJsonAsync("/workshops", new
+        {
+            title = "Unsafe Exercise",
+            type = 1,
+            level = 0,
+            exerciseRuntime = new
+            {
+                compose = """
+                    services:
+                      workshop:
+                        image: python:3.11
+                        privileged: true
+                    """,
+                devService = "workshop"
+            }
+        });
+
+        postResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 }

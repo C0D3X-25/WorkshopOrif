@@ -23,14 +23,17 @@ backend/
 │   │   ├── WorkshopsController.cs   # Public CRUD + listing
 │   │   └── AdminController.cs       # Auth + import/export
 │   ├── Models/
-│   │   ├── Workshop.cs              # Domain entities
+│   │   ├── Workshop.cs              # Domain entities (incl. ExerciseRuntime)
 │   │   └── WorkshopImportDto.cs     # Import/export DTO
+│   ├── Services/
+│   │   └── ExerciseRuntimeValidator.cs  # Compose validation on save/import
 │   ├── DataSeeder.cs                # Startup data seeding
 │   └── Program.cs                   # App configuration
 ├── WorkshopOrif.Api.Tests/        # Integration tests
 │   ├── WorkshopsEndpointsTests.cs
 │   ├── AdminAuthTests.cs
-│   └── WorkshopImportExportTests.cs
+│   ├── WorkshopImportExportTests.cs
+│   └── ExerciseRuntimeTests.cs    # Exercise Runtime CRUD + validation
 └── Dockerfile                       # Multi-stage build
 ```
 
@@ -193,6 +196,26 @@ The [`DataSeeder`](../../../backend/WorkshopOrif.Api/DataSeeder.cs) runs at star
 
 **For development:** Mount your local `backend/WorkshopOrif.Api/data/workshops` folder into the container to live-edit workshop content.
 
+**Re-import after schema changes:** If MongoDB already contains workshops with an old shape (e.g. `dockerEnvironment`), re-import seed JSON with `POST /admin/workshops/import?force=true` or drop the `workshops` collection and restart the API to re-seed from files.
+
+---
+
+## Exercise Runtime
+
+Exercise workshops may include an embedded **Exercise Runtime** (`exerciseRuntime` on the workshop document):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `Compose` | string | Docker Compose YAML |
+| `DevService` | string | Compose service name for IDE attach |
+| `WorkspaceFiles` | array | Starter files for the learner workspace |
+
+[`ExerciseRuntimeValidator`](../../../backend/WorkshopOrif.Api/Services/ExerciseRuntimeValidator.cs) runs on POST/PUT/import when `exerciseRuntime` is present. It rejects dangerous compose (privileged mode, host network, `docker.sock` mounts, non-relative volume paths).
+
+List endpoints **omit** `exerciseRuntime` from the response (projection exclude) to keep payloads small; detail and export include the full object.
+
+See [Companion App Architecture](../companion/companion-architecture.md) for how learners consume this at Launch.
+
 ---
 
 ## Testing
@@ -208,6 +231,7 @@ dotnet test
 - **CRUD operations** — Workshop creation, reading, updating, deletion
 - **Auth flow** — Login, token validation, protected endpoints
 - **Import/Export** — JSON round-trip, duplicate detection
+- **Exercise Runtime** — CRUD, compose validation, list projection
 
 ---
 
@@ -237,6 +261,7 @@ Multi-stage Dockerfile:
 ## Related Documentation
 
 - [API Reference](../api/api-reference.md) — Endpoint details
+- [Companion App Architecture](../companion/companion-architecture.md) — Launch and compose lifecycle
 - [Docker Deployment](../docker/docker-deployment.md) — Container orchestration
 - [Testing Guide](../testing.md) — Running and writing tests
-- [Workshop JSON Format](../../workshop-json-format.md) — Import schema
+- [Workshop JSON Reference](../../how-to/json-reference.md) — Import schema

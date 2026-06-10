@@ -104,11 +104,16 @@ Get a single workshop with full details including all chapters and questions.
       "blocks": [...],
       "questions": [...]
     }
-  ]
+  ],
+  "exerciseRuntime": {
+    "compose": "services:\n  workshop:\n    image: python:3.11-slim\n    volumes:\n      - .:/workspace\n    working_dir: /workspace\n    command: sleep infinity\n",
+    "devService": "workshop",
+    "workspaceFiles": [{ "name": "main.py", "content": "...", "gitUrl": null }]
+  }
 }
 ```
 
-**Note:** `type` and `level` are returned as integers (0=Theory/Introduction, 1=Exercise/Advanced).
+**Note:** `type` and `level` are returned as integers (0=Theory/Introduction, 1=Exercise/Advanced). `exerciseRuntime` is present only on Exercise workshops that define a containerised environment. List responses omit it.
 
 ---
 
@@ -123,6 +128,8 @@ Create a new workshop.
 **Request Body:** Workshop object (same schema as GET response, without `id`)
 
 **Response:** `201 Created` with `Location` header pointing to the new resource
+
+Returns `400 Bad Request` with `{ "error": "…" }` if `exerciseRuntime.compose` fails validation.
 
 ### PUT /workshops/{id}
 
@@ -173,6 +180,9 @@ Import a workshop from JSON. This is the primary way to create workshops from fi
 | `level` | string ("Introduction"/"Advanced") | enum (integer) |
 | `date` | string ("YYYY-MM-DD") | DateTime |
 | `id` | Not allowed (auto-generated) | Required |
+| `exerciseRuntime` | optional compose + devService + workspaceFiles | same |
+
+Compose validation applies on import. Use `force=true` to overwrite existing workshops when updating seed JSON (e.g. migrating from `dockerEnvironment` to `exerciseRuntime`).
 
 ### GET /admin/workshops/{id}/export
 
@@ -220,7 +230,17 @@ Export a workshop as JSON.
 }
 ```
 
-See [Chapter Content System](../../frontend/src/components/ChapterContent.tsx) for rendering logic.
+### ExerciseRuntime
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `compose` | string | Docker Compose YAML |
+| `devService` | string | Service name for IDE attach |
+| `workspaceFiles` | WorkspaceFile[] | Starter files |
+
+See [JSON Reference](../../how-to/json-reference.md#exercise-runtime-object) for authoring rules and validation.
+
+See [Chapter Content System](../../../frontend/src/components/ChapterContent.tsx) for rendering logic.
 
 ---
 
@@ -230,7 +250,7 @@ All errors follow standard HTTP status codes:
 
 | Status | Meaning |
 |--------|---------|
-| 400 | Bad Request — Invalid JSON or missing required fields |
+| 400 | Bad Request — Invalid JSON, missing required fields, or invalid `exerciseRuntime.compose` |
 | 401 | Unauthorized — Missing or invalid JWT |
 | 404 | Not Found — Workshop ID doesn't exist |
 | 409 | Conflict — Import collision (title exists) |
@@ -239,6 +259,7 @@ All errors follow standard HTTP status codes:
 
 ## Related Documentation
 
-- [Workshop JSON Format](../../workshop-json-format.md) — Complete schema for import/export
+- [Workshop JSON Reference](../../how-to/json-reference.md) — Complete schema for import/export
 - [Backend Architecture](../backend/backend-architecture.md) — Controllers and models
+- [Companion App Architecture](../companion/companion-architecture.md) — Launch API consumed by the frontend
 - [Frontend Architecture](../frontend/frontend-architecture.md) — How the UI consumes these endpoints

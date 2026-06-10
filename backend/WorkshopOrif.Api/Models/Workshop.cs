@@ -7,13 +7,6 @@ namespace WorkshopOrif.Api.Models;
 public enum WorkshopLevel { Introduction, Advanced }
 public enum WorkshopType { Theory, Exercise }
 
-public class DevContainerConfig
-{
-    public string[] Extensions { get; set; } = [];
-    public Dictionary<string, string> Features { get; set; } = new();
-    public string PostCreateCommand { get; set; } = string.Empty;
-}
-
 public class WorkspaceFile
 {
     public string Name { get; set; } = string.Empty;
@@ -21,19 +14,11 @@ public class WorkspaceFile
     public string? GitUrl { get; set; }
 }
 
-public class PortMapping
+public class ExerciseRuntime
 {
-    public int ContainerPort { get; set; }
-    public int HostPort { get; set; }
-}
-
-public class DockerEnvironment
-{
-    public string Image { get; set; } = string.Empty;
-    public DevContainerConfig DevContainer { get; set; } = new();
+    public string Compose { get; set; } = string.Empty;
     public WorkspaceFile[] WorkspaceFiles { get; set; } = [];
-    public PortMapping[] Ports { get; set; } = [];
-    public Dictionary<string, string> Env { get; set; } = new();
+    public string DevService { get; set; } = string.Empty;
 }
 
 public class QuestionOption
@@ -107,5 +92,5 @@ public class Workshop
     public Chapter[] Chapters { get; set; } = [];
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public DockerEnvironment? DockerEnvironment { get; set; }
+    public ExerciseRuntime? ExerciseRuntime { get; set; }
 }

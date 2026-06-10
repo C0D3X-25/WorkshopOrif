@@ -1,27 +1,16 @@
-export interface PortMapping {
-  containerPort: number;
-}
-
 export interface WorkspaceFile {
   name?: string;
   content?: string;
   gitUrl?: string;
 }
 
-export interface DevContainerConfig {
-  extensions?: string[];
-  postCreateCommand?: string;
-}
-
-export interface WorkshopEnv {
-  image: string;
-  devContainer?: DevContainerConfig;
+export interface ExerciseRuntime {
+  compose: string;
+  devService: string;
   workspaceFiles?: WorkspaceFile[];
-  ports?: PortMapping[];
-  env?: Record<string, string>;
 }
 
-export interface LaunchRequestBody extends WorkshopEnv {
+export interface LaunchRequestBody extends ExerciseRuntime {
   workshopId?: string;
 }
 

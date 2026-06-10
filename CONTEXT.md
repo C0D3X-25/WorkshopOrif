@@ -46,16 +46,44 @@ A workshop that presents concepts and may include questions at the end. Question
 _Avoid_: Theory module, lecture, reading
 
 **Exercise Workshop**:
-A workshop that presents a hands-on task for the learner to complete. May optionally include a `dockerEnvironment` for containerized development.
+A workshop that presents a hands-on task for the learner to complete. May optionally include an **Exercise Runtime** for containerized development.
 _Avoid_: Exercise module, lab, practical
 
+**Exercise Runtime**:
+The containerized environment specification attached to an Exercise Workshop. Stored embedded on the same workshop document (`exerciseRuntime`): a Docker Compose document (`compose`), starter workspace files (`workspaceFiles`), and the name of the service the IDE attaches to (`devService`). One self-contained record per exercise — authors add a workshop JSON with its compose YAML inside. The Companion App generates `devcontainer.json` at launch; authors never write it.
+_Avoid_: dockerEnvironment, container config, lab setup, runtime environment
+
+**Dev Service**:
+The compose service the learner's IDE connects to for editing and running code. Named by `devService` on the Exercise Runtime (e.g. `workshop`). Other services in the same compose stack (databases, queues) run alongside but are not the Coding Surface.
+_Avoid_: Main service, app service, workspace service
+
+**Compose Validation**:
+Checks applied to Exercise Runtime compose documents when trusted authors save or import a workshop. Rejects dangerous directives (privileged mode, host network, unsafe volume mounts). Validation runs in the backend Exercise Runtime service only — the Companion App trusts compose received from the API. Authors are trusted; learners are not expected to supply compose.
+_Avoid_: Sandbox, lint, security scan
+
+**Coding Surface**:
+Where the learner writes and runs exercise code. Always the learner's own local IDE (VS Code or Cursor) attached to the Exercise Runtime via Dev Containers — never a browser-based editor bundled in the workshop. The learner keeps tools and shortcuts they already know.
+_Avoid_: Web IDE, online editor, in-browser coding, code-server
+
 **dockerEnvironment**:
-An optional field on an Exercise Workshop that specifies a containerized development environment. Contains: Docker image reference, Dev Container configuration, workspace files (inline or git-sourced), port mappings, and environment variables. When present, learners use the Companion App to start a local container and connect via VS Code Dev Containers.
-_Avoid_: Container config, Docker setup, runtime environment
+Deprecated field name on workshop documents. Replaced by **Exercise Runtime** (`exerciseRuntime` in storage). Do not add new structured fields (image, devContainer, ports, env).
+_Avoid_: Container config, Docker setup
 
 **Companion App**:
-A lightweight native application (Tauri/Electron) installed by learners alongside Docker Desktop. Bridges the browser (where the Workshop web app runs) to the local Docker Desktop installation. Handles container lifecycle (start, stop, destroy), VS Code Dev Container launch, and Docker Desktop auto-start. Communicates with the browser over localhost HTTP. Stores a persistent anonymous user ID for container identification.
+A lightweight native application (Tauri/Electron) installed by learners alongside Docker Desktop. Bridges the browser (where the Workshop web app runs) to the local Docker Desktop installation. On launch: materialises the Exercise Runtime, runs the compose stack, and opens the learner's local IDE already attached to the dev service — no manual "Reopen in Container" step. Tears the stack down on reset. Communicates with the browser over localhost HTTP. Stores a persistent anonymous user ID for stack identification.
 _Avoid_: Desktop app, native client, Docker helper
+
+**Launch**:
+The Companion App action triggered when a learner clicks "Lancer l'exercice." Succeeds only when the compose stack is running and the Coding Surface is connected to the dev service. A failed or partial launch (files written but container not running) is not a successful Launch.
+_Avoid_: Start, open, deploy
+
+**Workspace**:
+The learner's working copy of an Exercise Runtime on their machine, at `~/.workshop-orif/workspaces/<workshopId>/`. Starter files are written here on first launch; edits persist across relaunches. The dev service bind-mounts this directory. Reset deletes the folder and recreates from starter files.
+_Avoid_: Project folder, lab directory, exercise files
+
+**Reset**:
+The learner action that tears down a workshop environment and starts fresh. Stops the compose stack, removes containers, deletes the Workspace on disk, and relaunches from starter files on the next Launch.
+_Avoid_: Restart, reload, recommencer (UI label only)
 
 **Question**:
 A self-assessment item embedded in a Theory Workshop. Fields: chapterTitle (groups the question under its chapter heading in the UI), text, type (single-choice or multiple-choice), options (each with text and isCorrect), and explanation shown after answering. Stored as an embedded array in the workshop document. Rendered as a grouped interactive self-assessment section after the workshop content body.

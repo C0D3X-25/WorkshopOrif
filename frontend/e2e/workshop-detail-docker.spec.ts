@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-// Cycle 6: WorkshopDetail renders Docker environment card
-
 const WORKSHOP_ID = '507f1f77bcf86cd799439011';
 
 const BASE_WORKSHOP = {
@@ -21,25 +19,21 @@ const BASE_WORKSHOP = {
   chapters: [],
 };
 
-test.describe('WorkshopDetail docker environment card', () => {
-  test('shows docker environment card when dockerEnvironment is present', async ({ page }) => {
+const SAMPLE_RUNTIME = {
+  compose: 'services:\n  workshop:\n    image: python:3.11\n',
+  devService: 'workshop',
+  workspaceFiles: [{ name: 'main.py', content: 'print("hello")', gitUrl: null }],
+};
+
+test.describe('WorkshopDetail exercise runtime card', () => {
+  test('shows exercise runtime card when exerciseRuntime is present', async ({ page }) => {
     await page.route(`/api/workshops/${WORKSHOP_ID}`, async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
           ...BASE_WORKSHOP,
-          dockerEnvironment: {
-            image: 'python:3.11',
-            devContainer: {
-              extensions: ['ms-python.python'],
-              features: {},
-              postCreateCommand: 'pip install openai',
-            },
-            workspaceFiles: [{ name: 'main.py', content: 'print("hello")', gitUrl: null }],
-            ports: [{ containerPort: 8000, hostPort: 8000 }],
-            env: { OPENAI_KEY: 'test' },
-          },
+          exerciseRuntime: SAMPLE_RUNTIME,
         }),
       });
     });
@@ -47,8 +41,7 @@ test.describe('WorkshopDetail docker environment card', () => {
     await page.goto(`/workshops/${WORKSHOP_ID}`);
 
     await expect(page.getByTestId('docker-environment')).toBeVisible();
-    await expect(page.getByTestId('docker-image')).toHaveText('python:3.11');
-    await expect(page.getByTestId('docker-post-create-command')).toHaveText('pip install openai');
+    await expect(page.getByTestId('docker-dev-service')).toContainText('workshop');
   });
 
   test('shows in-app confirmation when restarting exercise', async ({ page }) => {
@@ -64,7 +57,7 @@ test.describe('WorkshopDetail docker environment card', () => {
       await route.fulfill({
         status: 200,
         headers: { 'Content-Type': 'text/event-stream' },
-        body: 'data: {"phase":"pulling"}\n\ndata: {"phase":"starting"}\n\ndata: {"phase":"ready"}\n\n',
+        body: 'data: {"phase":"starting"}\n\ndata: {"phase":"pulling"}\n\ndata: {"phase":"ready"}\n\n',
       });
     });
 
@@ -74,12 +67,10 @@ test.describe('WorkshopDetail docker environment card', () => {
         contentType: 'application/json',
         body: JSON.stringify({
           ...BASE_WORKSHOP,
-          dockerEnvironment: {
-            image: 'python:3.11',
-            devContainer: { extensions: [], features: {}, postCreateCommand: '' },
+          exerciseRuntime: {
+            compose: 'services:\n  workshop:\n    image: python:3.11\n',
+            devService: 'workshop',
             workspaceFiles: [],
-            ports: [],
-            env: {},
           },
         }),
       });
@@ -126,7 +117,7 @@ test.describe('WorkshopDetail docker environment card', () => {
       await route.fulfill({
         status: 200,
         headers: { 'Content-Type': 'text/event-stream' },
-        body: 'data: {"phase":"pulling"}\n\ndata: {"phase":"starting"}\n\ndata: {"phase":"ready"}\n\n',
+        body: 'data: {"phase":"starting"}\n\ndata: {"phase":"pulling"}\n\ndata: {"phase":"ready"}\n\n',
       });
     });
 
@@ -136,12 +127,10 @@ test.describe('WorkshopDetail docker environment card', () => {
         contentType: 'application/json',
         body: JSON.stringify({
           ...BASE_WORKSHOP,
-          dockerEnvironment: {
-            image: 'python:3.11',
-            devContainer: { extensions: [], features: {}, postCreateCommand: '' },
+          exerciseRuntime: {
+            compose: 'services:\n  workshop:\n    image: python:3.11\n',
+            devService: 'workshop',
             workspaceFiles: [],
-            ports: [],
-            env: {},
           },
         }),
       });
@@ -158,7 +147,7 @@ test.describe('WorkshopDetail docker environment card', () => {
     await expect(page.getByRole('button', { name: "Recommencer l'exercice" })).toBeVisible();
   });
 
-  test('hides docker environment card when dockerEnvironment is absent', async ({ page }) => {
+  test('hides exercise runtime card when exerciseRuntime is absent', async ({ page }) => {
     await page.route(`/api/workshops/${WORKSHOP_ID}`, async route => {
       await route.fulfill({
         status: 200,

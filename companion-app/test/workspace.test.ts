@@ -4,73 +4,37 @@ import assert from 'node:assert/strict';
 import {
   buildCloseEditorCommand,
   buildDevcontainerJson,
+  buildDevContainerFolderUri,
+  devContainerLaunchCandidates,
   editorLaunchCandidates,
   makeEditorLauncher,
   makeWorkspace,
   type FsLike,
 } from '../src/workspace';
 
-// ── buildDevcontainerJson (pure) ─────────────────────────────────────────────
+const sampleRuntime = {
+  compose: 'services:\n  workshop:\n    image: python:3.11-slim\n',
+  devService: 'workshop',
+};
 
 describe('buildDevcontainerJson', () => {
-  test('sets name and image', () => {
-    const dc = buildDevcontainerJson('ws1', { image: 'python:3.11-slim' });
-    assert.equal(dc.image, 'python:3.11-slim');
+  test('references compose file and dev service from exercise runtime', () => {
+    const dc = buildDevcontainerJson('ws1', sampleRuntime);
+    assert.equal(dc.dockerComposeFile, '../compose.yml');
+    assert.equal(dc.service, 'workshop');
+    assert.equal(dc.workspaceFolder, '/workspace');
     assert.equal(dc.name, 'Workshop ORIF — ws1');
-  });
-
-  test('adds VS Code extensions when non-empty', () => {
-    const dc = buildDevcontainerJson('ws1', {
-      image: 'node:20',
-      devContainer: { extensions: ['ms-python.python'] },
-    });
-    assert.deepEqual(dc.customizations?.vscode.extensions, ['ms-python.python']);
-  });
-
-  test('omits customizations when extensions list is empty', () => {
-    const dc = buildDevcontainerJson('ws1', {
-      image: 'node:20',
-      devContainer: { extensions: [] },
-    });
-    assert.equal(dc.customizations, undefined);
-  });
-
-  test('adds postCreateCommand when present', () => {
-    const dc = buildDevcontainerJson('ws1', {
-      image: 'node:20',
-      devContainer: { postCreateCommand: 'pip install openai' },
-    });
-    assert.equal(dc.postCreateCommand, 'pip install openai');
-  });
-
-  test('omits postCreateCommand when absent', () => {
-    const dc = buildDevcontainerJson('ws1', { image: 'node:20' });
-    assert.equal(dc.postCreateCommand, undefined);
-  });
-
-  test('maps ports array to forwardPorts', () => {
-    const dc = buildDevcontainerJson('ws1', {
-      image: 'node:20',
-      ports: [{ containerPort: 3000 }, { containerPort: 5000 }],
-    });
-    assert.deepEqual(dc.forwardPorts, [3000, 5000]);
-  });
-
-  test('adds remoteEnv when non-empty', () => {
-    const dc = buildDevcontainerJson('ws1', {
-      image: 'node:20',
-      env: { OPENAI_API_KEY: 'test-key' },
-    });
-    assert.deepEqual(dc.remoteEnv, { OPENAI_API_KEY: 'test-key' });
-  });
-
-  test('omits remoteEnv when empty object', () => {
-    const dc = buildDevcontainerJson('ws1', { image: 'node:20', env: {} });
-    assert.equal(dc.remoteEnv, undefined);
   });
 });
 
-// ── close editor ─────────────────────────────────────────────────────────────
+describe('buildDevContainerFolderUri', () => {
+  test('builds a dev-container folder URI for full-auto IDE attach', () => {
+    const wsDir = '/base/workspaces/ws1';
+    const uri = buildDevContainerFolderUri(wsDir);
+    assert.ok(uri.startsWith('vscode-remote://dev-container+'));
+    assert.ok(uri.endsWith('/workspace'));
+  });
+});
 
 describe('buildCloseEditorCommand', () => {
   test('targets editor processes whose command line contains the workspace path', () => {
@@ -103,7 +67,21 @@ describe('closeEditorForWorkspace', () => {
   });
 });
 
-// ── editorLaunchCandidates ───────────────────────────────────────────────────
+describe('devContainerLaunchCandidates', () => {
+  const folderUri = 'vscode-remote://dev-container+abc/workspace';
+
+  test('prefers VS Code when preference is vscode', () => {
+    const candidates = devContainerLaunchCandidates('vscode', folderUri);
+    const clis = candidates.map(([, args]) => args.find((a) => a === 'code' || a === 'cursor'));
+    assert.deepEqual(clis, ['code', 'cursor']);
+  });
+
+  test('passes folder-uri to the editor CLI', () => {
+    const candidates = devContainerLaunchCandidates('vscode', folderUri);
+    assert.ok(candidates[0][1].includes('--folder-uri'));
+    assert.ok(candidates[0][1].includes(folderUri));
+  });
+});
 
 describe('editorLaunchCandidates', () => {
   const wsDir = '/tmp/ws1';
@@ -114,14 +92,7 @@ describe('editorLaunchCandidates', () => {
     const order = cli(editorLaunchCandidates('vscode', wsDir));
     assert.deepEqual(order, ['code', 'cursor']);
   });
-
-  test('prefers Cursor when preference is cursor', () => {
-    const order = cli(editorLaunchCandidates('cursor', wsDir));
-    assert.deepEqual(order, ['cursor', 'code']);
-  });
 });
-
-// ── prepareWorkspace (injectable fs) ─────────────────────────────────────────
 
 interface MockFs extends FsLike {
   _files: Record<string, string>;
@@ -150,15 +121,22 @@ describe('prepareWorkspace', () => {
   test('creates workspace directory', () => {
     const mockFs = makeMockFs();
     const { prepareWorkspace } = makeWorkspace(mockFs, '/base');
-    prepareWorkspace('ws1', { image: 'node:20' });
+    prepareWorkspace('ws1', sampleRuntime);
     assert.ok(mockFs._dirs.has(path.join('/base', 'workspaces', 'ws1')));
+  });
+
+  test('writes compose.yml from exercise runtime', () => {
+    const mockFs = makeMockFs();
+    const { prepareWorkspace } = makeWorkspace(mockFs, '/base');
+    const wsDir = prepareWorkspace('ws1', sampleRuntime);
+    assert.equal(mockFs._files[path.join(wsDir, 'compose.yml')], sampleRuntime.compose);
   });
 
   test('writes starter files to workspace dir', () => {
     const mockFs = makeMockFs();
     const { prepareWorkspace } = makeWorkspace(mockFs, '/base');
     const wsDir = prepareWorkspace('ws1', {
-      image: 'node:20',
+      ...sampleRuntime,
       workspaceFiles: [{ name: 'main.py', content: 'print("hello")' }],
     });
     assert.equal(mockFs._files[path.join(wsDir, 'main.py')], 'print("hello")');
@@ -169,7 +147,7 @@ describe('prepareWorkspace', () => {
     const mockFs = makeMockFs({ [path.join(wsDir, 'main.py')]: 'learner code' });
     const { prepareWorkspace } = makeWorkspace(mockFs, '/base');
     prepareWorkspace('ws1', {
-      image: 'node:20',
+      ...sampleRuntime,
       workspaceFiles: [{ name: 'main.py', content: 'original starter' }],
     });
     assert.equal(mockFs._files[path.join(wsDir, 'main.py')], 'learner code');
@@ -178,17 +156,16 @@ describe('prepareWorkspace', () => {
   test('always overwrites devcontainer.json with latest config', () => {
     const wsDir = path.join('/base', 'workspaces', 'ws1');
     const dcPath = path.join(wsDir, '.devcontainer', 'devcontainer.json');
-    const mockFs = makeMockFs({ [dcPath]: '{"image":"old"}' });
+    const mockFs = makeMockFs({ [dcPath]: '{"service":"old"}' });
     const { prepareWorkspace } = makeWorkspace(mockFs, '/base');
-    prepareWorkspace('ws1', { image: 'python:3.11-slim' });
-    const written = JSON.parse(mockFs._files[dcPath]) as { image: string };
-    assert.equal(written.image, 'python:3.11-slim');
+    prepareWorkspace('ws1', sampleRuntime);
+    const written = JSON.parse(mockFs._files[dcPath]) as { service: string };
+    assert.equal(written.service, 'workshop');
   });
 
-  test('hasWorkspace is true when devcontainer.json exists', () => {
+  test('hasWorkspace is true when compose.yml exists', () => {
     const wsDir = path.join('/base', 'workspaces', 'ws1');
-    const dcPath = path.join(wsDir, '.devcontainer', 'devcontainer.json');
-    const mockFs = makeMockFs({ [dcPath]: '{}' });
+    const mockFs = makeMockFs({ [path.join(wsDir, 'compose.yml')]: sampleRuntime.compose });
     const { hasWorkspace } = makeWorkspace(mockFs, '/base');
     assert.equal(hasWorkspace('ws1'), true);
   });
@@ -199,17 +176,17 @@ describe('prepareWorkspace', () => {
     assert.equal(hasWorkspace('ws1'), false);
   });
 
-  test('resetWorkspace removes the workshop directory and calls removeContainers', async () => {
+  test('resetWorkspace removes the workshop directory and tears down the stack', async () => {
     const wsDir = path.join('/base', 'workspaces', 'ws1');
     const mainPath = path.join(wsDir, 'main.py');
     const mockFs = makeMockFs({ [mainPath]: 'learner code' });
     mockFs._dirs.add(wsDir);
     const { resetWorkspace } = makeWorkspace(mockFs, '/base');
-    let removedPath: string | null = null;
+    let tornDownPath: string | null = null;
 
-    await resetWorkspace('ws1', async (dir) => { removedPath = dir; });
+    await resetWorkspace('ws1', async (dir) => { tornDownPath = dir; });
 
-    assert.equal(removedPath, wsDir);
+    assert.equal(tornDownPath, wsDir);
     assert.equal(mockFs.existsSync(wsDir), false);
     assert.equal(mockFs.existsSync(mainPath), false);
   });

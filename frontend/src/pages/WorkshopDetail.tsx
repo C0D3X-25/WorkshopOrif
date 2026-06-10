@@ -13,29 +13,16 @@ interface Chapter {
   questions: Question[]
 }
 
-interface DevContainerConfig {
-  extensions: string[]
-  features: Record<string, string>
-  postCreateCommand: string
-}
-
 interface WorkspaceFile {
   name: string
   content?: string
   gitUrl?: string
 }
 
-interface PortMapping {
-  containerPort: number
-  hostPort: number
-}
-
-interface DockerEnvironment {
-  image: string
-  devContainer: DevContainerConfig
+interface ExerciseRuntime {
+  compose: string
+  devService: string
   workspaceFiles: WorkspaceFile[]
-  ports: PortMapping[]
-  env: Record<string, string>
 }
 
 interface Workshop {
@@ -53,7 +40,7 @@ interface Workshop {
   expectedOutcome: string
   date: string
   chapters: Chapter[]
-  dockerEnvironment?: DockerEnvironment
+  exerciseRuntime?: ExerciseRuntime
 }
 
 const TYPE_LABELS: Record<number, string> = { 0: 'Theory', 1: 'Exercise' }
@@ -164,10 +151,10 @@ export default function WorkshopDetail() {
           </div>
         )}
 
-        {workshop.dockerEnvironment && (
+        {workshop.exerciseRuntime && (
           <DockerLaunchButton
             workshopId={workshop.id}
-            dockerEnvironment={workshop.dockerEnvironment}
+            exerciseRuntime={workshop.exerciseRuntime}
           />
         )}
 

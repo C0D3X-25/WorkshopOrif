@@ -1,7 +1,7 @@
 import express, { type Express, type Request, type Response } from 'express';
 import cors from 'cors';
 import type { Server } from 'node:http';
-import { checkDocker, startDockerDesktop, pullImage, removeDevContainersForPath } from './docker';
+import { checkDocker, startDockerDesktop, composeUp, composeDown } from './docker';
 import {
   prepareWorkspace,
   resetWorkspace,
@@ -31,15 +31,15 @@ const CORS_OPTIONS = {
 export interface LaunchHandlerDeps {
   checkDocker: () => Promise<DockerStatus>;
   startDockerDesktop: () => void;
-  pullImage: (image: string, onLine: (line: string) => void) => Promise<void>;
-  prepareWorkspace: (workshopId: string, env: LaunchRequestBody) => string;
+  composeUp: (wsDir: string, onLine: (line: string) => void) => Promise<void>;
+  prepareWorkspace: (workshopId: string, runtime: LaunchRequestBody) => string;
   openInVSCode: (wsDir: string) => Promise<void>;
 }
 
 export interface ResetHandlerDeps {
   workshopDir: (workshopId: string) => string;
   closeEditorForWorkspace: (wsDir: string) => Promise<CloseEditorResult>;
-  resetWorkspace: (workshopId: string, removeContainers: (wsDir: string) => Promise<void>) => Promise<void>;
+  resetWorkspace: (workshopId: string, tearDownStack: (wsDir: string) => Promise<void>) => Promise<void>;
 }
 
 export interface StatusHandlerDeps {
@@ -50,15 +50,11 @@ export interface AppDeps extends LaunchHandlerDeps, ResetHandlerDeps, StatusHand
   getUserId: () => string;
 }
 
-// ── SSE helper ────────────────────────────────────────────────────────────────
-
 function sseEvent(res: Response, phase: string, message?: string): void {
   if (res.writableEnded) return;
   const payload = JSON.stringify({ phase, ...(message ? { message } : {}) });
   try {
     res.write(`data: ${payload}\n\n`);
-    // Flush explicitly — required when compression middleware is present,
-    // and harmless otherwise.
     if (typeof (res as Response & { flush?: () => void }).flush === 'function') {
       (res as Response & { flush: () => void }).flush();
     }
@@ -67,27 +63,21 @@ function sseEvent(res: Response, phase: string, message?: string): void {
   }
 }
 
-// ── Launch handler (injectable deps for testability) ──────────────────────────
-
-/**
- * Returns an Express request handler for POST /containers/launch.
- * All external operations are injected so they can be replaced in tests.
- */
 export function createLaunchHandler(deps: LaunchHandlerDeps) {
   const {
     checkDocker: checkDockerFn,
     startDockerDesktop: startDockerDesktopFn,
-    pullImage: pullImageFn,
+    composeUp: composeUpFn,
     prepareWorkspace: prepareWorkspaceFn,
     openInVSCode: openInVSCodeFn,
   } = deps;
 
   return async function handleLaunch(req: Request, res: Response): Promise<void> {
-    const { workshopId, image, devContainer, workspaceFiles, ports, env } =
+    const { workshopId, compose, devService, workspaceFiles } =
       (req.body ?? {}) as LaunchRequestBody;
 
-    if (!workshopId || !image) {
-      res.status(400).json({ error: 'workshopId and image are required' });
+    if (!workshopId || !compose || !devService) {
+      res.status(400).json({ error: 'workshopId, compose, and devService are required' });
       return;
     }
 
@@ -96,17 +86,9 @@ export function createLaunchHandler(deps: LaunchHandlerDeps) {
     res.setHeader('X-Accel-Buffering', 'no');
     res.flushHeaders();
 
-    // Disable Nagle's algorithm so each res.write() triggers an immediate TCP send.
-    // Without this, small SSE frames are batched and the browser never sees them
-    // until the stream ends.
     res.socket?.setNoDelay(true);
-
-    // Absorb socket-level EPIPE — a disconnected client must not crash the process.
-    // (res.write throws asynchronously via the socket's 'error' event, not synchronously.)
     res.socket?.on('error', () => {});
 
-    // Detect a real client disconnect — NOT req 'close', which also fires once the
-    // POST body has been fully read (would suppress every SSE frame).
     let clientGone = false;
     const markClientGone = () => { clientGone = true; };
     req.on('aborted', markClientGone);
@@ -119,7 +101,6 @@ export function createLaunchHandler(deps: LaunchHandlerDeps) {
     };
 
     try {
-      // Step 1 — verify Docker
       const dockerStatus = await checkDockerFn();
       if (dockerStatus === 'stopped') {
         startDockerDesktopFn();
@@ -128,23 +109,6 @@ export function createLaunchHandler(deps: LaunchHandlerDeps) {
         return;
       }
 
-      // Step 2 — pull image
-      send('pulling');
-      if (clientGone) {
-        res.end();
-        return;
-      }
-
-      try {
-        await pullImageFn(image, (line) => send('pulling', line));
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        send('error', `Impossible de télécharger l'image : ${message}`);
-        res.end();
-        return;
-      }
-
-      // Step 3 — prepare workspace
       send('starting');
       if (clientGone) {
         res.end();
@@ -153,7 +117,7 @@ export function createLaunchHandler(deps: LaunchHandlerDeps) {
 
       let wsDir: string;
       try {
-        wsDir = prepareWorkspaceFn(workshopId, { image, devContainer, workspaceFiles, ports, env });
+        wsDir = prepareWorkspaceFn(workshopId, { compose, devService, workspaceFiles });
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         send('error', `Impossible de préparer l'espace de travail : ${message}`);
@@ -161,7 +125,21 @@ export function createLaunchHandler(deps: LaunchHandlerDeps) {
         return;
       }
 
-      // Step 4 — open editor
+      send('pulling');
+      if (clientGone) {
+        res.end();
+        return;
+      }
+
+      try {
+        await composeUpFn(wsDir, (line) => send('pulling', line));
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        send('error', `Impossible de démarrer la stack Docker : ${message}`);
+        res.end();
+        return;
+      }
+
       if (clientGone) {
         res.end();
         return;
@@ -172,7 +150,7 @@ export function createLaunchHandler(deps: LaunchHandlerDeps) {
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         send('error',
-          `VS Code n'a pas pu s'ouvrir : ${message}. ` +
+          `L'éditeur n'a pas pu s'ouvrir : ${message}. ` +
           `Ouvrez manuellement le dossier : ${wsDir}`);
         res.end();
         return;
@@ -187,8 +165,6 @@ export function createLaunchHandler(deps: LaunchHandlerDeps) {
     }
   };
 }
-
-// ── Reset handler ─────────────────────────────────────────────────────────────
 
 export function createResetHandler(deps: ResetHandlerDeps) {
   const {
@@ -208,7 +184,7 @@ export function createResetHandler(deps: ResetHandlerDeps) {
     try {
       const wsDir = workshopDirFn(workshopId);
       const { closed: editorClosed } = await closeEditorFn(wsDir);
-      await resetWorkspaceFn(workshopId, removeDevContainersForPath);
+      await resetWorkspaceFn(workshopId, composeDown);
       res.json({ ok: true, editorClosed });
     } catch (err) {
       console.error('[reset]', err);
@@ -216,8 +192,6 @@ export function createResetHandler(deps: ResetHandlerDeps) {
     }
   };
 }
-
-// ── Status handler ────────────────────────────────────────────────────────────
 
 export function createStatusHandler(deps: StatusHandlerDeps) {
   const { hasWorkspace: hasWorkspaceFn } = deps;
@@ -233,13 +207,11 @@ export function createStatusHandler(deps: StatusHandlerDeps) {
   };
 }
 
-// ── App factory ───────────────────────────────────────────────────────────────
-
 export function createApp(deps: Partial<AppDeps> = {}): Express {
   const resolved: AppDeps = {
     checkDocker,
     startDockerDesktop,
-    pullImage,
+    composeUp,
     prepareWorkspace,
     resetWorkspace,
     hasWorkspace,
@@ -255,7 +227,6 @@ export function createApp(deps: Partial<AppDeps> = {}): Express {
   app.options('*', cors(CORS_OPTIONS));
   app.use(express.json({ limit: '1mb' }));
 
-  // Liveness probe only — Docker is checked during /containers/launch.
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok', userId: resolved.getUserId(), version: '0.1.0' });
   });

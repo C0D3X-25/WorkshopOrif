@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using WorkshopOrif.Api.Models;
+using WorkshopOrif.Api.Services;
 
 namespace WorkshopOrif.Api.Controllers;
 
@@ -15,11 +16,16 @@ public class AdminController : ControllerBase
 {
     private readonly IConfiguration _config;
     private readonly IMongoCollection<Workshop> _workshops;
+    private readonly IExerciseRuntimeValidator _exerciseRuntimeValidator;
 
-    public AdminController(IConfiguration config, IMongoDatabase db)
+    public AdminController(
+        IConfiguration config,
+        IMongoDatabase db,
+        IExerciseRuntimeValidator exerciseRuntimeValidator)
     {
         _config = config;
         _workshops = db.GetCollection<Workshop>("workshops");
+        _exerciseRuntimeValidator = exerciseRuntimeValidator;
     }
 
     public record LoginRequest(string? Password);
@@ -64,6 +70,10 @@ public class AdminController : ControllerBase
         [FromQuery] bool force = false)
     {
         var workshop = dto.ToWorkshop();
+        var validation = _exerciseRuntimeValidator.Validate(workshop.ExerciseRuntime);
+        if (!validation.IsValid)
+            return BadRequest(new { error = validation.Error });
+
         var existing = await _workshops.Find(w => w.Title == workshop.Title).FirstOrDefaultAsync();
 
         if (existing is not null && !force)

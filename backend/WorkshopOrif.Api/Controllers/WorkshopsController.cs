@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using WorkshopOrif.Api.Models;
+using WorkshopOrif.Api.Services;
 
 namespace WorkshopOrif.Api.Controllers;
 
@@ -10,10 +11,12 @@ namespace WorkshopOrif.Api.Controllers;
 public class WorkshopsController : ControllerBase
 {
     private readonly IMongoCollection<Workshop> _workshops;
+    private readonly IExerciseRuntimeValidator _exerciseRuntimeValidator;
 
-    public WorkshopsController(IMongoDatabase db)
+    public WorkshopsController(IMongoDatabase db, IExerciseRuntimeValidator exerciseRuntimeValidator)
     {
         _workshops = db.GetCollection<Workshop>("workshops");
+        _exerciseRuntimeValidator = exerciseRuntimeValidator;
     }
 
     [HttpGet("{id}")]
@@ -28,6 +31,10 @@ public class WorkshopsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Workshop>> CreateWorkshop([FromBody] Workshop workshop)
     {
+        var validation = _exerciseRuntimeValidator.Validate(workshop.ExerciseRuntime);
+        if (!validation.IsValid)
+            return BadRequest(new { error = validation.Error });
+
         await _workshops.InsertOneAsync(workshop);
         return CreatedAtAction(nameof(GetWorkshop), new { id = workshop.Id }, workshop);
     }
@@ -36,6 +43,10 @@ public class WorkshopsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<Workshop>> UpdateWorkshop(string id, [FromBody] Workshop workshop)
     {
+        var validation = _exerciseRuntimeValidator.Validate(workshop.ExerciseRuntime);
+        if (!validation.IsValid)
+            return BadRequest(new { error = validation.Error });
+
         workshop.Id = id;
         var result = await _workshops.ReplaceOneAsync(w => w.Id == id, workshop);
         if (result.MatchedCount == 0) return NotFound();
@@ -66,7 +77,7 @@ public class WorkshopsController : ControllerBase
         };
 
         var result = await _workshops.Find(filter)
-            .Project<Workshop>(Builders<Workshop>.Projection.Exclude(w => w.DockerEnvironment))
+            .Project<Workshop>(Builders<Workshop>.Projection.Exclude(w => w.ExerciseRuntime))
             .ToListAsync();
         return Ok(result);
     }

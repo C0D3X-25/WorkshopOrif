@@ -15,7 +15,7 @@ public class WorkshopImportDto
     public string? Date { get; set; }
     public string ExpectedOutcome { get; set; } = string.Empty;
     public Chapter[] Chapters { get; set; } = [];
-    public DockerEnvironment? DockerEnvironment { get; set; }
+    public ExerciseRuntime? ExerciseRuntime { get; set; }
 
     public Workshop ToWorkshop() => new()
     {
@@ -34,7 +34,7 @@ public class WorkshopImportDto
             : default,
         ExpectedOutcome = ExpectedOutcome,
         Chapters = Chapters,
-        DockerEnvironment = DockerEnvironment
+        ExerciseRuntime = ExerciseRuntime
     };
 
     public static WorkshopImportDto FromWorkshop(Workshop w) => new()
@@ -52,6 +52,6 @@ public class WorkshopImportDto
         Date = w.Date == default ? null : w.Date.ToString("yyyy-MM-dd"),
         ExpectedOutcome = w.ExpectedOutcome,
         Chapters = w.Chapters,
-        DockerEnvironment = w.DockerEnvironment
+        ExerciseRuntime = w.ExerciseRuntime
     };
 }
