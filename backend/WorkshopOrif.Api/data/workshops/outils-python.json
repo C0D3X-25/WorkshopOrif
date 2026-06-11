@@ -46,9 +46,7 @@
             {
               "type": "paragraph",
               "parts": [
-                { "kind": "text", "value": "L'environnement de développement se lance automatiquement via le bouton ci-dessous. Un container " },
-                { "kind": "code", "value": "python:3.11-slim" },
-                { "kind": "text", "value": " démarre ; le SDK " },
+                { "kind": "text", "value": "L'environnement de développement se lance automatiquement via le bouton ci-dessous. Un container Python 3.11 démarre ; le SDK " },
                 { "kind": "code", "value": "openai" },
                 { "kind": "text", "value": " est installé automatiquement (" },
                 { "kind": "code", "value": "pip install openai" },
@@ -154,7 +152,7 @@
             {
               "type": "code",
               "language": "bash",
-              "code": "python main.py"
+              "code": "python3 main.py"
             },
             {
               "type": "paragraph",
@@ -169,9 +167,14 @@
     }
   ],
   "exerciseRuntime": {
-    "compose": "services:\n  workshop:\n    image: python:3.11-slim\n    volumes:\n      - .:/workspace\n    working_dir: /workspace\n    command: sh -c \"pip install -q openai && sleep infinity\"\n",
+    "compose": "services:\n  workshop:\n    image: mcr.microsoft.com/devcontainers/python:3.11\n    volumes:\n      - .:/workspace\n    working_dir: /workspace\n    stdin_open: true\n    tty: true\n    command: sleep infinity\n",
     "devService": "workshop",
     "workspaceFiles": [
+      {
+        "name": "requirements.txt",
+        "content": "openai==1.58.1\n",
+        "gitUrl": null
+      },
       {
         "name": "main.py",
         "content": "from openai import OpenAI\nfrom datetime import datetime\n\nclient = OpenAI()  # Lit OPENAI_API_KEY depuis l'environnement\n\n# TODO 1 : Définir le schéma de l'outil get_current_datetime\ntools = []\n\n# TODO 2 : Envoyer la question + outils au modèle\nmessages = [{\"role\": \"user\", \"content\": \"Quelle heure est-il ?\"}]\nresponse = None  # remplacer par l'appel à client.chat.completions.create(...)\n\n# TODO 3 : Intercepter le tool_call et exécuter la vraie fonction\n# tool_call = response.choices[0].message.tool_calls[0]\n# print(f\"Outil appelé : {tool_call.function.name}\")\n# result = datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")\n\n# TODO 4 : Réinjecter le résultat et obtenir la réponse finale\n# messages += [\n#     response.choices[0].message,\n#     {\"role\": \"tool\", \"tool_call_id\": tool_call.id, \"content\": result}\n# ]\n# final = client.chat.completions.create(model=\"gpt-4o-mini\", messages=messages)\n# print(final.choices[0].message.content)\n",

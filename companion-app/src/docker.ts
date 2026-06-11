@@ -1,5 +1,6 @@
 import { execFile as defaultExecFile, spawn as defaultSpawn } from 'node:child_process';
 import type { DockerStatus } from './types';
+import { COMPOSE_REL_PATH } from './workspace';
 
 export function makeDockerOps(
   execFileFn: typeof defaultExecFile,
@@ -31,7 +32,7 @@ export function makeDockerOps(
     return new Promise((resolve, reject) => {
       const proc = spawnFn(
         'docker',
-        ['compose', '-f', 'compose.yml', 'up', '-d', '--remove-orphans'],
+        ['compose', '-f', COMPOSE_REL_PATH, 'up', '-d', '--remove-orphans'],
         { cwd: wsDir },
       );
 
@@ -60,7 +61,7 @@ export function makeDockerOps(
     return new Promise((resolve) => {
       execFileFn(
         'docker',
-        ['compose', '-f', 'compose.yml', 'down', '--remove-orphans'],
+        ['compose', '-f', COMPOSE_REL_PATH, 'down', '--remove-orphans'],
         { cwd: wsDir, timeout: 60_000 },
         () => resolve(),
       );

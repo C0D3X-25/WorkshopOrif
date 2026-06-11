@@ -145,6 +145,8 @@ export function createLaunchHandler(deps: LaunchHandlerDeps) {
         return;
       }
 
+      send('pulling', 'Ouverture de VS Code…');
+
       try {
         await openInVSCodeFn(wsDir);
       } catch (err) {

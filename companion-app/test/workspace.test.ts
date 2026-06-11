@@ -9,6 +9,7 @@ import {
   editorLaunchCandidates,
   makeEditorLauncher,
   makeWorkspace,
+  materializeComposeForDevContainer,
   type FsLike,
 } from '../src/workspace';
 
@@ -20,10 +21,32 @@ const sampleRuntime = {
 describe('buildDevcontainerJson', () => {
   test('references compose file and dev service from exercise runtime', () => {
     const dc = buildDevcontainerJson('ws1', sampleRuntime);
-    assert.equal(dc.dockerComposeFile, '../compose.yml');
+    assert.equal(dc.dockerComposeFile, 'docker-compose.yml');
     assert.equal(dc.service, 'workshop');
     assert.equal(dc.workspaceFolder, '/workspace');
     assert.equal(dc.name, 'Workshop ORIF — ws1');
+    assert.equal(dc.overrideCommand, false);
+    assert.equal(dc.remoteUser, 'vscode');
+    assert.equal(dc.updateRemoteUserUID, 'on');
+  });
+
+  test('adds postCreateCommand and python extension when workspace has requirements and .py files', () => {
+    const dc = buildDevcontainerJson('ws1', {
+      ...sampleRuntime,
+      workspaceFiles: [
+        { name: 'requirements.txt', content: 'openai\n' },
+        { name: 'main.py', content: 'print("hi")\n' },
+      ],
+    });
+    assert.equal(dc.postCreateCommand, 'python3 -m pip install -q -r requirements.txt');
+    assert.deepEqual(dc.customizations?.vscode.extensions, ['ms-python.python']);
+  });
+});
+
+describe('materializeComposeForDevContainer', () => {
+  test('rewrites workspace-relative volume for .devcontainer compose file', () => {
+    const compose = 'services:\n  workshop:\n    volumes:\n      - .:/workspace\n';
+    assert.match(materializeComposeForDevContainer(compose), /- \.\.:\/workspace/);
   });
 });
 
@@ -31,8 +54,22 @@ describe('buildDevContainerFolderUri', () => {
   test('builds a dev-container folder URI for full-auto IDE attach', () => {
     const wsDir = '/base/workspaces/ws1';
     const uri = buildDevContainerFolderUri(wsDir);
-    assert.ok(uri.startsWith('vscode-remote://dev-container+'));
-    assert.ok(uri.endsWith('/workspace'));
+    const expectedHex = Buffer.from(wsDir).toString('hex');
+    assert.equal(uri, `vscode-remote://dev-container+${expectedHex}/workspace`);
+  });
+
+  test('encodes the workspace folder path, not the devcontainer.json path', () => {
+    const wsDir = '/base/workspaces/ws1';
+    const uri = buildDevContainerFolderUri(wsDir);
+    const wrongHex = Buffer.from(`${wsDir}/.devcontainer/devcontainer.json`).toString('hex');
+    assert.ok(!uri.includes(wrongHex), 'URI must not encode the devcontainer.json file path');
+  });
+
+  test('uses hex encoding, not base64url', () => {
+    const wsDir = '/base/workspaces/ws1';
+    const uri = buildDevContainerFolderUri(wsDir);
+    const base64urlEncoded = Buffer.from(wsDir).toString('base64url');
+    assert.ok(!uri.includes(base64urlEncoded), 'URI must not use base64url encoding');
   });
 });
 
@@ -125,11 +162,15 @@ describe('prepareWorkspace', () => {
     assert.ok(mockFs._dirs.has(path.join('/base', 'workspaces', 'ws1')));
   });
 
-  test('writes compose.yml from exercise runtime', () => {
+  test('writes docker-compose.yml under .devcontainer', () => {
     const mockFs = makeMockFs();
     const { prepareWorkspace } = makeWorkspace(mockFs, '/base');
-    const wsDir = prepareWorkspace('ws1', sampleRuntime);
-    assert.equal(mockFs._files[path.join(wsDir, 'compose.yml')], sampleRuntime.compose);
+    const wsDir = prepareWorkspace('ws1', {
+      ...sampleRuntime,
+      compose: 'services:\n  workshop:\n    volumes:\n      - .:/workspace\n',
+    });
+    const composePath = path.join(wsDir, '.devcontainer', 'docker-compose.yml');
+    assert.match(mockFs._files[composePath], /- \.\.:\/workspace/);
   });
 
   test('writes starter files to workspace dir', () => {
@@ -163,9 +204,11 @@ describe('prepareWorkspace', () => {
     assert.equal(written.service, 'workshop');
   });
 
-  test('hasWorkspace is true when compose.yml exists', () => {
+  test('hasWorkspace is true when docker-compose.yml exists', () => {
     const wsDir = path.join('/base', 'workspaces', 'ws1');
-    const mockFs = makeMockFs({ [path.join(wsDir, 'compose.yml')]: sampleRuntime.compose });
+    const mockFs = makeMockFs({
+      [path.join(wsDir, '.devcontainer', 'docker-compose.yml')]: sampleRuntime.compose,
+    });
     const { hasWorkspace } = makeWorkspace(mockFs, '/base');
     assert.equal(hasWorkspace('ws1'), true);
   });

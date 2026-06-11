@@ -11,6 +11,14 @@ export interface DevcontainerJson {
   dockerComposeFile: string;
   service: string;
   workspaceFolder: string;
+  overrideCommand: boolean;
+  remoteUser: string;
+  updateRemoteUserUID: string;
+  shutdownAction: string;
+  postCreateCommand?: string;
+  customizations?: {
+    vscode: { extensions: string[] };
+  };
 }
 
 export interface FsLike {
@@ -38,19 +46,41 @@ export interface CloseEditorResult {
 }
 
 const DEFAULT_WORKSPACE_FOLDER = '/workspace';
+export const COMPOSE_REL_PATH = '.devcontainer/docker-compose.yml';
+
+/** Author compose uses `.:/workspace` from the workspace root; under `.devcontainer/` use `..`. */
+export function materializeComposeForDevContainer(compose: string): string {
+  return compose.replace(/- \.:\/workspace/g, '- ..:/workspace');
+}
 
 export function buildDevcontainerJson(workshopId: string, runtime: ExerciseRuntime): DevcontainerJson {
-  return {
+  const hasRequirements = runtime.workspaceFiles?.some((f) => f.name === 'requirements.txt');
+  const isPython = runtime.workspaceFiles?.some((f) => f.name?.endsWith('.py'));
+
+  const dc: DevcontainerJson = {
     name: `Workshop ORIF — ${workshopId}`,
-    dockerComposeFile: '../compose.yml',
+    dockerComposeFile: 'docker-compose.yml',
     service: runtime.devService,
     workspaceFolder: DEFAULT_WORKSPACE_FOLDER,
+    overrideCommand: false,
+    remoteUser: 'vscode',
+    updateRemoteUserUID: 'on',
+    shutdownAction: 'none',
   };
+
+  if (hasRequirements) {
+    dc.postCreateCommand = 'python3 -m pip install -q -r requirements.txt';
+  }
+
+  if (isPython) {
+    dc.customizations = { vscode: { extensions: ['ms-python.python'] } };
+  }
+
+  return dc;
 }
 
 export function buildDevContainerFolderUri(wsDir: string, workspaceFolder = DEFAULT_WORKSPACE_FOLDER): string {
-  const configPath = path.join(wsDir, '.devcontainer', 'devcontainer.json');
-  const encoded = Buffer.from(configPath).toString('base64url');
+  const encoded = Buffer.from(wsDir).toString('hex');
   return `vscode-remote://dev-container+${encoded}${workspaceFolder}`;
 }
 
@@ -63,7 +93,13 @@ export function makeWorkspace(fsModule: FsLike, baseDir: string) {
     const wsDir = workshopDir(workshopId);
     fsModule.mkdirSync(wsDir, { recursive: true });
 
-    fsModule.writeFileSync(path.join(wsDir, 'compose.yml'), runtime.compose, 'utf8');
+    const dcDir = path.join(wsDir, '.devcontainer');
+    fsModule.mkdirSync(dcDir, { recursive: true });
+    fsModule.writeFileSync(
+      path.join(dcDir, 'docker-compose.yml'),
+      materializeComposeForDevContainer(runtime.compose),
+      'utf8',
+    );
 
     for (const file of runtime.workspaceFiles ?? []) {
       if (!file.name) continue;
@@ -82,9 +118,6 @@ export function makeWorkspace(fsModule: FsLike, baseDir: string) {
       }
     }
 
-    const dcDir = path.join(wsDir, '.devcontainer');
-    fsModule.mkdirSync(dcDir, { recursive: true });
-
     const devcontainer = buildDevcontainerJson(workshopId, runtime);
     fsModule.writeFileSync(
       path.join(dcDir, 'devcontainer.json'),
@@ -96,7 +129,7 @@ export function makeWorkspace(fsModule: FsLike, baseDir: string) {
   }
 
   function hasWorkspace(workshopId: string): boolean {
-    const composePath = path.join(workshopDir(workshopId), 'compose.yml');
+    const composePath = path.join(workshopDir(workshopId), '.devcontainer', 'docker-compose.yml');
     return fsModule.existsSync(composePath);
   }
 

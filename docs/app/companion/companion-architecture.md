@@ -167,8 +167,10 @@ The learner's anonymous ID is stored at `~/.workshop-orif/id` (used for future s
 The Companion opens the IDE with a Dev Container folder URI — the learner does **not** click "Reopen in Container":
 
 ```
-code --folder-uri vscode-remote://dev-container+<base64url(devcontainer.json path)>/workspace
+code --folder-uri vscode-remote://dev-container+<hex(workspace folder path)>/workspace
 ```
+
+The path encoded in the URI is the **workspace folder** (`~/.workshop-orif/workspaces/<workshopId>/`), hex-encoded. The Dev Containers extension decodes this to locate `.devcontainer/devcontainer.json` inside that folder.
 
 Editor preference (`vscode` or `cursor`) is read from `~/.workshop-orif/settings.json`, with fallback to the other CLI if the primary is missing from `PATH`.
 

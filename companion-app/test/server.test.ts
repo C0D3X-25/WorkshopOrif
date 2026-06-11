@@ -162,12 +162,26 @@ describe('launch handler', () => {
     assert.ok(err?.message?.includes('compose failed'));
   });
 
+  test('streams error phase when VS Code fails to open', async () => {
+    const handler = createLaunchHandler(defaultDeps({
+      openInVSCode: async () => { throw new Error('editor failed'); },
+    }));
+    const req = mockReq(sampleBody);
+    const res = mockRes();
+
+    await handler(req as unknown as Request, res as unknown as Response);
+
+    const err = res._events_collected.find((e) => e.phase === 'error');
+    assert.ok(err, 'must emit error event');
+    assert.ok(err?.message?.includes('editor failed'));
+  });
+
   test('does not crash when client disconnects and socket emits EPIPE', async () => {
     let resolveP: () => void = () => {};
-    const composeBarrier = new Promise<void>((r) => { resolveP = r; });
+    const editorBarrier = new Promise<void>((r) => { resolveP = r; });
 
     const handler = createLaunchHandler(defaultDeps({
-      composeUp: () => composeBarrier,
+      openInVSCode: () => editorBarrier,
     }));
     const req = mockReq(sampleBody);
     const res = mockRes();
